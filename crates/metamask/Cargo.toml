@@ -1,0 +1,15 @@
+[package]
+name = "wallet-metamask"
+version = "0.1.0"
+edition = "2021"
+
+license = "MPL-2.0"
+
+[lib]
+name = "wallet_metamask"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+anyhow = { workspace = true }
+rand = "0.8.5"
+ring = { workspace = true }
