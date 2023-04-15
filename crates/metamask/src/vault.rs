@@ -48,10 +48,14 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     let re = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap();
     if let Some(capture) = re.captures(data) {
         println!("Found chromium vault");
-        let vault_body_data = &capture[0][29..].replace("\\\"", "\"");
-        println!("vault_body_data: {}", vault_body_data);
-        println!("{}", vault_body_data);
-        println!("here");
+        let vault_body_data = &capture[0][29..];
+        let mut vault_body_data = vault_body_data.chars();
+        vault_body_data.next();
+        vault_body_data.next_back();
+        println!("{}", vault_body_data.as_str());
+        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
+        println!("{}", vault_body_data.as_str());
+        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
         // let vault_body = serde_json::from_str::<String>(vault_body_data)?;
         // println!("{:?}", serde_json::from_str::<Vault>(vault_body_data));
         let vault_body: Value = serde_json::from_str(data).unwrap();
@@ -102,7 +106,13 @@ mod test {
         // let data = r#"{\"data\":\"++9zp6eMW5rw++//\",\"iv\":\"==\",\"salt\":\"as=\"}"#;
         // let data = r#"{\"name\":\"Alice\",\"age\":25,\"is_student\":true}"#;
         // let data = data.replace("\\\"", "\"");
-        let data = r#"{"data":"JoQHNVPtbasloEAPF40zXNIXG4vqP/1LfN6cuKTjFxSqxhOrqsCK/O3CULHVvmGT1wqUgw7PKgZE/vZ7xj7UThU+x+QZ2Y1qGOXVAyEKq7mI9gJjz4L3FS1yTcdK6Q6QnA1Q2Z/srea6BJPRKMwhb5k50j/ajxaByOleD5dkTsI3fBVQ9SwchOzYBzdne3qBNeEPuTXnqkJt5E0ji1a2o1g1tK6opMpzFBf5LQ9f0+ItgIIZbJYP","iv":"MdrB5cx9x2Fn9BEgjkMEjA==","salt":"OjqbwoK17SXSwcXkshRag8x8Hlk+UvB0ak1AjTlsCpw="}"#;
+        // let data =
+        // r#"{"data":"JoQHNVPtbasloEAPF40zXNIXG4vqP/1LfN6cuKTjFxSqxhOrqsCK/O3CULHVvmGT1wqUgw7PKgZE/
+        // vZ7xj7UThU+x+QZ2Y1qGOXVAyEKq7mI9gJjz4L3FS1yTcdK6Q6QnA1Q2Z/srea6BJPRKMwhb5k50j/
+        // ajxaByOleD5dkTsI3fBVQ9SwchOzYBzdne3qBNeEPuTXnqkJt5E0ji1a2o1g1tK6opMpzFBf5LQ9f0+ItgIIZbJYP"
+        // ,"iv":"MdrB5cx9x2Fn9BEgjkMEjA==","salt":"OjqbwoK17SXSwcXkshRag8x8Hlk+UvB0ak1AjTlsCpw="}"#
+        // ;
+        let data = r#"{"data":"8w0Wn8LaR3kMTp++Crr/JMCd6/xrfI1xWJsBgZXIdaKvPHCpjK/o1d6drEvQ7/ThtCynS5jP5F2T5esc0cin6E+2g3zcHRIpYp1Ut3Zn4Gw5Of8yxEk+Whq5eV2O8kbxfeurqTBx3b377e9Jd4N39QFF9kyE3cr8j6fETQvKjOC6irIGL0vI+TkUUylKISZ2OksbQJEooWPW3S1O8xdazL32j7dOnLbkrq1Xan0EIC7sg41oWUyMuS5eVopigxJ0ehueZsFlkvcBb+9zp6eMW5rw+CHC8KHXZdWGU45Ag85PaO5smtkOzb+WrQbufpQgsgKY23SsM8I1uTK6738/IHQ7kzFYImX0AJdF60xiUpihA/iUdWn6lr+kS4uyp7NhMLb4D5fHQi7pDb29TIDj1267rCD3w1N9M1nwWUjcG0gw5AMdf4bwYjpKOeQv2M5dGiX41+iQ9Rs5R6t3qZTNZpNu/czZaCUU8Bbr/je6Z7Milwl3b5NMfO7u2GID7aSG8s8RQ6/D5PjmtJN3a5BY6WLm1IzV","iv":"SCr2xR/hqI6qqJQese4E9Q==","salt":"HQnH0ArgfCWp86acfYN5Kr9wCWFKE3uw0fwUQafJHMY="}"#;
         println!("{:?}", data);
         // let vault = extract_vault_from_string(data);
         let vault_body: Value = serde_json::from_str(data).unwrap();
