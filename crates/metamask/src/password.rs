@@ -32,13 +32,15 @@ pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
 pub fn encrypt(data: &mut Vec<u8>, key: &[u8]) -> Result<Vec<u8>> {
+    // Generate a random nonce.
     let rng = SystemRandom::new();
-
     let mut nonce = [0u8; NONCE_LEN];
     rng.fill(&mut nonce).map_err(|_| ()).unwrap();
 
+    // Construct a key from the provided bytes.
     let key = construct_key(key);
 
+    // Encrypt the data.
     let nonce = Nonce::assume_unique_for_key(OsRng.gen());
     let mut ciphertext: Vec<u8> = nonce.as_ref().to_vec();
     key.seal_in_place_append_tag(nonce, Aad::empty(), data)
@@ -60,8 +62,10 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8]) -> Result<&'c [u8]> {
     // Split the ciphertext into the nonce and the encrypted data.
     let (nonce_bytes, encrypted_bytes) = ciphertext.split_at_mut(NONCE_LEN);
 
+    // Construct a key from the provided bytes.
     let key = construct_key(key);
 
+    // Decrypt the data.
     key.open_in_place(
         Nonce::assume_unique_for_key(nonce_bytes.try_into().expect("nonce size known")),
         Aad::empty(),
@@ -69,6 +73,7 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8]) -> Result<&'c [u8]> {
     )
     .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
 
+    // Return the decrypted data.
     Ok(&encrypted_bytes[..encrypted_bytes.len() - key.algorithm().tag_len()])
 }
 
