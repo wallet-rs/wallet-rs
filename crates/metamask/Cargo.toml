@@ -7,9 +7,11 @@ license = "MPL-2.0"
 
 [lib]
 name = "wallet_metamask"
-crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 anyhow = { workspace = true }
 rand = "0.8.5"
+regex = "1.7.3"
 ring = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
