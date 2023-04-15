@@ -12,7 +12,7 @@ use anyhow::{bail, format_err, Result};
 use rand::{rngs::OsRng, thread_rng, Rng};
 use ring::{
     aead,
-    aead::{Aad, BoundKey, Nonce, SealingKey, AES_256_GCM, NONCE_LEN},
+    aead::{Aad, Nonce, AES_256_GCM, NONCE_LEN},
     digest, pbkdf2,
     rand::{SecureRandom, SystemRandom},
 };
