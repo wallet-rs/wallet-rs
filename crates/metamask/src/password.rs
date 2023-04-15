@@ -12,7 +12,7 @@ use anyhow::{bail, format_err, Result};
 use rand::{rngs::OsRng, thread_rng, Rng};
 use ring::{
     aead,
-    aead::{Aad, Nonce, AES_256_GCM, NONCE_LEN},
+    aead::{Aad, BoundKey, Nonce, SealingKey, AES_256_GCM, NONCE_LEN},
     digest, pbkdf2,
     rand::{SecureRandom, SystemRandom},
 };
@@ -61,13 +61,12 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -
     }
 
     if let Some(iv) = iv {
-        let nonce_bytes = iv;
         let key = construct_key(key);
-        key.open_in_place(Nonce::assume_unique_for_key(nonce_bytes), Aad::empty(), ciphertext)
+        key.open_in_place(Nonce::assume_unique_for_key(iv), Aad::empty(), ciphertext)
             .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
 
         // Return the decrypted data.
-        return Ok(&ciphertext[..ciphertext.len() - key.algorithm().tag_len()]);
+        return Ok(ciphertext);
     }
 
     // Split the ciphertext into the nonce and the encrypted data.
@@ -130,6 +129,19 @@ mod tests {
         let key = key_from_password(password, None);
         let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, None).unwrap();
         let decrypted = decrypt(&mut cipher_text, &key, None).unwrap();
+
+        assert_eq!(decrypted, message.as_bytes());
+    }
+
+    #[test]
+    fn encrypts_and_decrypts_with_iv() {
+        let password = "test123";
+        let message = "hello world";
+        let iv: [u8; 12] = OsRng.gen();
+
+        let key = key_from_password(password, None);
+        let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, Some(iv)).unwrap();
+        let decrypted = decrypt(&mut cipher_text, &key, Some(iv)).unwrap();
 
         assert_eq!(decrypted, message.as_bytes());
     }

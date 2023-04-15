@@ -82,18 +82,20 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
     }
 
     // Otherwise, assume it's encrypted and decrypt it.
-    println!("{:?}", remove_first_last_three_chars(&vault.data));
+    println!("{}", remove_first_last_three_chars(&vault.data));
     let mut data = general_purpose::STANDARD
         .decode(remove_first_last_three_chars(&vault.data).as_bytes())
         .unwrap();
-    println!("{:?}", remove_first_last_three_chars(&vault.salt));
+    println!("{}", remove_first_last_three_chars(&vault.salt));
     let salt = general_purpose::STANDARD
         .decode(remove_first_last_three_chars(&vault.salt).as_bytes())
         .unwrap();
-    println!("{:?}", remove_first_last_three_chars(&vault.iv));
+    println!("{}", remove_first_last_three_chars(&vault.iv));
     let iv = general_purpose::STANDARD
         .decode(remove_first_last_three_chars(&vault.iv).as_bytes())
         .unwrap();
+    println!("{:?}", iv);
+    println!("{}", iv.len());
     let iv_slice = &iv[0..12];
     let iv_array: [u8; 12] = iv_slice.try_into().unwrap();
     println!("{:?}", iv_array);
