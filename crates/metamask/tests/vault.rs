@@ -5,7 +5,7 @@
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
-    use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
+    use wallet_metamask::vault::extract_vault_from_file;
 
     struct Fixture<'a> {
         path: &'a str,
@@ -39,10 +39,8 @@ mod tests {
     /// Tests implemented from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
     #[test]
     fn encrypts_and_decrypts() {
-        use std::env;
-
         for f in FIXTURES.iter() {
-            println!("decrypts {}", f.path);
+            println!("decrypts {} {} {}", f.path, f.mnemonic, f.passphrase);
             let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
             println!("{:?}", a);
             // decrypt_vault(a)
