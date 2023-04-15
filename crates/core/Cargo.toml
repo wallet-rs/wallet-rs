@@ -1,0 +1,17 @@
+[package]
+name = "wallet-rs"
+version = "0.1.0"
+edition = "2021"
+
+license = "MPL-2.0"
+
+[lib]
+name = "wallet_core"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+uniffi = { workspace = true }
+uniffi_macros = { workspace = true }
+
+[build-dependencies]
+uniffi_build = { workspace = true, features = ["builtin-bindgen"] }

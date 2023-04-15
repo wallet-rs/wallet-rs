@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "crates/core",
+  "tools/embedded-uniffi-bindgen",
+  "tools/mpl-license-checker",
+]
+
+[profile.dev.build-override]
+opt-level = 3
+
+[profile.release]
+lto = "off"
+
+[workspace.dependencies]
+anyhow = "1.0.69"
+ethers-core = "2.0.2"
+ethers-signers = "2.0.2"
+lazy_static = "1.4.0"
+regex = "1.7.1"
+serde = "1.0.153"
+serde_json = "1.0.94"
+thiserror = "1.0.39"
+tokio = "1.27"
+uniffi = "0.23.0"
+uniffi_build = "0.23.0"
+uniffi_macros = "0.23.0"

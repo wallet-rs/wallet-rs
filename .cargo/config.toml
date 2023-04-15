@@ -1,0 +1,5 @@
+[alias]
+uniffi-bindgen = ["run", "--package", "embedded-uniffi-bindgen", "--"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/opt/llvm/bin/ld64.lld"]
