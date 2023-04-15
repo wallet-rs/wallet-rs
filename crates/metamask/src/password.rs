@@ -31,7 +31,7 @@ pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
-pub fn encrypt(data: &mut Vec<u8>, key: &[u8]) -> Result<Vec<u8>> {
+pub fn encrypt(data: &mut Vec<u8>, key: &[u8], iv: Option<[u8; 12]>) -> Result<Vec<u8>> {
     // Generate a random nonce.
     let rng = SystemRandom::new();
     let mut nonce = [0u8; NONCE_LEN];
@@ -41,7 +41,7 @@ pub fn encrypt(data: &mut Vec<u8>, key: &[u8]) -> Result<Vec<u8>> {
     let key = construct_key(key);
 
     // Encrypt the data.
-    let nonce = Nonce::assume_unique_for_key(OsRng.gen());
+    let nonce = Nonce::assume_unique_for_key(iv.unwrap_or(OsRng.gen()));
     let mut ciphertext: Vec<u8> = nonce.as_ref().to_vec();
     key.seal_in_place_append_tag(nonce, Aad::empty(), data)
         .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
@@ -54,11 +54,22 @@ pub fn encrypt(data: &mut Vec<u8>, key: &[u8]) -> Result<Vec<u8>> {
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
-pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8]) -> Result<&'c [u8]> {
+pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -> Result<&'c [u8]> {
     // Check that the ciphertext is long enough to contain a nonce.
     if ciphertext.len() < NONCE_LEN {
         bail!("Ciphertext too short: {}", ciphertext.len());
     }
+
+    if let Some(iv) = iv {
+        let nonce_bytes = iv;
+        let key = construct_key(key);
+        key.open_in_place(Nonce::assume_unique_for_key(nonce_bytes), Aad::empty(), ciphertext)
+            .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
+
+        // Return the decrypted data.
+        return Ok(&ciphertext[..ciphertext.len() - key.algorithm().tag_len()]);
+    }
+
     // Split the ciphertext into the nonce and the encrypted data.
     let (nonce_bytes, encrypted_bytes) = ciphertext.split_at_mut(NONCE_LEN);
 
@@ -117,8 +128,8 @@ mod tests {
         let message = "hello world";
 
         let key = key_from_password(password, None);
-        let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key).unwrap();
-        let decrypted = decrypt(&mut cipher_text, &key).unwrap();
+        let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, None).unwrap();
+        let decrypted = decrypt(&mut cipher_text, &key, None).unwrap();
 
         assert_eq!(decrypted, message.as_bytes());
     }
