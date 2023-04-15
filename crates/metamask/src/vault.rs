@@ -74,9 +74,21 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
         return Ok(vault.data.as_bytes().to_vec());
     }
 
+    fn remove_first_last_three_chars(s: &str) -> &str {
+        if s.len() <= 6 {
+            return "";
+        }
+        &s[3..s.len() - 3]
+    }
+
     // Otherwise, assume it's encrypted and decrypt it.
-    let mut data = general_purpose::STANDARD.decode(vault.data.as_bytes()).unwrap();
-    let salt = general_purpose::STANDARD.decode(vault.salt.as_bytes()).unwrap();
+    println!("{:?}", remove_first_last_three_chars(&vault.data));
+    let mut data = general_purpose::STANDARD
+        .decode(remove_first_last_three_chars(&vault.data).as_bytes())
+        .unwrap();
+    let salt = general_purpose::STANDARD
+        .decode(remove_first_last_three_chars(&vault.salt).as_bytes())
+        .unwrap();
     let key = key_from_password(password, Some(salt));
     let res = decrypt(&mut data, &key)?;
     Ok(res.to_vec())
