@@ -24,8 +24,7 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
 
 pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempt 1: Try to parse as a JSON object
-    let vault_body: Vault;
-    if let Ok(vault) = serde_json::from_str(data) {
+    if let Ok(vault) = serde_json::from_str::<Vault>(data) {
         return Ok(vault);
     }
 
@@ -33,15 +32,14 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     let matches = regex::Regex::new(r#"\{"wallet-seed":"([^"}]*)""#)?.find(data);
     if let Some(m) = matches {
         println!("Found pre-v3 vault");
-        let mnemonic = m.as_str().replace(r#"\\n"#, "");
-        let vault_matches =
-            regex::Regex::new(r#""wallet":("\{[ -~]*\\"version\\":2}")"#)?.find(data);
-        let vault: String = if let Some(m) = vault_matches {
-            serde_json::from_str(m.as_str())?
-        } else {
-            return Err("Could not find vault".into());
-        };
-        return Ok(Vault { data: vault, iv: "".to_string(), salt: "".to_string() });
+        let mnemonic = (m.as_str().replace(r#"\""#, r#"""#) + "}").replace('\n', "");
+        println!("{:?}", mnemonic);
+        let vault_body: Value = serde_json::from_str(mnemonic.as_str()).unwrap();
+        return Ok(Vault {
+            data: vault_body["wallet-seed"].to_string(),
+            iv: "".to_string(),
+            salt: "".to_string(),
+        });
     }
 
     // Attempt 3: chromium 000003.log file on linux
@@ -52,12 +50,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         let mut vault_body_data = vault_body_data.chars();
         vault_body_data.next();
         vault_body_data.next_back();
-        println!("{}", vault_body_data.as_str());
-        // let vault_body = serde_json::from_str::<String>(vault_body_data)?;
-        // println!("{:?}", serde_json::from_str::<Vault>(vault_body_data));
         let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
-        println!("here2");
-        println!("{:?}", vault_body);
         return Ok(Vault {
             data: vault_body["data"].to_string(),
             iv: vault_body["iv"].to_string(),

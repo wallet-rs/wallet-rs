@@ -44,8 +44,8 @@ mod tests {
         for f in FIXTURES.iter() {
             println!("decrypts {}", f.path);
             let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
+            println!("{:?}", a);
             // decrypt_vault(a)
-            // println!("{:?}", a);
             // read file contents
             // call extractVaultFromFile function
             // call decryptVault function
