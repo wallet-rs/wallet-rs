@@ -83,8 +83,8 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8]) -> Result<&'c [u8]> {
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L214
-pub fn key_from_password(password: &str) -> [u8; 32] {
-    let salt = generate_salt();
+pub fn key_from_password(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
+    let salt = salt.unwrap_or_else(|| generate_salt());
     let mut to_store: Credential = [0u8; CREDENTIAL_LEN];
     pbkdf2::derive(
         PBKDF2_ALG,
@@ -116,7 +116,7 @@ mod tests {
         let password = "test123";
         let message = "hello world";
 
-        let key = key_from_password(password);
+        let key = key_from_password(password, None);
         let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key).unwrap();
         let decrypted = decrypt(&mut cipher_text, &key).unwrap();
 

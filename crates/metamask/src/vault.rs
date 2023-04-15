@@ -2,10 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+use base64::{engine::general_purpose, Engine as _};
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
+
+use crate::password::{decrypt, key_from_password};
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Vault {
     data: String,
@@ -60,8 +64,22 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     Err("Something went wrong".into())
 }
 
-pub fn decrypt_vault(vault: &Vault) -> Result<Vec<Vault>, Box<dyn Error>> {
-    Ok(vec![vault.clone()])
+pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+    // Define a regular expression that matches a BIP39 mnemonic phrase.
+    let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
+
+    // Check if the input string matches the regular expression.
+    if re.is_match(&vault.data) {
+        // If it matches, return the string.
+        return Ok(vault.data.as_bytes().to_vec());
+    }
+
+    // Otherwise, assume it's encrypted and decrypt it.
+    let mut data = general_purpose::STANDARD.decode(vault.data.as_bytes()).unwrap();
+    let salt = general_purpose::STANDARD.decode(vault.salt.as_bytes()).unwrap();
+    let key = key_from_password(password, Some(salt));
+    let res = decrypt(&mut data, &key)?;
+    Ok(res.to_vec())
 }
 
 #[cfg(test)]

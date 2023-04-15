@@ -10,6 +10,7 @@ name = "wallet_metamask"
 
 [dependencies]
 anyhow = { workspace = true }
+base64 = "0.21.0"
 rand = "0.8.5"
 regex = "1.7.3"
 ring = { workspace = true }

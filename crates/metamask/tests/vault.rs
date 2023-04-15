@@ -1,11 +1,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+use std::path::PathBuf;
+use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
-    use wallet_metamask::vault::extract_vault_from_file;
+    use super::*;
 
     struct Fixture<'a> {
         path: &'a str,
@@ -43,6 +44,10 @@ mod tests {
             println!("decrypts {} {} {}", f.path, f.mnemonic, f.passphrase);
             let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
             println!("{:?}", a);
+            if let Ok(a) = a {
+                let s = decrypt_vault(&a, f.passphrase);
+                println!("{:?}", s);
+            }
             // decrypt_vault(a)
             // read file contents
             // call extractVaultFromFile function
