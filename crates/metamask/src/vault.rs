@@ -48,17 +48,14 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     let re = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap();
     if let Some(capture) = re.captures(data) {
         println!("Found chromium vault");
-        let vault_body_data = &capture[0][29..];
+        let vault_body_data = &capture[0][29..].replace(r#"\""#, r#"""#);
         let mut vault_body_data = vault_body_data.chars();
         vault_body_data.next();
         vault_body_data.next_back();
         println!("{}", vault_body_data.as_str());
-        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
-        println!("{}", vault_body_data.as_str());
-        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
         // let vault_body = serde_json::from_str::<String>(vault_body_data)?;
         // println!("{:?}", serde_json::from_str::<Vault>(vault_body_data));
-        let vault_body: Value = serde_json::from_str(data).unwrap();
+        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
         println!("here2");
         println!("{:?}", vault_body);
         return Ok(Vault {
