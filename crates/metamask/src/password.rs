@@ -14,7 +14,6 @@ use ring::{
     aead,
     aead::{Aad, Nonce, AES_256_GCM, NONCE_LEN},
     digest, pbkdf2,
-    rand::{SecureRandom, SystemRandom},
 };
 use std::{num::NonZeroU32, str};
 
@@ -32,16 +31,21 @@ pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
 pub fn encrypt(data: &mut Vec<u8>, key: &[u8], iv: Option<[u8; 12]>) -> Result<Vec<u8>> {
-    // Generate a random nonce.
-    let rng = SystemRandom::new();
-    let mut nonce = [0u8; NONCE_LEN];
-    rng.fill(&mut nonce).map_err(|_| ()).unwrap();
-
     // Construct a key from the provided bytes.
     let key = construct_key(key);
 
     // Encrypt the data.
     let nonce = Nonce::assume_unique_for_key(iv.unwrap_or(OsRng.gen()));
+
+    // If an IV is provided, use it to encrypt the data.
+    if iv.is_some() {
+        let mut ciphertext: Vec<u8> = vec![];
+        key.seal_in_place_append_tag(nonce, Aad::empty(), data)
+            .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
+        ciphertext.append(data);
+        return Ok(ciphertext);
+    }
+
     let mut ciphertext: Vec<u8> = nonce.as_ref().to_vec();
     key.seal_in_place_append_tag(nonce, Aad::empty(), data)
         .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
@@ -60,13 +64,13 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -
         bail!("Ciphertext too short: {}", ciphertext.len());
     }
 
+    // If an IV is provided, use it to decrypt the data.
     if let Some(iv) = iv {
         let key = construct_key(key);
         key.open_in_place(Nonce::assume_unique_for_key(iv), Aad::empty(), ciphertext)
-            .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
-
+            .map_err(|_| format_err!("Decryption failed due to unspecified aead error with iv"))?;
         // Return the decrypted data.
-        return Ok(ciphertext);
+        return Ok(&ciphertext[..ciphertext.len() - key.algorithm().tag_len()]);
     }
 
     // Split the ciphertext into the nonce and the encrypted data.
@@ -137,9 +141,10 @@ mod tests {
     fn encrypts_and_decrypts_with_iv() {
         let password = "test123";
         let message = "hello world";
+        let salt = generate_salt();
         let iv: [u8; 12] = OsRng.gen();
 
-        let key = key_from_password(password, None);
+        let key = key_from_password(password, Some(salt));
         let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, Some(iv)).unwrap();
         let decrypted = decrypt(&mut cipher_text, &key, Some(iv)).unwrap();
 
