@@ -99,8 +99,7 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     let mut cyphertext = Vault { data, iv, salt: Some(salt) };
 
     // Attempt to decrypt the vault.
-    let salt =
-        general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes()).unwrap();
+    let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;
     let key = key_from_password(password, Some(&salt));
     let res = decrypt(password, &mut cyphertext, Some(&key))?;
     Ok(res)

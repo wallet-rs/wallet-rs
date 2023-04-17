@@ -87,7 +87,7 @@ pub fn decrypt(
     let cipher = Aes256Gcm::new(key.into());
 
     // Decrypt the data.
-    let data = cipher.decrypt(nonce, data.as_ref()).unwrap();
+    let data = cipher.decrypt(nonce, data.as_ref()).map_err(|e| e.to_string())?;
 
     // Return the decrypted data.
     Ok(String::from_utf8(data).unwrap())
