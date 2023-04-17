@@ -61,19 +61,6 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     Err("Something went wrong".into())
 }
 
-fn decode(s: &str, clean: bool) -> String {
-    let s = if clean { remove_first_last_three_chars(s) } else { s };
-    println!("{}", s);
-    s.to_string()
-}
-
-fn remove_first_last_three_chars(s: &str) -> &str {
-    if s.len() <= 6 {
-        return "";
-    }
-    &s[1..s.len() - 1]
-}
-
 /// Attempts to decrypt a vault.
 /// If the vault is not encrypted, it will return the vault data.
 ///
@@ -83,18 +70,28 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     // Define a regular expression that matches a BIP39 mnemonic phrase.
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
 
-    // Check if the input string matches the regular expression.
+    // Return the vault data if it is not encrypted.
     if re.is_match(&vault.data) {
-        // If it matches, return the string.
         return Ok(vault.data.clone());
     }
 
-    let data = decode(&vault.data, true);
-    let iv = decode(&vault.iv, true);
-    let salt = decode(vault.salt.as_ref().unwrap(), true);
+    // Decode the vault data.
+    // This is a workaround for a bug in the extract_vault_from_string that has redundant quotes.
+    fn decode(s: &str) -> String {
+        let s = &s[1..s.len() - 1];
+        println!("{}", s);
+        s.to_string()
+    }
 
+    // Decode the vault data.
+    let data = decode(&vault.data);
+    let iv = decode(&vault.iv);
+    let salt = decode(vault.salt.as_ref().unwrap());
+
+    // Create a vault object.
     let mut cyphertext = Vault { data, iv, salt: Some(salt) };
 
+    // Attempt to decrypt the vault.
     let salt =
         general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes()).unwrap();
     let key = key_from_password(password, Some(&salt));
