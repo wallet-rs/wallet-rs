@@ -1,4 +1,4 @@
-name: release
+name: Release
 on:
   push:
     branches:
@@ -13,8 +13,11 @@ jobs:
       - id: release
         uses: google-github-actions/release-please-action@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: manifest
+          release-type: rust
+          command: manifest
+          monorepo-tags: true
+          token: ${{secrets.GITHUB_TOKEN}}
+          default-branch: main
       - if: ${{ steps.release.outputs.releases_created }}
         uses: katyo/publish-crates@v2
         with:
