@@ -8,11 +8,6 @@ members = [
   "tools/mpl-license-checker",
 ]
 
-[workspace.package]
-# x-release-please-start-version
-version = "0.0.0"
-# x-release-please-end
-
 [profile.dev.build-override]
 opt-level = 3
 
