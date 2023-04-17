@@ -7,7 +7,7 @@ use crate::password::{decrypt, key_from_password};
 use crate::types::Vault;
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::Value;
-use std::{error::Error, fs::File, io::Read, path::Path};
+use std::{collections::HashMap, error::Error, fs::File, io::Read, path::Path};
 
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
@@ -17,6 +17,19 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     let data = String::from_utf8_lossy(&data);
 
     extract_vault_from_string(&data)
+}
+
+fn dedupe(arr: &[HashMap<String, String>]) -> Vec<HashMap<String, String>> {
+    let mut result: Vec<HashMap<String, String>> = Vec::new();
+    for x in arr {
+        if !result
+            .iter()
+            .any(|y| x.len() == y.len() && x.iter().all(|(k, ex)| y.get(k) == Some(ex)))
+        {
+            result.push(x.clone());
+        }
+    }
+    result
 }
 
 /// Extracts the vault from a file contents.
@@ -61,7 +74,69 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
             salt: Some(vault_body["salt"].to_string()),
         });
     }
-    Err("Something went wrong".into())
+
+    // Attempt 4: chromium 000003.log file on mac
+    let match_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
+    let capture_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u"#).unwrap();
+    let iv_regex =
+        regex::Regex::new(r#"/\\"iv.{1,4}[^A-Za-z0-9+\\/]{1,10}([A-Za-z0-9+\\/]{10,40}=*)/u"#)
+            .unwrap();
+    let data_regex = regex::Regex::new(r#"/\\"[^":,is]*\\":\\"([A-Za-z0-9+\\/]*=*)/u"#).unwrap();
+    let salt_regex =
+        regex::Regex::new(r#"/,\\"salt.{1,4}[^A-Za-z0-9+\\/]{1,10}([A-Za-z0-9+\\/]{10,100}=*)/u"#)
+            .unwrap();
+
+    let vaults = dedupe(
+        &match_regex
+            .captures_iter(data)
+            .filter_map(|m| capture_regex.captures(m.get(0)?.as_str()))
+            .map(|s| {
+                [
+                    data_regex.find(s.get(1).unwrap().as_str()).map(|d| d.as_str()),
+                    iv_regex.find(s.get(1).unwrap().as_str()).map(|i| i.as_str()),
+                    salt_regex.find(s.get(1).unwrap().as_str()).map(|s| s.as_str()),
+                ]
+            })
+            .filter(|[d, i, s]| {
+                d.is_some() &&
+                    d.unwrap().len() > 1 &&
+                    i.is_some() &&
+                    i.unwrap().len() > 1 &&
+                    s.is_some() &&
+                    s.unwrap().len() > 1
+            })
+            .map(|[d, i, s]| {
+                let mut vault = HashMap::new();
+                vault.insert("data".to_string(), d.unwrap()[2..].to_string());
+                vault.insert("iv".to_string(), i.unwrap()[6..].to_string());
+                vault.insert("salt".to_string(), s.unwrap()[7..].to_string());
+                vault
+            })
+            .collect::<Vec<HashMap<String, String>>>(),
+    );
+
+    match vaults.len() {
+        0 => {
+            println!("Found no vaults!");
+            Err("No vaults found".into())
+        }
+        1 => {
+            println!("Found single vault! {:?}", vaults);
+            Ok(Vault {
+                data: vaults[0]["data"].clone(),
+                iv: vaults[0]["iv"].clone(),
+                salt: Some(vaults[0]["salt"].clone()),
+            })
+        }
+        _ => {
+            println!("Found multiple vaults! {:?}", vaults);
+            Ok(Vault {
+                data: vaults[0]["data"].clone(),
+                iv: vaults[0]["iv"].clone(),
+                salt: Some(vaults[0]["salt"].clone()),
+            })
+        }
+    }
 }
 
 /// Attempts to decrypt a vault.

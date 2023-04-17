@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Vault {
     pub data: String,
     pub iv: String,
