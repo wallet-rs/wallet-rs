@@ -8,8 +8,6 @@ use wallet_metamask::interactive::locate_metamask_extension;
 use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 
 #[cfg(test)]
-#[allow(unused_attributes)]
-#[ignore = "This test can only be run on the local machine"]
 mod tests {
     use super::*;
     use anyhow::Result;
@@ -25,6 +23,8 @@ mod tests {
 
     /// How to use the Vault Decryptor with the MetaMask Vault Data
     /// https://support.metamask.io/hc/en-us/articles/360018766351-How-to-use-the-Vault-Decryptor-with-the-MetaMask-Vault-Data
+    #[allow(unused_attributes)]
+    #[ignore = "This test can only be run on the local machine"]
     #[test]
     fn test_open_local() -> Result<()> {
         // Attempt to locate the MetaMask extension
