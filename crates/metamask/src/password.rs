@@ -11,7 +11,8 @@
 use aes_gcm::aead::Aead;
 use aes_gcm::{
     aead::{KeyInit, OsRng},
-    Aes256Gcm, Nonce,
+    aes::{cipher::consts::U16, Aes256},
+    AesGcm, Nonce,
 };
 use base64::{engine::general_purpose, Engine as _};
 use pbkdf2::{hmac::Hmac, pbkdf2};
@@ -26,6 +27,9 @@ pub struct Cyphertext {
     pub iv: String,
     pub salt: Option<String>,
 }
+
+// Nonce size is set at 16 bytes (128 bits).
+pub type Aes256Gcm = AesGcm<Aes256, U16>;
 
 /// Encrypts a message using a key.
 ///
@@ -44,7 +48,7 @@ pub fn encrypt(
 
     // Generate the nonce (iv) from random bytes.
     let mut rng = OsRng;
-    let mut bytes = [0u8; 12];
+    let mut bytes = [0u8; 16];
     rng.fill_bytes(&mut bytes);
     let nonce = Nonce::from_slice(&bytes);
 
@@ -76,7 +80,7 @@ pub fn decrypt(
     // Decode the nonce and encrypted data.
     let data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
     let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
-    let nonce_slice: [u8; 12] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
+    let nonce_slice: [u8; 16] = *nonce_bytes.as_slice().array_chunks::<16>().next().unwrap();
     println!("nonce_bytes: {:?}", nonce_bytes);
 
     // Create a key from the password and salt
