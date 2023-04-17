@@ -96,16 +96,16 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
         return Ok(vault.data.as_bytes().to_vec());
     }
 
-    let mut data = decode_base64(&vault.data, true);
     let salt = decode_base64(&vault.salt, true);
     let iv = decode_base64(&vault.iv, true);
     let iv_slice = &iv[0..12];
     let iv_array: [u8; 12] = iv_slice.try_into().unwrap();
 
     let binding = serde_json::to_string(&vault).unwrap();
-    let mut cyphertext = binding.as_mut().as_bytes().clone();
+    let mut cyphertext = vec![];
+    cyphertext.append(&mut binding.as_bytes().to_vec());
     let key = key_from_password(password, Some(salt));
-    let res = decrypt(cyphertext, &key, Some(iv_array))?;
+    let res = decrypt(&mut cyphertext, &key, Some(iv_array))?;
     Ok(res.to_vec())
 }
 
