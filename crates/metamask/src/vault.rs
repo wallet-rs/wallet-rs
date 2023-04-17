@@ -64,6 +64,28 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     Err("Something went wrong".into())
 }
 
+fn decode_base64(s: &str, clean: bool) -> Vec<u8> {
+    let s = if clean { remove_first_last_three_chars(s) } else { s };
+    println!("{}", s);
+    #[warn(deprecated)]
+    let bytes = general_purpose::STANDARD.decode(s.as_bytes());
+    if let Ok(bytes) = bytes {
+        bytes
+    } else {
+        let b = general_purpose::STANDARD.decode(s.as_bytes()).unwrap();
+        b
+    }
+    // let str = std::str::from_utf8(&bytes).unwrap();
+    // println!("{}", str);
+}
+
+fn remove_first_last_three_chars(s: &str) -> &str {
+    if s.len() <= 6 {
+        return "";
+    }
+    &s[1..s.len() - 1]
+}
+
 pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn Error>> {
     // Define a regular expression that matches a BIP39 mnemonic phrase.
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
@@ -74,33 +96,16 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
         return Ok(vault.data.as_bytes().to_vec());
     }
 
-    fn remove_first_last_three_chars(s: &str) -> &str {
-        if s.len() <= 6 {
-            return "";
-        }
-        &s[3..s.len() - 3]
-    }
-
-    // Otherwise, assume it's encrypted and decrypt it.
-    println!("{}", remove_first_last_three_chars(&vault.data));
-    let mut data = general_purpose::STANDARD
-        .decode(remove_first_last_three_chars(&vault.data).as_bytes())
-        .unwrap();
-    println!("{}", remove_first_last_three_chars(&vault.salt));
-    let salt = general_purpose::STANDARD
-        .decode(remove_first_last_three_chars(&vault.salt).as_bytes())
-        .unwrap();
-    println!("{}", remove_first_last_three_chars(&vault.iv));
-    let iv = general_purpose::STANDARD
-        .decode(remove_first_last_three_chars(&vault.iv).as_bytes())
-        .unwrap();
-    println!("{:?}", iv);
-    println!("{}", iv.len());
+    let mut data = decode_base64(&vault.data, true);
+    let salt = decode_base64(&vault.salt, true);
+    let iv = decode_base64(&vault.iv, true);
     let iv_slice = &iv[0..12];
     let iv_array: [u8; 12] = iv_slice.try_into().unwrap();
-    println!("{:?}", iv_array);
+
+    let binding = serde_json::to_string(&vault).unwrap();
+    let mut cyphertext = binding.as_mut().as_bytes().clone();
     let key = key_from_password(password, Some(salt));
-    let res = decrypt(&mut data, &key, Some(iv_array))?;
+    let res = decrypt(cyphertext, &key, Some(iv_array))?;
     Ok(res.to_vec())
 }
 
@@ -115,5 +120,19 @@ mod test {
         // let vault = extract_vault_from_string(data);
         let vault_body: Value = serde_json::from_str(data).unwrap();
         println!("{:?}", vault_body);
+    }
+
+    #[test]
+    fn test_decode() {
+        // 13 bytes to 12 bytes
+        let b = decode_base64("YmFzZTY0IGRlY29kZQ==", false);
+        println!("{:?}", b);
+        let str = std::str::from_utf8(&b).unwrap();
+        println!("{}", str);
+        // #[warn(deprecated)]
+        // let bytes = base64::decode("YmFzZTY0IGRlY29kZQ==").unwrap();
+        // let str = std::str::from_utf8(&bytes).unwrap();
+        // println!("{}", str);
+        // println!("{:?}", str.as_bytes().to_vec());
     }
 }
