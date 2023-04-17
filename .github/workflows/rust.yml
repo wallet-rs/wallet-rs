@@ -59,10 +59,12 @@ jobs:
           command: test
       - uses: actions-rs/cargo@v1
         with:
-          command: install llvm-cov
+          command: install 
+          args: llvm-cov
       - uses: actions-rs/cargo@v1
         with:
-          command: llvm-cov report --lcov --output-path lcov.info
+          command: llvm-cov 
+          args: report --lcov --output-path lcov.info
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
