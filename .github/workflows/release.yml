@@ -22,7 +22,7 @@ jobs:
           default-branch: main
   cargo:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    # if: ${{ needs.release-please.outputs.release_created == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
