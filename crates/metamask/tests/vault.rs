@@ -45,6 +45,7 @@ mod tests {
             let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
             println!("{:?}", a);
             if let Ok(a) = a {
+                println!("{:?}", a);
                 let s = decrypt_vault(&a, f.passphrase);
                 println!("{:?}", s);
             }

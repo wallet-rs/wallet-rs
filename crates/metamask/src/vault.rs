@@ -2,13 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use base64::{engine::general_purpose, Engine as _};
+// use base64::{engine::general_purpose, Engine as _};
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
 
-use crate::password::{decrypt, key_from_password};
+use crate::password::{decrypt, key_from_password, Cyphertext};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Vault {
@@ -64,21 +64,20 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     Err("Something went wrong".into())
 }
 
-fn decode_base64(s: &str, clean: bool) -> Vec<u8> {
+fn decode(s: &str, clean: bool) -> String {
     let s = if clean { remove_first_last_three_chars(s) } else { s };
     println!("{}", s);
-    #[warn(deprecated)]
-    let bytes = general_purpose::STANDARD.decode(s.as_bytes());
-    if let Ok(bytes) = bytes {
-        println!("bytes: {:?}", bytes);
-        println!("bytes: {:?}", bytes.len());
-        bytes
-    } else {
-        let b = general_purpose::STANDARD_NO_PAD.decode(s.as_bytes()).unwrap();
-        println!("bytes pad: {:?}", b);
-        println!("bytes pad: {:?}", b.len());
-        b
-    }
+    s.to_string()
+    // if let Ok(bytes) = bytes {
+    //     println!("bytes: {:?}", bytes);
+    //     println!("bytes: {:?}", bytes.len());
+    //     bytes
+    // } else {
+    //     let b = general_purpose::STANDARD_NO_PAD.decode(s.as_bytes()).unwrap();
+    //     println!("bytes pad: {:?}", b);
+    //     println!("bytes pad: {:?}", b.len());
+    //     b
+    // }
     // let str = std::str::from_utf8(&bytes).unwrap();
     // println!("{}", str);
 }
@@ -100,15 +99,15 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
         return Ok(vault.data.as_bytes().to_vec());
     }
 
-    let mut data = decode_base64(&vault.data, true);
-    let salt = decode_base64(&vault.salt, true);
-    let iv = decode_base64(&vault.iv, true);
-    let iv_slice = &iv[0..12];
-    let iv_array: [u8; 12] = iv_slice.try_into().unwrap();
+    let data = decode(&vault.data, true);
+    let salt = decode(&vault.salt, true);
+    let iv = decode(&vault.iv, true);
 
-    let key = key_from_password(password, Some(salt));
-    let res = decrypt(&mut data, &key, Some(iv_array))?;
-    Ok(res.to_vec())
+    let mut cyphertext = Cyphertext { data, salt: Some(salt), iv };
+
+    let key = key_from_password(password, None);
+    let res = decrypt(password, &mut cyphertext, Some(&key))?;
+    Ok(res.into_bytes())
 }
 
 #[cfg(test)]
@@ -124,17 +123,17 @@ mod test {
         println!("{:?}", vault_body);
     }
 
-    #[test]
-    fn test_decode() {
-        // 13 bytes to 12 bytes
-        let b = decode_base64("YmFzZTY0IGRlY29kZQ==", false);
-        println!("{:?}", b);
-        let str = std::str::from_utf8(&b).unwrap();
-        println!("{}", str);
-        // #[warn(deprecated)]
-        // let bytes = base64::decode("YmFzZTY0IGRlY29kZQ==").unwrap();
-        // let str = std::str::from_utf8(&bytes).unwrap();
-        // println!("{}", str);
-        // println!("{:?}", str.as_bytes().to_vec());
-    }
+    // #[test]
+    // fn test_decode() {
+    //     // 13 bytes to 12 bytes
+    //     let b = decode_base64("YmFzZTY0IGRlY29kZQ==", false);
+    //     println!("{:?}", b);
+    //     let str = std::str::from_utf8(&b).unwrap();
+    //     println!("{}", str);
+    //     // #[warn(deprecated)]
+    //     // let bytes = base64::decode("YmFzZTY0IGRlY29kZQ==").unwrap();
+    //     // let str = std::str::from_utf8(&bytes).unwrap();
+    //     // println!("{}", str);
+    //     // println!("{:?}", str.as_bytes().to_vec());
+    // }
 }

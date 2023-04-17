@@ -8,13 +8,15 @@
 /// Inspired by:
 /// https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L25
 /// https://docs.rs/ring/latest/ring/pbkdf2/index.html
-use anyhow::{bail, format_err, Result};
+use anyhow::{format_err, Result};
+use base64::{engine::general_purpose, Engine as _};
 use rand::{rngs::OsRng, thread_rng, Rng};
 use ring::{
     aead,
-    aead::{Aad, BoundKey, Nonce, AES_256_GCM, NONCE_LEN},
+    aead::{Aad, BoundKey, Nonce, AES_256_GCM},
     digest, error, pbkdf2,
 };
+use serde::{Deserialize, Serialize};
 use std::{num::NonZeroU32, str};
 
 pub static PBKDF2_ALG: pbkdf2::Algorithm = pbkdf2::PBKDF2_HMAC_SHA256;
@@ -47,6 +49,13 @@ impl aead::NonceSequence for OneNonceSequence {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct Cyphertext {
+    pub data: String,
+    pub iv: String,
+    pub salt: Option<String>,
+}
+
 /// Constructs a key from a slice of bytes.
 pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
     let key = aead::UnboundKey::new(&AES_256_GCM, key).map_err(|_| ()).unwrap();
@@ -56,59 +65,51 @@ pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
-pub fn encrypt(data: &mut Vec<u8>, key: &[u8], iv: Option<[u8; 12]>) -> Result<Vec<u8>> {
-    // The target ciphertext for encryption.
-    let mut ciphertext: Vec<u8> = vec![];
+pub fn encrypt(
+    password: &str,
+    data: &mut Vec<u8>,
+    key: Option<&[u8]>,
+    salt: Option<&str>,
+) -> Result<String> {
+    // Generate a salt if one is not provided.
+    let salt = salt.map_or_else(|| None, |s| Some(general_purpose::STANDARD.encode(s)));
+    let k = key_from_password(password, salt.as_ref().map(|s| s.as_bytes()));
+    let key = key.unwrap_or(&k);
 
-    // Generate the nonce from iv or random bytes.
-    let nonce = Nonce::assume_unique_for_key(iv.unwrap_or(OsRng.gen()));
-    let mut bytes_vec: Vec<u8> = nonce.as_ref().to_vec();
+    // Generate the nonce (iv) from random bytes.
+    let nonce = Nonce::assume_unique_for_key(OsRng.gen());
+    let bytes_vec: Vec<u8> = nonce.as_ref().to_vec();
 
     // Construct a key from the provided bytes.
     let mut key: aead::SealingKey<OneNonceSequence> = make_key(&AES_256_GCM, key, nonce);
 
-    // If an IV is provided, use it to encrypt the data.
-    if iv.is_some() {
-        key.seal_in_place_append_tag(Aad::empty(), data)
-            .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
-        ciphertext.append(data);
-        return Ok(ciphertext);
-    }
-
+    // Encrypt the data.
     key.seal_in_place_append_tag(Aad::empty(), data)
         .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
 
-    ciphertext.append(&mut bytes_vec);
-    ciphertext.append(data);
-    Ok(ciphertext)
+    // Return the encrypted data.
+    let text = Cyphertext {
+        data: general_purpose::STANDARD.encode(data),
+        iv: general_purpose::STANDARD.encode(bytes_vec),
+        salt,
+    };
+
+    Ok(serde_json::to_string(&text).unwrap())
 }
 
 /// Decrypts a ciphertext using a key.
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
-pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -> Result<&'c [u8]> {
-    // If an IV is provided, use it to decrypt the data.
-    if let Some(iv) = iv {
-        // Construct a key from the provided bytes.
-        let mut key: aead::OpeningKey<OneNonceSequence> =
-            make_key(&AES_256_GCM, key, Nonce::assume_unique_for_key(iv));
-        println!("ciphertext: {:?}", ciphertext);
-        println!("key: {:?}", key);
-        println!("iv: {:?}", iv);
-        key.open_in_place(Aad::empty(), ciphertext)
-            .map_err(|_| format_err!("Decryption failed due to unspecified aead error with iv"))?;
-        // Return the decrypted data.
-        return Ok(&ciphertext[..ciphertext.len() - key.algorithm().tag_len()]);
-    }
+pub fn decrypt(password: &str, ciphertext: &mut Cyphertext, key: Option<&[u8]>) -> Result<String> {
+    // Decode the nonce and encrypted data.
+    let mut data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
+    let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
 
-    // Check that the ciphertext is long enough to contain a nonce.
-    if ciphertext.len() < NONCE_LEN {
-        bail!("Ciphertext too short: {}", ciphertext.len());
-    }
-
-    // Split the ciphertext into the nonce and the encrypted data.
-    let (nonce_bytes, encrypted_bytes) = ciphertext.split_at_mut(NONCE_LEN);
+    // Create a key from the password and salt
+    let salt = ciphertext.salt.as_ref().map(|s| s.as_bytes());
+    let k = key_from_password(password, salt);
+    let key = key.unwrap_or(&k);
 
     // Construct a key from the provided bytes.
     let mut key: aead::OpeningKey<OneNonceSequence> = make_key(
@@ -118,15 +119,13 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -
     );
 
     // Decrypt the data.
-    key.open_in_place(Aad::empty(), encrypted_bytes)
+    key.open_in_place(Aad::empty(), data.as_mut_slice())
         .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
 
     // Return the decrypted data.
-    Ok(&encrypted_bytes[..encrypted_bytes.len() - key.algorithm().tag_len()])
-}
-
-pub fn u8_array_to_hex_array(values: &[u8]) -> Vec<String> {
-    values.iter().map(|&value| format!("{:02x}", value)).collect()
+    // Omits the appended tag of the key algorithm.
+    let d = std::str::from_utf8(&data[..data.len() - key.algorithm().tag_len()]);
+    Ok(d.unwrap().to_string())
 }
 
 /// Derives a key from a password and random salt.
@@ -135,16 +134,17 @@ pub fn u8_array_to_hex_array(values: &[u8]) -> Vec<String> {
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L214
-pub fn key_from_password(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
+pub fn key_from_password(password: &str, salt: Option<&[u8]>) -> [u8; 32] {
     let password = password.as_bytes();
-    let salt = salt.unwrap_or_else(generate_salt);
+    let random = generate_salt();
+    let salt = salt.unwrap_or(&random);
 
     // Derive a key from the password using PBKDF2
     let mut pbkdf2_key: Credential = [0u8; CREDENTIAL_LEN];
     pbkdf2::derive(
         pbkdf2::PBKDF2_HMAC_SHA256,
         NonZeroU32::new(10_000).unwrap(),
-        &salt,
+        salt,
         password,
         &mut pbkdf2_key,
     );
@@ -165,45 +165,46 @@ pub fn generate_salt() -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use base64::{engine::general_purpose, Engine as _};
 
-    /// Tests implemented from: https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L131
     #[test]
-    fn encrypts_and_decrypts() {
-        let password = "test123";
-        let message = "hello world";
+    fn encrypt_decrypt_test() {
+        // determins the test data
+        let data = r#"
+        {
+            "cypher": "text"
+        }"#;
+        let data = serde_json::from_str::<serde_json::Value>(data).unwrap();
+        let salt = "salt";
+        let salt = general_purpose::STANDARD.decode(salt).unwrap();
+        let key = key_from_password("password", Some(&salt));
 
-        let key = key_from_password(password, None);
-        let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, None).unwrap();
-        let decrypted = decrypt(&mut cipher_text, &key, None).unwrap();
+        let mut data = serde_json::to_vec(&data).unwrap();
+        println!("data: {:?}", data);
+        let ciphertext = encrypt("password", &mut data, Some(&key), Some("salt")).unwrap();
+        println!("encrypted: {:?}", ciphertext);
 
-        assert_eq!(decrypted, message.as_bytes());
+        let mut ciphertext = serde_json::from_str::<Cyphertext>(&ciphertext).unwrap();
+        let res = decrypt("password", &mut ciphertext, Some(&key));
+        println!("decrypted: {:?}", res);
     }
 
     #[test]
-    fn encrypts_and_decrypts_with_iv() {
-        let password = "test123";
-        let message = "hello world";
-        let salt = generate_salt();
-        let iv: [u8; 12] = OsRng.gen();
-
-        let key = key_from_password(password, Some(salt));
-        let mut cipher_text = encrypt(&mut message.as_bytes().to_vec(), &key, Some(iv)).unwrap();
-        let decrypted = decrypt(&mut cipher_text, &key, Some(iv)).unwrap();
-
-        assert_eq!(decrypted, message.as_bytes());
-    }
-
-    #[test]
-    fn key_from_password_2_test() {
-        let b = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
-        let a = key_from_password("password", Some(b));
+    fn key_from_password_test() {
+        // salt is "salt"
+        let salt = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
+        let key = key_from_password("password", Some(&salt));
         let answer = [
             "a6", "e9", "a9", "8f", "39", "01", "5c", "ba", "20", "58", "d4", "f4", "20", "fb",
             "f2", "b2", "e0", "ea", "e6", "73", "a7", "d4", "60", "b2", "1d", "e1", "9e", "ef",
             "f9", "4c", "f6", "db",
         ];
+
+        // changes the array of u8 to an array of hex strings
+        fn u8_array_to_hex_array(values: &[u8]) -> Vec<String> {
+            values.iter().map(|&value| format!("{:02x}", value)).collect()
+        }
+
         // iterates over the array to check if each element is equal
-        answer.iter().zip(u8_array_to_hex_array(&a).iter()).for_each(|(a, b)| assert_eq!(a, b));
+        answer.iter().zip(u8_array_to_hex_array(&key).iter()).for_each(|(a, b)| assert_eq!(a, b));
     }
 }
