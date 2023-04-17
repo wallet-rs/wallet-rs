@@ -190,6 +190,26 @@ mod tests {
     }
 
     #[test]
+    fn encrypt_decrypt_test_real() {
+        // taken from chromium-108.0_5359.98_4.10.24.2 example
+        let data = r#"
+        {    
+            "data": "8w0Wn8LaR3kMTp++Crr/JMCd6/xrfI1xWJsBgZXIdaKvPHCpjK/o1d6drEvQ7/ThtCynS5jP5F2T5esc0cin6E+2g3zcHRIpYp1Ut3Zn4Gw5Of8yxEk+Whq5eV2O8kbxfeurqTBx3b377e9Jd4N39QFF9kyE3cr8j6fETQvKjOC6irIGL0vI+TkUUylKISZ2OksbQJEooWPW3S1O8xdazL32j7dOnLbkrq1Xan0EIC7sg41oWUyMuS5eVopigxJ0ehueZsFlkvcBb+9zp6eMW5rw+CHC8KHXZdWGU45Ag85PaO5smtkOzb+WrQbufpQgsgKY23SsM8I1uTK6738/IHQ7kzFYImX0AJdF60xiUpihA/iUdWn6lr+kS4uyp7NhMLb4D5fHQi7pDb29TIDj1267rCD3w1N9M1nwWUjcG0gw5AMdf4bwYjpKOeQv2M5dGiX41+iQ9Rs5R6t3qZTNZpNu/czZaCUU8Bbr/je6Z7Milwl3b5NMfO7u2GID7aSG8s8RQ6/D5PjmtJN3a5BY6WLm1IzV", 
+            "iv": "SCr2xR/hqI6qqJQese4E9Q==", 
+            "salt": "HQnH0ArgfCWp86acfYN5Kr9wCWFKE3uw0fwUQafJHMY=" 
+        }
+        "#;
+        let ciphertext: Cyphertext = serde_json::from_str(data).unwrap();
+        let salt = general_purpose::STANDARD.decode(ciphertext.salt.unwrap().as_bytes()).unwrap();
+        let key = key_from_password("JooXegoodowu8mohf2ietah5kohgah5", Some(&salt));
+
+        // decrypts the data
+        let mut ciphertext = serde_json::from_str::<Cyphertext>(data).unwrap();
+        let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &mut ciphertext, Some(&key));
+        println!("decrypted: {:?}", res);
+    }
+
+    #[test]
     fn key_from_password_test() {
         // salt is "salt"
         let salt = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
