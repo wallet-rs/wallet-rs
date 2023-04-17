@@ -167,7 +167,7 @@ mod tests {
 
     #[test]
     fn encrypt_decrypt_test() {
-        // determins the test data
+        // determines the key, salt, and data
         let data = r#"
         {
             "cypher": "text"
@@ -177,11 +177,13 @@ mod tests {
         let salt = general_purpose::STANDARD.decode(salt).unwrap();
         let key = key_from_password("password", Some(&salt));
 
+        // encrypts the data
         let mut data = serde_json::to_vec(&data).unwrap();
         println!("data: {:?}", data);
         let ciphertext = encrypt("password", &mut data, Some(&key), Some("salt")).unwrap();
         println!("encrypted: {:?}", ciphertext);
 
+        // decrypts the data
         let mut ciphertext = serde_json::from_str::<Cyphertext>(&ciphertext).unwrap();
         let res = decrypt("password", &mut ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
