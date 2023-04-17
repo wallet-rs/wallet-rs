@@ -13,7 +13,7 @@ use base64::{engine::general_purpose, Engine as _};
 use rand::{rngs::OsRng, thread_rng, Rng};
 use ring::{
     aead,
-    aead::{Aad, BoundKey, Nonce, AES_256_GCM},
+    aead::{Aad, BoundKey, Nonce, AES_256_GCM, NONCE_LEN},
     digest, error, pbkdf2,
 };
 use serde::{Deserialize, Serialize};
@@ -105,6 +105,8 @@ pub fn decrypt(password: &str, ciphertext: &mut Cyphertext, key: Option<&[u8]>) 
     // Decode the nonce and encrypted data.
     let mut data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
     let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
+    let nonce_slice: [u8; NONCE_LEN] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
+    println!("nonce_bytes: {:?}", nonce_bytes);
 
     // Create a key from the password and salt
     let salt = ciphertext.salt.as_ref().map(|s| s.as_bytes());
@@ -112,11 +114,8 @@ pub fn decrypt(password: &str, ciphertext: &mut Cyphertext, key: Option<&[u8]>) 
     let key = key.unwrap_or(&k);
 
     // Construct a key from the provided bytes.
-    let mut key: aead::OpeningKey<OneNonceSequence> = make_key(
-        &AES_256_GCM,
-        key,
-        Nonce::assume_unique_for_key(nonce_bytes.try_into().expect("nonce size known")),
-    );
+    let mut key: aead::OpeningKey<OneNonceSequence> =
+        make_key(&AES_256_GCM, key, Nonce::assume_unique_for_key(nonce_slice));
 
     // Decrypt the data.
     key.open_in_place(Aad::empty(), data.as_mut_slice())
