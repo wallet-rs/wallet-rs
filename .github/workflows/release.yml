@@ -9,9 +9,18 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - crate: wallet-metamask
+            path: crates/metamask
     steps:
       - uses: google-github-actions/release-please-action@v3
         with:
           commit-search-depth: 1
           release-type: rust
           prerelease: true
+          monorepo-tags: true
+          path: ${{ matrix.path }}
+          package-name: ${{ matrix.crate }}
+          token: ${{ secrets.GITHUB_TOKEN }}
