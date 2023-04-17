@@ -10,7 +10,6 @@ repository = "https://github.com/wallet-rs/wallet-rs"
 
 [lib]
 name = "wallet_core"
-crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 uniffi = { workspace = true }
