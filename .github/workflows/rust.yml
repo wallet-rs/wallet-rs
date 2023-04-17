@@ -43,7 +43,8 @@ jobs:
         with:
           command: run
           args: --bin mpl-license-checker
-      - uses: actions-rs/clippy-check@v1
+      - if: ${{ github.event_name == 'pull_request' }}
+        uses: actions-rs/clippy-check@v1
         with:
           args: --all --all-features
           token: ${{ secrets.GITHUB_TOKEN }}

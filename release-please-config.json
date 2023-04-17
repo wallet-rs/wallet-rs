@@ -1,0 +1,19 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "rust"
+    },
+    "crates/core": {
+      "release-type": "rust"
+    },
+    "crates/metamask": {
+      "release-type": "rust"
+    }
+  },
+  "plugins": [
+    {
+      "type": "cargo-workspace",
+      "merge": false
+    }
+  ]
+}
