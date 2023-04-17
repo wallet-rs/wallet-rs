@@ -33,6 +33,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     let matches = regex::Regex::new(r#"\{"wallet-seed":"([^"}]*)""#)?.find(data);
     if let Some(m) = matches {
         println!("Found pre-v3 vault");
+        // TODO: Fix this hack
         let mnemonic = (m.as_str().replace(r#"\""#, r#"""#) + "}").replace('\n', "");
         println!("{:?}", mnemonic);
         let vault_body: Value = serde_json::from_str(mnemonic.as_str()).unwrap();
@@ -47,7 +48,9 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     let re = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap();
     if let Some(capture) = re.captures(data) {
         println!("Found chromium vault");
+        // TODO: Fix this hack #2
         let vault_body_data = &capture[0][29..].replace(r#"\""#, r#"""#);
+        // TODO: Fix this hack #3
         let mut vault_body_data = vault_body_data.chars();
         vault_body_data.next();
         vault_body_data.next_back();
