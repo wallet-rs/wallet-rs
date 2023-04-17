@@ -70,9 +70,13 @@ fn decode_base64(s: &str, clean: bool) -> Vec<u8> {
     #[warn(deprecated)]
     let bytes = general_purpose::STANDARD.decode(s.as_bytes());
     if let Ok(bytes) = bytes {
+        println!("bytes: {:?}", bytes);
+        println!("bytes: {:?}", bytes.len());
         bytes
     } else {
-        let b = general_purpose::STANDARD.decode(s.as_bytes()).unwrap();
+        let b = general_purpose::STANDARD_NO_PAD.decode(s.as_bytes()).unwrap();
+        println!("bytes pad: {:?}", b);
+        println!("bytes pad: {:?}", b.len());
         b
     }
     // let str = std::str::from_utf8(&bytes).unwrap();
@@ -96,16 +100,14 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
         return Ok(vault.data.as_bytes().to_vec());
     }
 
+    let mut data = decode_base64(&vault.data, true);
     let salt = decode_base64(&vault.salt, true);
     let iv = decode_base64(&vault.iv, true);
     let iv_slice = &iv[0..12];
     let iv_array: [u8; 12] = iv_slice.try_into().unwrap();
 
-    let binding = serde_json::to_string(&vault).unwrap();
-    let mut cyphertext = vec![];
-    cyphertext.append(&mut binding.as_bytes().to_vec());
     let key = key_from_password(password, Some(salt));
-    let res = decrypt(&mut cyphertext, &key, Some(iv_array))?;
+    let res = decrypt(&mut data, &key, Some(iv_array))?;
     Ok(res.to_vec())
 }
 

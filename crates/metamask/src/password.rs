@@ -12,7 +12,7 @@ use anyhow::{bail, format_err, Result};
 use rand::{rngs::OsRng, thread_rng, Rng};
 use ring::{
     aead,
-    aead::{Aad, BoundKey, Nonce, NonceSequence, AES_256_GCM, NONCE_LEN},
+    aead::{Aad, BoundKey, Nonce, AES_256_GCM, NONCE_LEN},
     digest, error, pbkdf2,
 };
 use std::{num::NonZeroU32, str};
@@ -125,6 +125,10 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -
     Ok(&encrypted_bytes[..encrypted_bytes.len() - key.algorithm().tag_len()])
 }
 
+pub fn u8_array_to_hex_array(values: &[u8]) -> Vec<String> {
+    values.iter().map(|&value| format!("{:02x}", value)).collect()
+}
+
 /// Derives a key from a password and random salt.
 ///
 /// The key is derived using PBKDF2_HMAC_SHA256 with 10,000 iterations.
@@ -134,14 +138,42 @@ pub fn decrypt<'c>(ciphertext: &'c mut [u8], key: &[u8], iv: Option<[u8; 12]>) -
 pub fn key_from_password(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
     let salt = salt.unwrap_or_else(generate_salt);
     let mut to_store: Credential = [0u8; CREDENTIAL_LEN];
+
     pbkdf2::derive(
-        PBKDF2_ALG,
+        pbkdf2::PBKDF2_HMAC_SHA256,
+        NonZeroU32::new(10_000).unwrap(),
+        &salt,
+        password.as_bytes(),
+        &mut to_store,
+    );
+
+    pbkdf2::derive(
+        pbkdf2::PBKDF2_HMAC_SHA1,
         NonZeroU32::new(10_000).unwrap(),
         &salt,
         password.as_bytes(),
         &mut to_store,
     );
     to_store
+}
+
+pub fn key_from_password_2(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
+    let password = password.as_bytes();
+    let salt = salt.unwrap_or_else(generate_salt);
+    println!("password: {:?}", u8_array_to_hex_array(password));
+    println!("salt: {:?}", u8_array_to_hex_array(&salt));
+
+    // Derive a key from the password using PBKDF2
+    let mut pbkdf2_key: Credential = [0u8; CREDENTIAL_LEN];
+    pbkdf2::derive(
+        pbkdf2::PBKDF2_HMAC_SHA256,
+        NonZeroU32::new(10_000).unwrap(),
+        &salt,
+        password,
+        &mut pbkdf2_key,
+    );
+
+    pbkdf2_key
 }
 
 /// Generates a random salt.
@@ -157,6 +189,7 @@ pub fn generate_salt() -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base64::{engine::general_purpose, Engine as _};
 
     /// Tests implemented from: https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L131
     #[test]
@@ -183,5 +216,18 @@ mod tests {
         let decrypted = decrypt(&mut cipher_text, &key, Some(iv)).unwrap();
 
         assert_eq!(decrypted, message.as_bytes());
+    }
+
+    #[test]
+    fn key_from_password_2_test() {
+        let b = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
+        let a = key_from_password_2("password", Some(b));
+        let answer = [
+            "a6", "e9", "a9", "8f", "39", "01", "5c", "ba", "20", "58", "d4", "f4", "20", "fb",
+            "f2", "b2", "e0", "ea", "e6", "73", "a7", "d4", "60", "b2", "1d", "e1", "9e", "ef",
+            "f9", "4c", "f6", "db",
+        ];
+        // iterates over the array to check if each element is equal
+        answer.iter().zip(u8_array_to_hex_array(&a).iter()).for_each(|(a, b)| assert_eq!(a, b));
     }
 }
