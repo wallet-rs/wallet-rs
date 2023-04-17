@@ -3,12 +3,12 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 // use base64::{engine::general_purpose, Engine as _};
+use crate::password::{decrypt, key_from_password, Cyphertext};
+use base64::{engine::general_purpose, Engine as _};
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
-
-use crate::password::{decrypt, key_from_password, Cyphertext};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Vault {
@@ -89,14 +89,14 @@ fn remove_first_last_three_chars(s: &str) -> &str {
     &s[1..s.len() - 1]
 }
 
-pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Error>> {
     // Define a regular expression that matches a BIP39 mnemonic phrase.
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
 
     // Check if the input string matches the regular expression.
     if re.is_match(&vault.data) {
         // If it matches, return the string.
-        return Ok(vault.data.as_bytes().to_vec());
+        return Ok(vault.data.clone());
     }
 
     let data = decode(&vault.data, true);
@@ -105,9 +105,11 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<Vec<u8>, Box<dyn E
 
     let mut cyphertext = Cyphertext { data, salt: Some(salt), iv };
 
-    let key = key_from_password(password, None);
+    let salt =
+        general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes()).unwrap();
+    let key = key_from_password(password, Some(&salt));
     let res = decrypt(password, &mut cyphertext, Some(&key))?;
-    Ok(res.into_bytes())
+    Ok(res)
 }
 
 #[cfg(test)]

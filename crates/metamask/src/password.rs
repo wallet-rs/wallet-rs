@@ -28,7 +28,9 @@ pub struct Cyphertext {
     pub salt: Option<String>,
 }
 
-// Nonce size is set at 16 bytes (128 bits).
+/// Nonce size is set at 16 bytes (128 bits).
+/// From:
+/// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L83
 pub type Aes256Gcm = AesGcm<Aes256, U16>;
 
 /// Encrypts a message using a key.
