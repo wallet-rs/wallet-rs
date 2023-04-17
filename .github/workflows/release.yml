@@ -32,4 +32,5 @@ jobs:
           cache-on-failure: true
       - uses: katyo/publish-crates@v2
         with:
+          path: './crates'
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
