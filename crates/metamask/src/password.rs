@@ -76,7 +76,7 @@ pub fn decrypt(
     // Decode the nonce and encrypted data.
     let data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
     let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
-    let nonce_slice: [u8; 16] = *nonce_bytes.as_slice().array_chunks::<16>().next().unwrap();
+    let nonce_slice: [u8; 12] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
     println!("nonce_bytes: {:?}", nonce_bytes);
 
     // Create a key from the password and salt
