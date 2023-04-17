@@ -136,32 +136,8 @@ pub fn u8_array_to_hex_array(values: &[u8]) -> Vec<String> {
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L214
 pub fn key_from_password(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
-    let salt = salt.unwrap_or_else(generate_salt);
-    let mut to_store: Credential = [0u8; CREDENTIAL_LEN];
-
-    pbkdf2::derive(
-        pbkdf2::PBKDF2_HMAC_SHA256,
-        NonZeroU32::new(10_000).unwrap(),
-        &salt,
-        password.as_bytes(),
-        &mut to_store,
-    );
-
-    pbkdf2::derive(
-        pbkdf2::PBKDF2_HMAC_SHA1,
-        NonZeroU32::new(10_000).unwrap(),
-        &salt,
-        password.as_bytes(),
-        &mut to_store,
-    );
-    to_store
-}
-
-pub fn key_from_password_2(password: &str, salt: Option<Vec<u8>>) -> [u8; 32] {
     let password = password.as_bytes();
     let salt = salt.unwrap_or_else(generate_salt);
-    println!("password: {:?}", u8_array_to_hex_array(password));
-    println!("salt: {:?}", u8_array_to_hex_array(&salt));
 
     // Derive a key from the password using PBKDF2
     let mut pbkdf2_key: Credential = [0u8; CREDENTIAL_LEN];
@@ -221,7 +197,7 @@ mod tests {
     #[test]
     fn key_from_password_2_test() {
         let b = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
-        let a = key_from_password_2("password", Some(b));
+        let a = key_from_password("password", Some(b));
         let answer = [
             "a6", "e9", "a9", "8f", "39", "01", "5c", "ba", "20", "58", "d4", "f4", "20", "fb",
             "f2", "b2", "e0", "ea", "e6", "73", "a7", "d4", "60", "b2", "1d", "e1", "9e", "ef",
