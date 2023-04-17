@@ -1,6 +1,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+/// Test cases are from:
+/// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
 use std::path::PathBuf;
 use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 

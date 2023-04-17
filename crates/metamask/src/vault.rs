@@ -2,20 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-// use base64::{engine::general_purpose, Engine as _};
-use crate::password::{decrypt, key_from_password, Cyphertext};
-use base64::{engine::general_purpose, Engine as _};
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
-use serde::{Deserialize, Serialize};
+use crate::password::{decrypt, key_from_password};
+use crate::types::Vault;
+use base64::{engine::general_purpose, Engine as _};
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Vault {
-    data: String,
-    iv: String,
-    salt: String,
-}
 
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
     let mut file = File::open(path).unwrap();
@@ -42,7 +34,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         return Ok(Vault {
             data: vault_body["wallet-seed"].to_string(),
             iv: "".to_string(),
-            salt: "".to_string(),
+            salt: Some("".to_string()),
         });
     }
 
@@ -58,7 +50,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         return Ok(Vault {
             data: vault_body["data"].to_string(),
             iv: vault_body["iv"].to_string(),
-            salt: vault_body["salt"].to_string(),
+            salt: Some(vault_body["salt"].to_string()),
         });
     }
     Err("Something went wrong".into())
@@ -100,10 +92,10 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     }
 
     let data = decode(&vault.data, true);
-    let salt = decode(&vault.salt, true);
     let iv = decode(&vault.iv, true);
+    let salt = decode(vault.salt.as_ref().unwrap(), true);
 
-    let mut cyphertext = Cyphertext { data, salt: Some(salt), iv };
+    let mut cyphertext = Vault { data, iv, salt: Some(salt) };
 
     let salt =
         general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes()).unwrap();

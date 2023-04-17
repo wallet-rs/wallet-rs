@@ -8,25 +8,17 @@
 /// Inspired by:
 /// https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L25
 /// https://docs.rs/ring/latest/ring/pbkdf2/index.html
-use aes_gcm::aead::Aead;
+use crate::types::Vault;
 use aes_gcm::{
-    aead::{KeyInit, OsRng},
+    aead::{Aead, KeyInit, OsRng},
     aes::{cipher::consts::U16, Aes256},
     AesGcm, Nonce,
 };
 use base64::{engine::general_purpose, Engine as _};
 use pbkdf2::{hmac::Hmac, pbkdf2};
 use rand::{thread_rng, Rng, RngCore};
-use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use std::{error::Error, str};
-
-#[derive(Serialize, Deserialize)]
-pub struct Cyphertext {
-    pub data: String,
-    pub iv: String,
-    pub salt: Option<String>,
-}
 
 /// Nonce size is set at 16 bytes (128 bits).
 /// From:
@@ -61,7 +53,7 @@ pub fn encrypt(
     let data = cipher.encrypt(nonce, data.as_ref()).unwrap();
 
     // Return the encrypted data.
-    let text = Cyphertext {
+    let text = Vault {
         data: general_purpose::STANDARD.encode(data),
         iv: general_purpose::STANDARD.encode(nonce),
         salt,
@@ -76,7 +68,7 @@ pub fn encrypt(
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
 pub fn decrypt(
     password: &str,
-    ciphertext: &mut Cyphertext,
+    ciphertext: &mut Vault,
     key: Option<&[u8]>,
 ) -> Result<String, Box<dyn Error>> {
     // Decode the nonce and encrypted data.
@@ -151,7 +143,7 @@ mod tests {
         println!("encrypted: {:?}", ciphertext);
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Cyphertext>(&ciphertext).unwrap();
+        let mut ciphertext = serde_json::from_str::<Vault>(&ciphertext).unwrap();
         let res = decrypt("password", &mut ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
     }
@@ -166,12 +158,12 @@ mod tests {
             "salt": "HQnH0ArgfCWp86acfYN5Kr9wCWFKE3uw0fwUQafJHMY=" 
         }
         "#;
-        let ciphertext: Cyphertext = serde_json::from_str(data).unwrap();
+        let ciphertext: Vault = serde_json::from_str(data).unwrap();
         let salt = general_purpose::STANDARD.decode(ciphertext.salt.unwrap().as_bytes()).unwrap();
         let key = key_from_password("JooXegoodowu8mohf2ietah5kohgah5", Some(&salt));
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Cyphertext>(data).unwrap();
+        let mut ciphertext = serde_json::from_str::<Vault>(data).unwrap();
         let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &mut ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
     }

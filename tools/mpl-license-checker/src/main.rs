@@ -8,9 +8,9 @@ use std::fs;
 fn main() {
     let dirs = [
         "crates/**/src/**/*.rs",
-        "crates/**/test/**/*.rs",
+        "crates/**/tests/**/*.rs",
         "tools/**/src/**/*.rs",
-        "tools/**/test/**/*.rs",
+        "tools/**/tests/**/*.rs",
     ];
     let mut failed = false;
     for dir in dirs.iter() {
