@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
 permissions:
   contents: write
   pull-requests: write
@@ -24,3 +23,4 @@ jobs:
           monorepo-tags: true
           path: ${{ matrix.path }}
           package-name: ${{ matrix.crate }}
+          token: ${{ secrets.GITHUB_TOKEN }}
