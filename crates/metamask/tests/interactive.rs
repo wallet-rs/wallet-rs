@@ -27,17 +27,26 @@ mod tests {
     /// https://support.metamask.io/hc/en-us/articles/360018766351-How-to-use-the-Vault-Decryptor-with-the-MetaMask-Vault-Data
     #[test]
     fn test_open_local() -> Result<()> {
+        // Attempt to locate the MetaMask extension
         let a = locate_metamask_extension();
         if let Err(a) = a {
             let err = anyhow::anyhow!("Could not find MetaMask extension: {}", a);
             return Err(err);
         }
-        let a = extract_vault_from_file(a.unwrap()).unwrap();
 
-        // ask for password from user interactively
+        // Attempt to extract the vault from the extension
+        let a = extract_vault_from_file(a.unwrap());
+        if let Err(a) = a {
+            let err = anyhow::anyhow!("Could not decrypt MetaMask vault: {}", a);
+            return Err(err);
+        }
+
+        // Ask for password from user interactively
         let pwd = get_password().unwrap();
 
-        let _ = decrypt_vault(&a, &pwd);
+        // Attempt to decrypt the vault
+        let _ = decrypt_vault(&a.unwrap(), &pwd);
+
         Ok(())
     }
 }
