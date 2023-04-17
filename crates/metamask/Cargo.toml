@@ -1,9 +1,12 @@
 [package]
 name = "wallet-metamask"
+description = "Metamask vaults, cryptography and utilities"
 version = "0.1.0"
 edition = "2021"
 
+authors = ["Shun Kakinoki"]
 license = "MPL-2.0"
+repository = "https://github.com/wallet-rs/wallet-rs"
 
 [lib]
 name = "wallet_metamask"
