@@ -9,6 +9,7 @@ use base64::{engine::general_purpose, Engine as _};
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
 
+/// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
     let mut file = File::open(path).unwrap();
     let mut data = Vec::new();
@@ -18,6 +19,10 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     extract_vault_from_string(&data)
 }
 
+/// Extracts the vault from a file contents.
+///
+/// From:
+/// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L22
 pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempt 1: Try to parse as a JSON object
     if let Ok(vault) = serde_json::from_str::<Vault>(data) {
@@ -60,18 +65,6 @@ fn decode(s: &str, clean: bool) -> String {
     let s = if clean { remove_first_last_three_chars(s) } else { s };
     println!("{}", s);
     s.to_string()
-    // if let Ok(bytes) = bytes {
-    //     println!("bytes: {:?}", bytes);
-    //     println!("bytes: {:?}", bytes.len());
-    //     bytes
-    // } else {
-    //     let b = general_purpose::STANDARD_NO_PAD.decode(s.as_bytes()).unwrap();
-    //     println!("bytes pad: {:?}", b);
-    //     println!("bytes pad: {:?}", b.len());
-    //     b
-    // }
-    // let str = std::str::from_utf8(&bytes).unwrap();
-    // println!("{}", str);
 }
 
 fn remove_first_last_three_chars(s: &str) -> &str {
@@ -81,6 +74,11 @@ fn remove_first_last_three_chars(s: &str) -> &str {
     &s[1..s.len() - 1]
 }
 
+/// Attempts to decrypt a vault.
+/// If the vault is not encrypted, it will return the vault data.
+///
+/// From:
+/// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L92
 pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Error>> {
     // Define a regular expression that matches a BIP39 mnemonic phrase.
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
@@ -116,18 +114,4 @@ mod test {
         let vault_body: Value = serde_json::from_str(data).unwrap();
         println!("{:?}", vault_body);
     }
-
-    // #[test]
-    // fn test_decode() {
-    //     // 13 bytes to 12 bytes
-    //     let b = decode_base64("YmFzZTY0IGRlY29kZQ==", false);
-    //     println!("{:?}", b);
-    //     let str = std::str::from_utf8(&b).unwrap();
-    //     println!("{}", str);
-    //     // #[warn(deprecated)]
-    //     // let bytes = base64::decode("YmFzZTY0IGRlY29kZQ==").unwrap();
-    //     // let str = std::str::from_utf8(&bytes).unwrap();
-    //     // println!("{}", str);
-    //     // println!("{:?}", str.as_bytes().to_vec());
-    // }
 }

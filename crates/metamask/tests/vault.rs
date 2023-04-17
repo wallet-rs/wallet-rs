@@ -52,11 +52,6 @@ mod tests {
                 let s = decrypt_vault(&a, f.passphrase);
                 println!("{:?}", s);
             }
-            // decrypt_vault(a)
-            // read file contents
-            // call extractVaultFromFile function
-            // call decryptVault function
-            // assert result
         }
     }
 }
