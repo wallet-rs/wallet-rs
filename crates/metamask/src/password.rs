@@ -50,7 +50,7 @@ pub fn encrypt(
     let cipher = Aes256Gcm::new(key.into());
 
     // Encrypt the data.
-    let data = cipher.encrypt(nonce, data.as_ref()).unwrap();
+    let data = cipher.encrypt(nonce, data.as_ref()).map_err(|e| e.to_string())?;
 
     // Return the encrypted data.
     let text = Vault {
@@ -123,9 +123,10 @@ pub fn generate_salt() -> Vec<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
 
     #[test]
-    fn encrypt_decrypt_test() {
+    fn encrypt_decrypt_test() -> Result<()> {
         // determines the key, salt, and data
         let data = r#"
         {
@@ -146,10 +147,11 @@ mod tests {
         let mut ciphertext = serde_json::from_str::<Vault>(&ciphertext).unwrap();
         let res = decrypt("password", &mut ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
+        Ok(())
     }
 
     #[test]
-    fn encrypt_decrypt_test_real() {
+    fn encrypt_decrypt_test_real() -> Result<()> {
         // taken from chromium-108.0_5359.98_4.10.24.2 example
         let data = r#"
         {    
@@ -166,10 +168,11 @@ mod tests {
         let mut ciphertext = serde_json::from_str::<Vault>(data).unwrap();
         let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &mut ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
+        Ok(())
     }
 
     #[test]
-    fn key_from_password_test() {
+    fn key_from_password_test() -> Result<()> {
         // salt is "salt"
         let salt = general_purpose::STANDARD.decode("salt".as_bytes()).unwrap();
         let key = key_from_password("password", Some(&salt));
@@ -186,5 +189,6 @@ mod tests {
 
         // iterates over the array to check if each element is equal
         answer.iter().zip(u8_array_to_hex_array(&key).iter()).for_each(|(a, b)| assert_eq!(a, b));
+        Ok(())
     }
 }

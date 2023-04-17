@@ -10,6 +10,7 @@ use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Result;
 
     struct Fixture<'a> {
         path: &'a str,
@@ -42,7 +43,7 @@ mod tests {
 
     /// Tests implemented from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
     #[test]
-    fn encrypts_and_decrypts() {
+    fn encrypts_and_decrypts() -> Result<()> {
         for f in FIXTURES.iter() {
             println!("decrypts {} {} {}", f.path, f.mnemonic, f.passphrase);
             let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
@@ -53,5 +54,6 @@ mod tests {
                 println!("{:?}", s);
             }
         }
+        Ok(())
     }
 }
