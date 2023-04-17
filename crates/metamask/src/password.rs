@@ -8,46 +8,16 @@
 /// Inspired by:
 /// https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L25
 /// https://docs.rs/ring/latest/ring/pbkdf2/index.html
-use anyhow::{format_err, Result};
-use base64::{engine::general_purpose, Engine as _};
-use rand::{rngs::OsRng, thread_rng, Rng};
-use ring::{
-    aead,
-    aead::{Aad, BoundKey, Nonce, AES_256_GCM, NONCE_LEN},
-    digest, error, pbkdf2,
+use aes_gcm::{
+    aead::{AeadInPlace, KeyInit, OsRng},
+    Aes256Gcm, Nonce,
 };
+use base64::{engine::general_purpose, Engine as _};
+use pbkdf2::{hmac::Hmac, pbkdf2};
+use rand::{thread_rng, Rng, RngCore};
 use serde::{Deserialize, Serialize};
-use std::{num::NonZeroU32, str};
-
-pub static PBKDF2_ALG: pbkdf2::Algorithm = pbkdf2::PBKDF2_HMAC_SHA256;
-const CREDENTIAL_LEN: usize = digest::SHA256_OUTPUT_LEN;
-pub type Credential = [u8; CREDENTIAL_LEN];
-
-fn make_key<K: aead::BoundKey<OneNonceSequence>>(
-    algorithm: &'static aead::Algorithm,
-    key: &[u8],
-    nonce: aead::Nonce,
-) -> K {
-    let key = aead::UnboundKey::new(algorithm, key).unwrap();
-    let nonce_sequence = OneNonceSequence::new(nonce);
-    K::new(key, nonce_sequence)
-}
-
-struct OneNonceSequence(Option<aead::Nonce>);
-
-impl OneNonceSequence {
-    /// Constructs the sequence allowing `advance()` to be called
-    /// `allowed_invocations` times.
-    fn new(nonce: aead::Nonce) -> Self {
-        Self(Some(nonce))
-    }
-}
-
-impl aead::NonceSequence for OneNonceSequence {
-    fn advance(&mut self) -> Result<aead::Nonce, error::Unspecified> {
-        self.0.take().ok_or(error::Unspecified)
-    }
-}
+use sha2::Sha256;
+use std::{error::Error, str};
 
 #[derive(Serialize, Deserialize)]
 pub struct Cyphertext {
@@ -56,11 +26,6 @@ pub struct Cyphertext {
     pub salt: Option<String>,
 }
 
-/// Constructs a key from a slice of bytes.
-pub fn construct_key(key: &[u8]) -> aead::LessSafeKey {
-    let key = aead::UnboundKey::new(&AES_256_GCM, key).map_err(|_| ()).unwrap();
-    aead::LessSafeKey::new(key)
-}
 /// Encrypts a message using a key.
 ///
 /// From:
@@ -70,27 +35,30 @@ pub fn encrypt(
     data: &mut Vec<u8>,
     key: Option<&[u8]>,
     salt: Option<&str>,
-) -> Result<String> {
+) -> Result<String, Box<dyn Error>> {
     // Generate a salt if one is not provided.
     let salt = salt.map_or_else(|| None, |s| Some(general_purpose::STANDARD.encode(s)));
     let k = key_from_password(password, salt.as_ref().map(|s| s.as_bytes()));
     let key = key.unwrap_or(&k);
 
     // Generate the nonce (iv) from random bytes.
-    let nonce = Nonce::assume_unique_for_key(OsRng.gen());
-    let bytes_vec: Vec<u8> = nonce.as_ref().to_vec();
+    let mut rng = OsRng;
+    let mut bytes = [0u8; 12];
+    rng.fill_bytes(&mut bytes);
+    let nonce = Nonce::from_slice(&bytes);
 
     // Construct a key from the provided bytes.
-    let mut key: aead::SealingKey<OneNonceSequence> = make_key(&AES_256_GCM, key, nonce);
+    let cipher = Aes256Gcm::new(key.into());
 
     // Encrypt the data.
-    key.seal_in_place_append_tag(Aad::empty(), data)
-        .map_err(|_| format_err!("Encryption failed due to unspecified aead error"))?;
+    let mut buffer = Vec::new();
+    buffer.extend_from_slice(data);
+    let _ = cipher.encrypt_in_place(nonce, &[], &mut buffer);
 
     // Return the encrypted data.
     let text = Cyphertext {
         data: general_purpose::STANDARD.encode(data),
-        iv: general_purpose::STANDARD.encode(bytes_vec),
+        iv: general_purpose::STANDARD.encode(nonce),
         salt,
     };
 
@@ -101,11 +69,15 @@ pub fn encrypt(
 ///
 /// From:
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
-pub fn decrypt(password: &str, ciphertext: &mut Cyphertext, key: Option<&[u8]>) -> Result<String> {
+pub fn decrypt(
+    password: &str,
+    ciphertext: &mut Cyphertext,
+    key: Option<&[u8]>,
+) -> Result<String, Box<dyn Error>> {
     // Decode the nonce and encrypted data.
     let mut data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
     let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
-    let nonce_slice: [u8; NONCE_LEN] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
+    let nonce_slice: [u8; 12] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
     println!("nonce_bytes: {:?}", nonce_bytes);
 
     // Create a key from the password and salt
@@ -113,18 +85,15 @@ pub fn decrypt(password: &str, ciphertext: &mut Cyphertext, key: Option<&[u8]>) 
     let k = key_from_password(password, salt);
     let key = key.unwrap_or(&k);
 
-    // Construct a key from the provided bytes.
-    let mut key: aead::OpeningKey<OneNonceSequence> =
-        make_key(&AES_256_GCM, key, Nonce::assume_unique_for_key(nonce_slice));
+    // Generate the nonce (iv) from random bytes.
+    let nonce = Nonce::from_slice(&nonce_slice);
+    let cipher = Aes256Gcm::new(key.into());
 
     // Decrypt the data.
-    key.open_in_place(Aad::empty(), data.as_mut_slice())
-        .map_err(|_| format_err!("Decryption failed due to unspecified aead error"))?;
+    let _ = cipher.decrypt_in_place(nonce, &[], &mut data);
 
     // Return the decrypted data.
-    // Omits the appended tag of the key algorithm.
-    let d = std::str::from_utf8(&data[..data.len() - key.algorithm().tag_len()]);
-    Ok(d.unwrap().to_string())
+    Ok(String::from_utf8(data).unwrap())
 }
 
 /// Derives a key from a password and random salt.
@@ -138,17 +107,10 @@ pub fn key_from_password(password: &str, salt: Option<&[u8]>) -> [u8; 32] {
     let random = generate_salt();
     let salt = salt.unwrap_or(&random);
 
-    // Derive a key from the password using PBKDF2
-    let mut pbkdf2_key: Credential = [0u8; CREDENTIAL_LEN];
-    pbkdf2::derive(
-        pbkdf2::PBKDF2_HMAC_SHA256,
-        NonZeroU32::new(10_000).unwrap(),
-        salt,
-        password,
-        &mut pbkdf2_key,
-    );
-
-    pbkdf2_key
+    let mut buf = [0u8; 32];
+    pbkdf2::<Hmac<Sha256>>(password, salt, 10_000, &mut buf)
+        .expect("HMAC can be initialized with any key length");
+    buf
 }
 
 /// Generates a random salt.
