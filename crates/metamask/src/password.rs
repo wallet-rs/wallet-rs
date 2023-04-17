@@ -8,6 +8,7 @@
 /// Inspired by:
 /// https://github.com/fedimint/fedimint/blob/aa21c66582c17a68f19438366864652cba4bd590/crypto/aead/src/lib.rs#L25
 /// https://docs.rs/ring/latest/ring/pbkdf2/index.html
+use aes_gcm::aead::Aead;
 use aes_gcm::{
     aead::{AeadInPlace, KeyInit, OsRng},
     Aes256Gcm, Nonce,
@@ -51,9 +52,7 @@ pub fn encrypt(
     let cipher = Aes256Gcm::new(key.into());
 
     // Encrypt the data.
-    let mut buffer = Vec::new();
-    buffer.extend_from_slice(data);
-    let _ = cipher.encrypt_in_place(nonce, &[], &mut buffer);
+    let data = cipher.encrypt(nonce, data.as_ref()).unwrap();
 
     // Return the encrypted data.
     let text = Cyphertext {
@@ -75,7 +74,7 @@ pub fn decrypt(
     key: Option<&[u8]>,
 ) -> Result<String, Box<dyn Error>> {
     // Decode the nonce and encrypted data.
-    let mut data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
+    let data = general_purpose::STANDARD.decode(ciphertext.data.as_bytes())?;
     let nonce_bytes = general_purpose::STANDARD.decode(ciphertext.iv.as_bytes())?;
     let nonce_slice: [u8; 12] = *nonce_bytes.as_slice().array_chunks::<12>().next().unwrap();
     println!("nonce_bytes: {:?}", nonce_bytes);
@@ -90,7 +89,7 @@ pub fn decrypt(
     let cipher = Aes256Gcm::new(key.into());
 
     // Decrypt the data.
-    let _ = cipher.decrypt_in_place(nonce, &[], &mut data);
+    let data = cipher.decrypt(nonce, data.as_ref()).unwrap();
 
     // Return the decrypted data.
     Ok(String::from_utf8(data).unwrap())
