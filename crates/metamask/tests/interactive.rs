@@ -10,13 +10,13 @@ use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 #[cfg(test)]
 mod tests {
     use super::*;
-    use anyhow::Result;
+    use anyhow::{anyhow, Result};
 
     fn get_password() -> Result<String> {
         let name = Password::new("Your metamask password:")
             .with_display_mode(PasswordDisplayMode::Masked)
             .prompt()
-            .map_err(|e| anyhow::anyhow!(e))?;
+            .map_err(|e| anyhow!(e))?;
 
         Ok(name)
     }
@@ -30,22 +30,26 @@ mod tests {
         // Attempt to locate the MetaMask extension
         let a = locate_metamask_extension();
         if let Err(a) = a {
-            let err = anyhow::anyhow!("Could not find MetaMask extension: {}", a);
+            let err = anyhow!("Error while finding MetaMask extension: {}", a);
             return Err(err);
         }
 
-        // Attempt to extract the vault from the extension
-        let a = extract_vault_from_file(a.unwrap());
-        if let Err(a) = a {
-            let err = anyhow::anyhow!("Could not decrypt MetaMask vault: {}", a);
-            return Err(err);
-        }
+        // Iterate over all vaults
+        a.unwrap().iter().for_each(|a| {
+            println!("Attempting to decrypt vault: {:?}", a);
 
-        // Ask for password from user interactively
-        let pwd = get_password().unwrap();
+            // Attempt to extract the vault from the extension
+            let vault = extract_vault_from_file(a);
 
-        // Attempt to decrypt the vault
-        let _ = decrypt_vault(&a.unwrap(), &pwd);
+            if vault.is_err() {
+                return;
+            }
+            // Ask for password from user interactively
+            let pwd = get_password().unwrap();
+
+            // Attempt to decrypt the vault
+            let _ = decrypt_vault(&vault.unwrap(), &pwd);
+        });
 
         Ok(())
     }

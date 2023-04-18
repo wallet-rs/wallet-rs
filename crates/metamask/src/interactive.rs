@@ -7,10 +7,10 @@
 /// From:
 /// https://support.metamask.io/hc/en-us/articles/360018766351-How-to-use-the-Vault-Decryptor-with-the-MetaMask-Vault-Data
 use os_info;
-use std::{error::Error, path::PathBuf};
+use std::{error::Error, fs, path::PathBuf};
 use whoami;
 
-pub fn locate_metamask_extension() -> Result<PathBuf, Box<dyn Error>> {
+pub fn locate_metamask_extension() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     // For Windows
     let user_name = "USER_NAME";
     let path = format!("C:\\Users\\{}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Local Extension Settings\\nkbihfbeogaeaoehlefnkodbefgpgknn", user_name);
@@ -33,16 +33,19 @@ pub fn locate_metamask_extension() -> Result<PathBuf, Box<dyn Error>> {
         return Err("Could not find MetaMask extension".into());
     }
 
-    let possible_file_names =
-        ["000003.ldb", "000004.ldb", "000005.ldb", "000003.log", "000004.log", "000005.log"];
-    // Attempt to open the vault, cycle one of multiple possible filenames
-    for file_name in possible_file_names.iter() {
-        let vault_path = path.join(file_name);
-        if vault_path.exists() {
-            println!("Found MetaMask vault at: {:?}", vault_path);
-            return Ok(vault_path);
+    // Attempt to open all files w/ the extension .log
+    let files = fs::read_dir(path).unwrap().filter_map(|entry| {
+        let path = entry.unwrap().path();
+        if path.is_file() {
+            if let Some(ext) = path.extension() {
+                if ext == "log" || ext == "ldb" {
+                    return Some(path);
+                }
+            }
         }
-    }
+        None
+    });
 
-    Err("Could not find MetaMask vault".into())
+    // Return a vec of all files of full paths
+    Ok(files.collect())
 }

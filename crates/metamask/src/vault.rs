@@ -6,9 +6,8 @@
 use crate::password::{decrypt, key_from_password};
 use crate::types::Vault;
 use base64::{engine::general_purpose, Engine as _};
-use serde_json::Value;
-use std::{collections::HashMap, error::Error, fs::File, io::Read, path::Path};
-
+use serde_json::{json, Value};
+use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
     let mut file = File::open(path).unwrap();
@@ -19,19 +18,19 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     extract_vault_from_string(&data)
 }
 
-fn dedupe(arr: &[HashMap<String, String>]) -> Vec<HashMap<String, String>> {
-    let mut result: Vec<HashMap<String, String>> = Vec::new();
-    for x in arr {
-        if !result
-            .iter()
-            .any(|y| x.len() == y.len() && x.iter().all(|(k, ex)| y.get(k) == Some(ex)))
-        {
+fn dedupe(arr: &[Value]) -> Vec<Value> {
+    let mut result = Vec::new();
+    for x in arr.iter() {
+        let keys_x: HashSet<_> = x.as_object().unwrap().keys().collect();
+        if !result.iter().any(|y: &Value| {
+            let keys_y: HashSet<_> = y.as_object().unwrap().keys().collect();
+            keys_x == keys_y && x == y
+        }) {
             result.push(x.clone());
         }
     }
     result
 }
-
 /// Extracts the vault from a file contents.
 ///
 /// From:
@@ -67,15 +66,19 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         let mut vault_body_data = vault_body_data.chars();
         vault_body_data.next();
         vault_body_data.next_back();
-        let vault_body: Value = serde_json::from_str(vault_body_data.as_str()).unwrap();
+        let vault_body = serde_json::from_str::<Value>(vault_body_data.as_str());
+        if vault_body.is_err() {
+            return Err(Box::new(vault_body.err().unwrap()));
+        }
+        let vault_value = vault_body.unwrap();
         return Ok(Vault {
-            data: vault_body["data"].to_string(),
-            iv: vault_body["iv"].to_string(),
-            salt: Some(vault_body["salt"].to_string()),
+            data: vault_value["data"].to_string(),
+            iv: vault_value["iv"].to_string(),
+            salt: Some(vault_value["salt"].to_string()),
         });
     }
 
-    // Attempt 4: chromium 000003.log file on mac
+    // Attempt 4: chromium 000005.ldb on windows
     let match_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
     let capture_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u"#).unwrap();
     let iv_regex =
@@ -86,34 +89,34 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         regex::Regex::new(r#"/,\\"salt.{1,4}[^A-Za-z0-9+\\/]{1,10}([A-Za-z0-9+\\/]{10,100}=*)/u"#)
             .unwrap();
 
-    let vaults = dedupe(
-        &match_regex
-            .captures_iter(data)
-            .filter_map(|m| capture_regex.captures(m.get(0)?.as_str()))
-            .map(|s| {
-                [
-                    data_regex.find(s.get(1).unwrap().as_str()).map(|d| d.as_str()),
-                    iv_regex.find(s.get(1).unwrap().as_str()).map(|i| i.as_str()),
-                    salt_regex.find(s.get(1).unwrap().as_str()).map(|s| s.as_str()),
-                ]
+    let mut vaults: Vec<Value> = match_regex
+        .find_iter(data)
+        .map(|m| {
+            print!("m: {:?}", m.as_str());
+            capture_regex.find(m.as_str()).unwrap().as_str()
+        })
+        .map(|sm| {
+            let mut d = None;
+            let mut i = None;
+            let mut s = None;
+            for r in [&data_regex, &iv_regex, &salt_regex] {
+                if let Some(caps) = r.captures(sm) {
+                    match r {
+                        _ if r.as_str() == data_regex.as_str() => d = Some(json!(caps[1])),
+                        _ if r.as_str() == iv_regex.as_str() => i = Some(json!(caps[1])),
+                        _ if r.as_str() == salt_regex.as_str() => s = Some(json!(caps[1])),
+                        _ => unreachable!(),
+                    }
+                }
+            }
+            json!({
+                "data": d.unwrap(),
+                "iv": i.unwrap(),
+                "salt": s.unwrap(),
             })
-            .filter(|[d, i, s]| {
-                d.is_some() &&
-                    d.unwrap().len() > 1 &&
-                    i.is_some() &&
-                    i.unwrap().len() > 1 &&
-                    s.is_some() &&
-                    s.unwrap().len() > 1
-            })
-            .map(|[d, i, s]| {
-                let mut vault = HashMap::new();
-                vault.insert("data".to_string(), d.unwrap()[2..].to_string());
-                vault.insert("iv".to_string(), i.unwrap()[6..].to_string());
-                vault.insert("salt".to_string(), s.unwrap()[7..].to_string());
-                vault
-            })
-            .collect::<Vec<HashMap<String, String>>>(),
-    );
+        })
+        .collect();
+    vaults = dedupe(&vaults);
 
     match vaults.len() {
         0 => {
@@ -123,17 +126,17 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         1 => {
             println!("Found single vault! {:?}", vaults);
             Ok(Vault {
-                data: vaults[0]["data"].clone(),
-                iv: vaults[0]["iv"].clone(),
-                salt: Some(vaults[0]["salt"].clone()),
+                data: vaults[0]["data"].clone().to_string(),
+                iv: vaults[0]["iv"].clone().to_string(),
+                salt: Some(vaults[0]["salt"].clone().to_string()),
             })
         }
         _ => {
             println!("Found multiple vaults! {:?}", vaults);
             Ok(Vault {
-                data: vaults[0]["data"].clone(),
-                iv: vaults[0]["iv"].clone(),
-                salt: Some(vaults[0]["salt"].clone()),
+                data: vaults[0]["data"].clone().to_string(),
+                iv: vaults[0]["iv"].clone().to_string(),
+                salt: Some(vaults[0]["salt"].clone().to_string()),
             })
         }
     }
