@@ -17,6 +17,7 @@ pub struct MnemoicData {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DecryptedVault {
     pub r#type: Option<String>,
     pub data: MnemoicData,
@@ -30,6 +31,7 @@ pub struct AnotherMnemoicData {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnotherDecryptedVault {
     pub r#type: Option<String>,
     pub data: AnotherMnemoicData,
