@@ -4,7 +4,7 @@
 
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use crate::password::{decrypt, key_from_password};
-use crate::types::{AnotherDecryptedVault, DecryptedVault, MnemoicData, Vault};
+use crate::types::{DecryptedVault, MnemoicData, StringOrBytes, Vault};
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{json, Value};
 use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
@@ -166,11 +166,8 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
 
     // Return the vault data if it is not encrypted.
     if re.is_match(&vault.data) || vault.salt.is_none() {
-        let data = MnemoicData {
-            mnemonic: vault.data.to_string(),
-            number_of_accounts: None,
-            hd_path: None,
-        };
+        let str = StringOrBytes::String(vault.data.to_string());
+        let data = MnemoicData { mnemonic: str, number_of_accounts: None, hd_path: None };
         let vault = DecryptedVault { r#type: None, data };
         return Ok(vault);
     }
@@ -204,20 +201,30 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     let data = serde_json::from_str::<DecryptedVault>(&decode(&res));
 
     if let Ok(vault) = data {
-        return Ok(vault);
-    }
-
-    // If the vault data is not a valid JSON object, try to parse it in a different way.
-    let data = serde_json::from_str::<AnotherDecryptedVault>(&decode(&res));
-
-    if let Ok(vault) = data {
-        let data = MnemoicData {
-            mnemonic: std::str::from_utf8(&vault.data.mnemonic).unwrap().to_string(),
-            number_of_accounts: vault.data.number_of_accounts,
-            hd_path: vault.data.hd_path,
-        };
-        let vault = DecryptedVault { r#type: vault.r#type, data };
-        return Ok(vault);
+        match vault.data.mnemonic {
+            StringOrBytes::String(s) => {
+                // `my_string` is a `String`
+                println!("The value is a string: {}", s);
+                let data = MnemoicData {
+                    mnemonic: StringOrBytes::String(s),
+                    number_of_accounts: vault.data.number_of_accounts,
+                    hd_path: vault.data.hd_path,
+                };
+                let vault = DecryptedVault { r#type: vault.r#type, data };
+                return Ok(vault);
+            }
+            StringOrBytes::Bytes(b) => {
+                // `my_string` is a byte array
+                println!("The value is a byte array: {:?}", b);
+                let data = MnemoicData {
+                    mnemonic: StringOrBytes::String(std::str::from_utf8(&b).unwrap().to_string()),
+                    number_of_accounts: vault.data.number_of_accounts,
+                    hd_path: vault.data.hd_path,
+                };
+                let vault = DecryptedVault { r#type: vault.r#type, data };
+                return Ok(vault);
+            }
+        }
     }
 
     Err("Could not decrypt vault".into())

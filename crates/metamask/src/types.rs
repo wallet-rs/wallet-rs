@@ -12,9 +12,16 @@ pub struct Vault {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StringOrBytes {
+    String(String),
+    Bytes(Vec<u8>),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MnemoicData {
-    pub mnemonic: String,
+    pub mnemonic: StringOrBytes,
     pub number_of_accounts: Option<u32>,
     pub hd_path: Option<String>,
 }
@@ -23,18 +30,4 @@ pub struct MnemoicData {
 pub struct DecryptedVault {
     pub r#type: Option<String>,
     pub data: MnemoicData,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AnotherMnemoicData {
-    pub mnemonic: Vec<u8>,
-    pub number_of_accounts: Option<u32>,
-    pub hd_path: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AnotherDecryptedVault {
-    pub r#type: Option<String>,
-    pub data: AnotherMnemoicData,
 }

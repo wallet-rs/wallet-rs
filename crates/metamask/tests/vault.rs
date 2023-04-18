@@ -5,7 +5,10 @@
 /// Test cases are from:
 /// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
 use std::path::PathBuf;
-use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
+use wallet_metamask::{
+    types::StringOrBytes,
+    vault::{decrypt_vault, extract_vault_from_file},
+};
 
 #[cfg(test)]
 mod tests {
@@ -58,7 +61,13 @@ mod tests {
             }
             let s = decrypt_vault(&vault.unwrap(), f.passphrase).unwrap();
             println!("{:?}", s);
-            assert!(s.data.mnemonic.clone() == f.mnemonic);
+
+            let my_str = match s.data.mnemonic {
+                StringOrBytes::String(s) => s.clone(),
+                StringOrBytes::Bytes(_) => "".to_string(),
+            };
+
+            assert!(my_str == f.mnemonic);
         }
         Ok(())
     }
