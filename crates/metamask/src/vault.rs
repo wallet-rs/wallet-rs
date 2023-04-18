@@ -166,8 +166,12 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
 
     // Return the vault data if it is not encrypted.
     if re.is_match(&vault.data) || vault.salt.is_none() {
-        let data = MnemoicData { mnemonic: vault.data.to_string() };
-        let vault = DecryptedVault { r#type: None, data, number_of_accounts: None, hd_path: None };
+        let data = MnemoicData {
+            mnemonic: vault.data.to_string(),
+            number_of_accounts: None,
+            hd_path: None,
+        };
+        let vault = DecryptedVault { r#type: None, data };
         return Ok(vault);
     }
 
@@ -209,13 +213,10 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     if let Ok(vault) = data {
         let data = MnemoicData {
             mnemonic: std::str::from_utf8(&vault.data.mnemonic).unwrap().to_string(),
+            number_of_accounts: vault.data.number_of_accounts,
+            hd_path: vault.data.hd_path,
         };
-        let vault = DecryptedVault {
-            r#type: vault.r#type,
-            data,
-            number_of_accounts: vault.number_of_accounts,
-            hd_path: vault.hd_path,
-        };
+        let vault = DecryptedVault { r#type: vault.r#type, data };
         return Ok(vault);
     }
 
