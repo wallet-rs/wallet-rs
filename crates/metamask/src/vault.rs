@@ -4,7 +4,7 @@
 
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use crate::password::{decrypt, key_from_password};
-use crate::types::Vault;
+use crate::types::{AnotherDecryptedVault, DecryptedVault, MnemoicData, Vault};
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{json, Value};
 use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
@@ -66,7 +66,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         if let Some(vault) = vault {
             return Ok(vault);
         }
-        return Ok(Vault { data: json!(mnemonic).to_string(), iv: "".to_string(), salt: None });
+        return Ok(Vault { data: mnemonic.to_string(), iv: "".to_string(), salt: None });
     }
 
     // Attempt 3: chromium 000003.log file on linux
@@ -160,13 +160,15 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
 ///
 /// From:
 /// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L92
-pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Error>> {
+pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Box<dyn Error>> {
     // Define a regular expression that matches a BIP39 mnemonic phrase.
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
 
     // Return the vault data if it is not encrypted.
     if re.is_match(&vault.data) || vault.salt.is_none() {
-        return Ok(vault.data.clone());
+        let data = MnemoicData { mnemonic: vault.data.to_string() };
+        let vault = DecryptedVault { r#type: None, data, number_of_accounts: None, hd_path: None };
+        return Ok(vault);
     }
 
     // Decode the vault data.
@@ -193,7 +195,31 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;
     let key = key_from_password(password, Some(&salt));
     let res = decrypt(password, &mut cyphertext, Some(&key))?;
-    Ok(res)
+
+    // Parse the decrypted vault data.
+    let data = serde_json::from_str::<DecryptedVault>(&decode(&res));
+
+    if let Ok(vault) = data {
+        return Ok(vault);
+    }
+
+    // If the vault data is not a valid JSON object, try to parse it in a different way.
+    let data = serde_json::from_str::<AnotherDecryptedVault>(&decode(&res));
+
+    if let Ok(vault) = data {
+        let data = MnemoicData {
+            mnemonic: std::str::from_utf8(&vault.data.mnemonic).unwrap().to_string(),
+        };
+        let vault = DecryptedVault {
+            r#type: vault.r#type,
+            data,
+            number_of_accounts: vault.number_of_accounts,
+            hd_path: vault.hd_path,
+        };
+        return Ok(vault);
+    }
+
+    Err("Could not decrypt vault".into())
 }
 
 #[cfg(test)]

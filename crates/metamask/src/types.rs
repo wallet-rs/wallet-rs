@@ -10,3 +10,29 @@ pub struct Vault {
     pub iv: String,
     pub salt: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MnemoicData {
+    pub mnemonic: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DecryptedVault {
+    pub r#type: Option<String>,
+    pub data: MnemoicData,
+    pub number_of_accounts: Option<u32>,
+    pub hd_path: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AnotherMnemoicData {
+    pub mnemonic: Vec<u8>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AnotherDecryptedVault {
+    pub r#type: Option<String>,
+    pub data: AnotherMnemoicData,
+    pub number_of_accounts: Option<u32>,
+    pub hd_path: Option<String>,
+}

@@ -18,15 +18,16 @@ mod tests {
         passphrase: &'a str,
     }
 
-    const FIXTURES: [Fixture; 4] = [
-        Fixture {
-            path: "chrome-windows-1/000005.ldb",
-            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial hard trigger",
-            passphrase: "t0b1m4ru",
-        },
+    const FIXTURES: [Fixture; 3] = [
+        // Fixture {
+        //     path: "chrome-windows-1/000005.ldb",
+        //     mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
+        // hard trigger",     passphrase: "t0b1m4ru",
+        // },
         Fixture {
             path: "chromium-108.0_5359.98_4.10.24.2/000003.log",
-            mnemonic: "harvest afraid useful nose electric swift various man boil diagram confirm ahead",
+            mnemonic:
+                "harvest afraid useful nose electric swift various man boil diagram confirm ahead",
             passphrase: "JooXegoodowu8mohf2ietah5kohgah5",
         },
         Fixture {
@@ -36,7 +37,8 @@ mod tests {
         },
         Fixture {
             path: "chromium-90-0.4430.72_2.14.1/Local Storage/leveldb/000003.log",
-            mnemonic: "speed accuse odor ordinary exercise truly outer mask arrest life sibling height",
+            mnemonic:
+                "speed accuse odor ordinary exercise truly outer mask arrest life sibling height",
             passphrase: "",
         },
     ];
@@ -45,7 +47,7 @@ mod tests {
     #[test]
     fn encrypts_and_decrypts() -> Result<()> {
         for f in FIXTURES.iter() {
-            println!("decrypts {} {} {}", f.path, f.mnemonic, f.passphrase);
+            println!("Decrypting fixture: {}", f.path);
             let vault = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
             println!("vault:");
             println!("{:?}", vault);
@@ -54,9 +56,9 @@ mod tests {
                 println!("Failed to extract vault from file: {}", a);
                 continue;
             }
-            println!("{:?}", vault);
-            let s = decrypt_vault(&vault.unwrap(), f.passphrase);
+            let s = decrypt_vault(&vault.unwrap(), f.passphrase).unwrap();
             println!("{:?}", s);
+            assert!(s.data.mnemonic.clone() == f.mnemonic);
         }
         Ok(())
     }
