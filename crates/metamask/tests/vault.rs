@@ -46,15 +46,16 @@ mod tests {
     fn encrypts_and_decrypts() -> Result<()> {
         for f in FIXTURES.iter() {
             println!("decrypts {} {} {}", f.path, f.mnemonic, f.passphrase);
-            let a = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
-            println!("{:?}", a);
-            if let Err(a) = a {
+            let vault = extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path));
+            println!("vault:");
+            println!("{:?}", vault);
+            if let Err(a) = vault {
                 // anyhow::bail!("Failed to extract vault from file: {}", a)
                 println!("Failed to extract vault from file: {}", a);
                 continue;
             }
-            println!("{:?}", a);
-            let s = decrypt_vault(&a.unwrap(), f.passphrase);
+            println!("{:?}", vault);
+            let s = decrypt_vault(&vault.unwrap(), f.passphrase);
             println!("{:?}", s);
         }
         Ok(())

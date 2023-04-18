@@ -36,24 +36,37 @@ fn dedupe(arr: &[Value]) -> Vec<Value> {
 /// From:
 /// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L22
 pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
-    // Attempt 1: Try to parse as a JSON object
+    // Attempt 1:
+    // Try to parse as a JSON object
+    // This is the case for objects that have not been encrypted
     if let Ok(vault) = serde_json::from_str::<Vault>(data) {
         return Ok(vault);
     }
 
     // Attempt 2: pre-v3 cleartext
-    let matches = regex::Regex::new(r#"\{"wallet-seed":"([^"}]*)""#)?.find(data);
+    // If this is a pre-v3 vault, it will be a JSON object with a single key
+    // Warns that the vault is not encrypted
+    let matches = regex::Regex::new(r#"\{"wallet-seed":"([^"}]*)"#).unwrap().captures(data);
     if let Some(m) = matches {
         println!("Found pre-v3 vault");
-        // TODO: Fix this hack
-        let mnemonic = (m.as_str().replace(r#"\""#, r#"""#) + "}").replace('\n', "");
-        println!("{:?}", mnemonic);
-        let vault_body: Value = serde_json::from_str(mnemonic.as_str()).unwrap();
-        return Ok(Vault {
-            data: vault_body["wallet-seed"].to_string(),
-            iv: "".to_string(),
-            salt: Some("".to_string()),
-        });
+
+        // Extract the mnemonic and parse it
+        let mnemonic = m.get(1).map_or("", |m| m.as_str());
+        let re = regex::Regex::new(r"\\n*").unwrap();
+        let mnemonic = re.replace_all(mnemonic, "");
+
+        // Extract the vault if it exists
+        let vault_matches =
+            regex::Regex::new(r#""wallet":("\{[ -~]*\\"version\\":2}")"#).unwrap().captures(data);
+        let vault: Option<Vault> = vault_matches
+            .and_then(|m| serde_json::from_str::<Vault>(m.get(1).map_or("", |m| m.as_str())).ok());
+
+        // Return the vault if it exists, otherwise return the mnemonic
+        println!("Your mnemonic is not encrypted");
+        if let Some(vault) = vault {
+            return Ok(vault);
+        }
+        return Ok(Vault { data: json!(mnemonic).to_string(), iv: "".to_string(), salt: None });
     }
 
     // Attempt 3: chromium 000003.log file on linux
@@ -152,7 +165,7 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     let re = regex::Regex::new(r"^(?:\w{3,}\s+){11,}\w{3,}$").unwrap();
 
     // Return the vault data if it is not encrypted.
-    if re.is_match(&vault.data) {
+    if re.is_match(&vault.data) || vault.salt.is_none() {
         return Ok(vault.data.clone());
     }
 
@@ -171,10 +184,10 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<String, Box<dyn Er
     // Decode the vault data.
     let data = decode(&vault.data);
     let iv = decode(&vault.iv);
-    let salt = decode(vault.salt.as_ref().unwrap());
+    let salt = &vault.salt.clone().map_or("".to_string(), |s| decode(&s));
 
     // Create a vault object.
-    let mut cyphertext = Vault { data, iv, salt: Some(salt) };
+    let mut cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
 
     // Attempt to decrypt the vault.
     let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;

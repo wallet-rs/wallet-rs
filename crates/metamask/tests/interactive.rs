@@ -22,6 +22,7 @@ mod tests {
     }
 
     /// How to use the Vault Decryptor with the MetaMask Vault Data
+    ///
     /// https://support.metamask.io/hc/en-us/articles/360018766351-How-to-use-the-Vault-Decryptor-with-the-MetaMask-Vault-Data
     #[allow(unused_attributes)]
     #[ignore = "This test can only be run on the local machine"]
