@@ -8,6 +8,7 @@ use crate::types::{DecryptedVault, MnemoicData, StringOrBytes, Vault};
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{json, Value};
 use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
+
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
     let mut file = File::open(path).unwrap();
@@ -203,8 +204,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     if let Ok(vault) = data {
         match vault.data.mnemonic {
             StringOrBytes::String(s) => {
-                // `my_string` is a `String`
-                println!("The value is a string: {}", s);
                 let data = MnemoicData {
                     mnemonic: StringOrBytes::String(s),
                     number_of_accounts: vault.data.number_of_accounts,
@@ -214,8 +213,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
                 return Ok(vault);
             }
             StringOrBytes::Bytes(b) => {
-                // `my_string` is a byte array
-                println!("The value is a byte array: {:?}", b);
                 let data = MnemoicData {
                     mnemonic: StringOrBytes::String(std::str::from_utf8(&b).unwrap().to_string()),
                     number_of_accounts: vault.data.number_of_accounts,
