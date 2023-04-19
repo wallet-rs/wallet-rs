@@ -89,7 +89,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     }
 
     // Attempt 4: chromium 000005.ldb on windows
-    let matches = regex::Regex::new(&get_regex(RegexEnum::Keyring)).unwrap().captures(data);
+    let matches = regex::Regex::new(&get_regex(RegexEnum::MatchRegex)).unwrap().captures(data);
     if let Some(m) = matches {
         println!("Found chromium ldb vault");
 

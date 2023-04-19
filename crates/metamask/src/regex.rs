@@ -39,3 +39,11 @@ pub fn get_regex(keyword: RegexEnum) -> String {
     let regex = regex.replace('{', "\\{");
     regex[1..regex.len() - 1].to_string()
 }
+
+#[cfg(test)]
+#[test]
+fn test_get_regex() {
+    let regex = get_regex(RegexEnum::WalletSeed);
+    assert_eq!(regex, r#"\{"wallet-seed":"([^"}]*)""#);
+    let _ = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
+}

@@ -21,12 +21,13 @@ mod tests {
         passphrase: &'a str,
     }
 
-    const FIXTURES: [Fixture; 3] = [
-        // Fixture {
-        //     path: "chrome-windows-1/000005.ldb",
-        //     mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
-        // hard trigger",     passphrase: "t0b1m4ru",
-        // },
+    const FIXTURES: [Fixture; 4] = [
+        Fixture {
+            path: "chrome-windows-1/000005.ldb",
+            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
+        hard trigger",
+            passphrase: "t0b1m4ru",
+        },
         Fixture {
             path: "chromium-108.0_5359.98_4.10.24.2/000003.log",
             mnemonic:
