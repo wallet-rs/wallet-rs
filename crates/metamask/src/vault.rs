@@ -8,6 +8,7 @@ use crate::types::{DecryptedVault, MnemoicData, StringOrBytes, Vault};
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{json, Value};
 use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
+
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
     let mut file = File::open(path).unwrap();
@@ -70,19 +71,26 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     }
 
     // Attempt 3: chromium 000003.log file on linux
-    let re = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap();
-    if let Some(capture) = re.captures(data) {
+    let matches =
+        regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap().captures(data);
+    if let Some(m) = matches {
         println!("Found chromium vault");
-        // TODO: Fix this hack #2
-        let vault_body_data = &capture[0][29..].replace(r#"\""#, r#"""#);
-        // TODO: Fix this hack #3
-        let mut vault_body_data = vault_body_data.chars();
-        vault_body_data.next();
-        vault_body_data.next_back();
-        let vault_body = serde_json::from_str::<Value>(vault_body_data.as_str());
+
+        // Extract the vault
+        // Extra replace is to remove the extra backslashes
+        // Also remove the first and last character
+        //
+        // Ref: https://github.com/MetaMask/vault-decryptor/blob/6cebd223816c80c3d879024aa385cb91fb49de0b/app/lib.js#L53
+        let vault_body_data = &m[0][29..].replace(r#"\""#, r#"""#);
+        let vault_body_data = vault_body_data[1..vault_body_data.len() - 1].to_string();
+
+        // Parse the vault as json value
+        let vault_body = serde_json::from_str::<Value>(&vault_body_data);
         if vault_body.is_err() {
             return Err(Box::new(vault_body.err().unwrap()));
         }
+
+        // Return the vault
         let vault_value = vault_body.unwrap();
         return Ok(Vault {
             data: vault_value["data"].to_string(),
@@ -203,8 +211,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     if let Ok(vault) = data {
         match vault.data.mnemonic {
             StringOrBytes::String(s) => {
-                // `my_string` is a `String`
-                println!("The value is a string: {}", s);
                 let data = MnemoicData {
                     mnemonic: StringOrBytes::String(s),
                     number_of_accounts: vault.data.number_of_accounts,
@@ -214,8 +220,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
                 return Ok(vault);
             }
             StringOrBytes::Bytes(b) => {
-                // `my_string` is a byte array
-                println!("The value is a byte array: {:?}", b);
                 let data = MnemoicData {
                     mnemonic: StringOrBytes::String(std::str::from_utf8(&b).unwrap().to_string()),
                     number_of_accounts: vault.data.number_of_accounts,
