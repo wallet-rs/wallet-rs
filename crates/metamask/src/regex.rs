@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 
@@ -36,11 +40,19 @@ lazy_static! {
     };
 }
 
+fn replace_after_last_forward_slash(string: &str) -> String {
+    if let Some(index) = string.rfind('/') {
+        string[..index].to_string()
+    } else {
+        string.to_string()
+    }
+}
 /// Get the regex string from the enum
 pub fn get_regex(keyword: RegexEnum) -> String {
     let regex = MY_MAP.get(&keyword).cloned().unwrap();
     let regex = regex.replace('{', "\\{");
-    regex[1..regex.len() - 1].to_string()
+    let regex = replace_after_last_forward_slash(&regex);
+    regex[1..].to_string()
 }
 
 #[cfg(test)]
@@ -53,8 +65,9 @@ fn test_get_regex() {
     let reg = r#""KeyringController":\{"vault":"\{[^\{}]*}""#;
     assert_eq!(regex, reg);
     let regex = get_regex(RegexEnum::MatchRegex);
-    let reg = r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})/g"#;
-    // let _ = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^\{}]*}""#).unwrap();
+    regex::Regex::new(&regex).unwrap();
+    let reg = r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})"#;
     assert_eq!(regex, reg);
-    // let _ = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
 }
+// r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})/g"#
+// r#"Keyring[0-9][^\}]*(\\\{\[^\\\{\}]*\\"\})/g"#

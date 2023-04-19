@@ -89,6 +89,10 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     }
 
     // Attempt 4: chromium 000005.ldb on windows
+    // r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"
+    // r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})gu"
+    // r#"Keyring[0-9][^\}]*(\\\{\[^\\\{\}]*\\"\})/gu"#
+    // let r = r#"Keyring[0-9][^\}]*(\\\{\[^\\\{\}]*\\"\})/gu"#;
     let matches = regex::Regex::new(&get_regex(RegexEnum::MatchRegex)).unwrap().captures(data);
     if let Some(m) = matches {
         println!("Found chromium ldb vault");
