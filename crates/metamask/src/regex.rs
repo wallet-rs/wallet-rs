@@ -52,5 +52,9 @@ fn test_get_regex() {
     let regex = get_regex(RegexEnum::Keyring);
     let reg = r#""KeyringController":\{"vault":"\{[^\{}]*}""#;
     assert_eq!(regex, reg);
+    let regex = get_regex(RegexEnum::MatchRegex);
+    let reg = r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})/g"#;
+    // let _ = regex::Regex::new(r#""KeyringController":\{"vault":"\{[^\{}]*}""#).unwrap();
+    assert_eq!(regex, reg);
     // let _ = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
 }
