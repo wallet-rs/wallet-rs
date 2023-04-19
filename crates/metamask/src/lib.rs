@@ -4,5 +4,6 @@
 #![feature(array_chunks)]
 pub mod interactive;
 pub mod password;
+pub mod regex;
 pub mod types;
 pub mod vault;

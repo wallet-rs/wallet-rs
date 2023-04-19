@@ -4,7 +4,10 @@
 
 /// Code from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js
 use crate::password::{decrypt, key_from_password};
-use crate::types::{DecryptedVault, MnemoicData, StringOrBytes, Vault};
+use crate::{
+    regex::{get_regex, RegexEnum},
+    types::{DecryptedVault, MnemoicData, StringOrBytes, Vault},
+};
 use base64::{engine::general_purpose, Engine as _};
 use serde_json::{json, Value};
 use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
@@ -47,7 +50,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempt 2: pre-v3 cleartext
     // If this is a pre-v3 vault, it will be a JSON object with a single key
     // Warns that the vault is not encrypted
-    let matches = regex::Regex::new(r#"\{"wallet-seed":"([^"}]*)"#).unwrap().captures(data);
+    let matches = regex::Regex::new(&get_regex(RegexEnum::WalletSeed)).unwrap().captures(data);
     if let Some(m) = matches {
         println!("Found pre-v3 vault");
 
