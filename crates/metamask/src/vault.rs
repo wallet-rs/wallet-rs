@@ -9,8 +9,8 @@ use crate::{
     types::{DecryptedVault, MnemoicData, StringOrBytes, Vault},
 };
 use base64::{engine::general_purpose, Engine as _};
-use serde_json::{json, Value};
-use std::{collections::HashSet, error::Error, fs::File, io::Read, path::Path};
+use serde_json::Value;
+use std::{error::Error, fs::File, io::Read, path::Path};
 
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
@@ -22,19 +22,6 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     extract_vault_from_string(&data)
 }
 
-fn dedupe(arr: &[Value]) -> Vec<Value> {
-    let mut result = Vec::new();
-    for x in arr.iter() {
-        let keys_x: HashSet<_> = x.as_object().unwrap().keys().collect();
-        if !result.iter().any(|y: &Value| {
-            let keys_y: HashSet<_> = y.as_object().unwrap().keys().collect();
-            keys_x == keys_y && x == y
-        }) {
-            result.push(x.clone());
-        }
-    }
-    result
-}
 /// Extracts the vault from a file contents.
 ///
 /// From:
@@ -102,67 +89,14 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     }
 
     // Attempt 4: chromium 000005.ldb on windows
-    let match_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#).unwrap();
-    let capture_regex = regex::Regex::new(r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u"#).unwrap();
-    let iv_regex =
-        regex::Regex::new(r#"/\\"iv.{1,4}[^A-Za-z0-9+\\/]{1,10}([A-Za-z0-9+\\/]{10,40}=*)/u"#)
-            .unwrap();
-    let data_regex = regex::Regex::new(r#"/\\"[^":,is]*\\":\\"([A-Za-z0-9+\\/]*=*)/u"#).unwrap();
-    let salt_regex =
-        regex::Regex::new(r#"/,\\"salt.{1,4}[^A-Za-z0-9+\\/]{1,10}([A-Za-z0-9+\\/]{10,100}=*)/u"#)
-            .unwrap();
+    let matches = regex::Regex::new(&get_regex(RegexEnum::Keyring)).unwrap().captures(data);
+    if let Some(m) = matches {
+        println!("Found chromium ldb vault");
 
-    let mut vaults: Vec<Value> = match_regex
-        .find_iter(data)
-        .map(|m| {
-            print!("m: {:?}", m.as_str());
-            capture_regex.find(m.as_str()).unwrap().as_str()
-        })
-        .map(|sm| {
-            let mut d = None;
-            let mut i = None;
-            let mut s = None;
-            for r in [&data_regex, &iv_regex, &salt_regex] {
-                if let Some(caps) = r.captures(sm) {
-                    match r {
-                        _ if r.as_str() == data_regex.as_str() => d = Some(json!(caps[1])),
-                        _ if r.as_str() == iv_regex.as_str() => i = Some(json!(caps[1])),
-                        _ if r.as_str() == salt_regex.as_str() => s = Some(json!(caps[1])),
-                        _ => unreachable!(),
-                    }
-                }
-            }
-            json!({
-                "data": d.unwrap(),
-                "iv": i.unwrap(),
-                "salt": s.unwrap(),
-            })
-        })
-        .collect();
-    vaults = dedupe(&vaults);
-
-    match vaults.len() {
-        0 => {
-            println!("Found no vaults!");
-            Err("No vaults found".into())
-        }
-        1 => {
-            println!("Found single vault! {:?}", vaults);
-            Ok(Vault {
-                data: vaults[0]["data"].clone().to_string(),
-                iv: vaults[0]["iv"].clone().to_string(),
-                salt: Some(vaults[0]["salt"].clone().to_string()),
-            })
-        }
-        _ => {
-            println!("Found multiple vaults! {:?}", vaults);
-            Ok(Vault {
-                data: vaults[0]["data"].clone().to_string(),
-                iv: vaults[0]["iv"].clone().to_string(),
-                salt: Some(vaults[0]["salt"].clone().to_string()),
-            })
-        }
+        println!("m: {:?}", m);
     }
+
+    Err("Could not extract vault".into())
 }
 
 /// Attempts to decrypt a vault.

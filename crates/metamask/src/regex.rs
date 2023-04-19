@@ -6,6 +6,11 @@ pub enum RegexEnum {
     WalletSeed,
     WalletV2,
     Keyring,
+    MatchRegex,
+    CaptureRegex,
+    IVRegex,
+    DataRegex,
+    SaltRegex,
 }
 
 lazy_static! {
@@ -14,6 +19,17 @@ lazy_static! {
         map.insert(RegexEnum::WalletSeed, r#"/{"wallet-seed":"([^"}]*)"/"#);
         map.insert(RegexEnum::WalletV2, r#"/"wallet":("{[ -~]*\\"version\\":2}")/"#);
         map.insert(RegexEnum::Keyring, r#"/"KeyringController":{"vault":"{[^{}]*}"/"#);
+        map.insert(RegexEnum::MatchRegex, r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#);
+        map.insert(RegexEnum::CaptureRegex, r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u"#);
+        map.insert(
+            RegexEnum::IVRegex,
+            r#"/\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)/u"#,
+        );
+        map.insert(RegexEnum::DataRegex, r#"/\\"[^":,is]*\\":\\"([A-Za-z0-9+\/]*=*)/u"#);
+        map.insert(
+            RegexEnum::SaltRegex,
+            r#"/,\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)/u"#,
+        );
         map
     };
 }
