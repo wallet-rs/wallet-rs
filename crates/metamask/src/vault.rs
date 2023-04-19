@@ -61,7 +61,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
 
         // Extract the vault if it exists
         let vault_matches =
-            regex::Regex::new(r#""wallet":("\{[ -~]*\\"version\\":2}")"#).unwrap().captures(data);
+            regex::Regex::new(&get_regex(RegexEnum::WalletV2)).unwrap().captures(data);
         let vault: Option<Vault> = vault_matches
             .and_then(|m| serde_json::from_str::<Vault>(m.get(1).map_or("", |m| m.as_str())).ok());
 
@@ -74,8 +74,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     }
 
     // Attempt 3: chromium 000003.log file on linux
-    let matches =
-        regex::Regex::new(r#""KeyringController":\{"vault":"\{[^{}]*}""#).unwrap().captures(data);
+    let matches = regex::Regex::new(&get_regex(RegexEnum::Keyring)).unwrap().captures(data);
     if let Some(m) = matches {
         println!("Found chromium vault");
 
