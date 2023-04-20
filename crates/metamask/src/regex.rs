@@ -156,8 +156,12 @@ mod test {
     #[test]
     fn test_get_regex() {
         for fixture in FIXTURES.iter() {
-            let regex = parse_regex(fixture.regex.clone());
-            assert_eq!(regex, fixture.be);
+            let be = parse_regex(fixture.regex.clone());
+            assert_eq!(be, fixture.be);
+            let re = get_regex(fixture.regex.clone());
+            assert_eq!(re, fixture.re);
+
+            let _ = regex::Regex::new(&parse_regex(RegexEnum::WalletSeed));
         }
     }
 }
