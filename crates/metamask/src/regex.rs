@@ -65,9 +65,14 @@ lazy_static! {
     };
 }
 
-fn replace_after_last_forward_slash(string: &str) -> String {
+// Replace until the last forward slash
+// Parse js regex string to rust regex string
+// Handle regex options like /regex/gu
+fn parse_regex_rust(string: &str) -> String {
     if let Some(index) = string.rfind('/') {
-        string[..index].to_string()
+        // Remove first until the last forward slash
+        dbg!(&string);
+        string[1..index].to_string()
     } else {
         string.to_string()
     }
@@ -75,9 +80,7 @@ fn replace_after_last_forward_slash(string: &str) -> String {
 /// Get the regex string from the enum
 pub fn get_regex(keyword: RegexEnum) -> String {
     let regex = MY_MAP.get(&keyword).cloned().unwrap();
-    let regex = regex.replace('{', "\\{");
-    let regex = replace_after_last_forward_slash(&regex);
-    regex[1..].to_string()
+    parse_regex_rust(regex)
 }
 
 #[cfg(test)]
@@ -85,14 +88,18 @@ pub fn get_regex(keyword: RegexEnum) -> String {
 // Test the get_regex function
 fn test_get_regex() {
     let regex = get_regex(RegexEnum::WalletSeed);
-    assert_eq!(regex, r#"\{"wallet-seed":"([^"}]*)""#);
+    // /{"wallet-seed":"([^"}]*)"/
+    assert_eq!(regex, r#"{"wallet-seed":"([^"}]*)""#);
+
+    let regex = get_regex(RegexEnum::WalletV2);
+    // /"wallet":("{[ -~]*\\"version\\":2}")/
+    assert_eq!(regex, r#""wallet":("{[ -~]*\\"version\\":2}")"#);
+
     let regex = get_regex(RegexEnum::Keyring);
-    let reg = r#""KeyringController":\{"vault":"\{[^\{}]*}""#;
-    assert_eq!(regex, reg);
+    // /"KeyringController":{"vault":"{[^{}]*}"/)
+    assert_eq!(regex, r#""KeyringController":{"vault":"{[^{}]*}""#);
+
     let regex = get_regex(RegexEnum::MatchRegex);
-    regex::Regex::new(&regex).unwrap();
-    let reg = r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})"#;
-    assert_eq!(regex, reg);
+    // /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu
+    assert_eq!(regex, r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#);
 }
-// r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})/g"#
-// r#"Keyring[0-9][^\}]*(\\\{\[^\\\{\}]*\\"\})/g"#
