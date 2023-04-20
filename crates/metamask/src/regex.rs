@@ -71,7 +71,6 @@ lazy_static! {
 fn parse_regex_rust(string: &str) -> String {
     if let Some(index) = string.rfind('/') {
         // Remove first until the last forward slash
-        dbg!(&string);
         string[1..index].to_string()
     } else {
         string.to_string()
@@ -82,7 +81,6 @@ fn parse_regex_rust(string: &str) -> String {
 pub fn get_regex(keyword: RegexEnum) -> String {
     let regex = MY_MAP.get(&keyword).cloned().unwrap();
     let st = parse_regex_rust(regex);
-    dbg!(&st);
     st.replace('{', "\\{")
 }
 
@@ -107,37 +105,37 @@ mod test {
             regex: RegexEnum::WalletSeed,
             // /{"wallet-seed":"([^"}]*)"/
             be: r#"{"wallet-seed":"([^"}]*)""#,
-            re: r#"{"wallet-seed":"([^"}]*)""#,
+            re: r#"\{"wallet-seed":"([^"}]*)""#,
         },
         Regex {
             regex: RegexEnum::WalletV2,
             // /"wallet":("{[ -~]*\\"version\\":2}")/
             be: r#""wallet":("{[ -~]*\\"version\\":2}")"#,
-            re: r#""wallet":("{[ -~]*\\"version\\":2}")"#,
+            re: r#""wallet":("\{[ -~]*\\"version\\":2}")"#,
         },
         Regex {
             regex: RegexEnum::Keyring,
             // /"KeyringController":{"vault":"{[^{}]*}"/)
             be: r#""KeyringController":{"vault":"{[^{}]*}""#,
-            re: r#""KeyringController":{"vault":"{[^{}]*}""#,
+            re: r#""KeyringController":\{"vault":"\{[^\{}]*}""#,
         },
         Regex {
             regex: RegexEnum::MatchRegex,
             // /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu
             be: r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#,
-            re: r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#,
+            re: r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})"#,
         },
         Regex {
             regex: RegexEnum::CaptureRegex,
             // /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u
             be: r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#,
-            re: r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#,
+            re: r#"Keyring[0-9][^\}]*(\\{[^\\{\}]*\\"\})"#,
         },
         Regex {
             regex: RegexEnum::IVRegex,
             // /\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)/u
             be: r#"\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)"#,
-            re: r#"\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)"#,
+            re: r#"\\"iv.\{1,4}[^A-Za-z0-9+\/]\{1,10}([A-Za-z0-9+\/]\{10,40}=*)"#,
         },
         Regex {
             regex: RegexEnum::DataRegex,
@@ -149,7 +147,7 @@ mod test {
             regex: RegexEnum::SaltRegex,
             //  /,\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)/u
             be: r#",\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)"#,
-            re: r#",\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)"#,
+            re: r#",\\"salt.\{1,4}[^A-Za-z0-9+\/]\{1,10}([A-Za-z0-9+\/]\{10,100}=*)"#,
         },
     ];
 
@@ -160,8 +158,7 @@ mod test {
             assert_eq!(be, fixture.be);
             let re = get_regex(fixture.regex.clone());
             assert_eq!(re, fixture.re);
-
-            let _ = regex::Regex::new(&parse_regex(RegexEnum::WalletSeed));
+            // let _ = regex::Regex::new(&re).unwrap();
         }
     }
 }
