@@ -22,16 +22,41 @@ lazy_static! {
     /// A map of regex strings
     static ref MY_MAP: HashMap<RegexEnum, &'static str> = {
         let mut map = HashMap::new();
+
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L33
+        // const matches = data.match(/{"wallet-seed":"([^"}]*)"/)
         map.insert(RegexEnum::WalletSeed, r#"/{"wallet-seed":"([^"}]*)"/"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L36
+        // const vaultMatches = data.match(/"wallet":("{[ -~]*\\"version\\":2}")/)
         map.insert(RegexEnum::WalletV2, r#"/"wallet":("{[ -~]*\\"version\\":2}")/"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L53
+        // const matches = data.match(/"KeyringController":{"vault":"{[^{}]*}"/)
         map.insert(RegexEnum::Keyring, r#"/"KeyringController":{"vault":"{[^{}]*}"/"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L64
+        // const matchRegex = /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu
         map.insert(RegexEnum::MatchRegex, r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L65
+        // const captureRegex  = /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u
         map.insert(RegexEnum::CaptureRegex, r#"/Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L66
+        // const ivRegex = /\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)/u
         map.insert(
             RegexEnum::IVRegex,
             r#"/\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)/u"#,
         );
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L67
+        // const dataRegex = /\\"[^":,is]*\\":\\"([A-Za-z0-9+\/]*=*)/u
         map.insert(RegexEnum::DataRegex, r#"/\\"[^":,is]*\\":\\"([A-Za-z0-9+\/]*=*)/u"#);
+        // From:
+        // https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.js#L68
+        // const saltRegex = /,\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)/u
         map.insert(
             RegexEnum::SaltRegex,
             r#"/,\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)/u"#,
