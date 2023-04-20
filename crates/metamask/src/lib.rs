@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #![feature(array_chunks)]
+#![feature(variant_count)]
 pub mod interactive;
 pub mod password;
 pub mod regex;

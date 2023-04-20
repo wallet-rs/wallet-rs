@@ -80,8 +80,7 @@ fn parse_regex_rust(string: &str) -> String {
 /// Get the regex string from the enum
 pub fn get_regex(keyword: RegexEnum) -> String {
     let regex = MY_MAP.get(&keyword).cloned().unwrap();
-    let st = parse_regex_rust(regex);
-    st.replace('{', "\\{")
+    regex::escape(&parse_regex_rust(regex))
 }
 
 #[cfg(test)]
@@ -157,8 +156,9 @@ mod test {
             let be = parse_regex(fixture.regex.clone());
             assert_eq!(be, fixture.be);
             let re = get_regex(fixture.regex.clone());
+            let _ = regex::Regex::new(&regex::escape(re.as_str()));
+            println!("{}", re);
             assert_eq!(re, fixture.re);
-            // let _ = regex::Regex::new(&re).unwrap();
         }
     }
 }

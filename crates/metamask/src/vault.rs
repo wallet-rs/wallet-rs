@@ -92,7 +92,9 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempts to match globaly
     let match_regex = regex::Regex::new(&get_regex(RegexEnum::MatchRegex)).unwrap();
     let matches = match_regex.find_iter(data);
-    println!("m: {:?}", matches);
+    for match_str in matches {
+        println!("{}", match_str.as_str());
+    }
 
     Err("Could not extract vault".into())
 }

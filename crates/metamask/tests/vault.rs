@@ -22,12 +22,12 @@ mod tests {
     }
 
     const FIXTURES: [Fixture; 4] = [
-        // Fixture {
-        //     path: "chrome-windows-1/000005.ldb",
-        //     mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
-        // hard trigger",
-        //     passphrase: "t0b1m4ru",
-        // },
+        Fixture {
+            path: "chrome-windows-1/000005.ldb",
+            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
+        hard trigger",
+            passphrase: "t0b1m4ru",
+        },
         Fixture {
             path: "chromium-108.0_5359.98_4.10.24.2/000003.log",
             mnemonic:
@@ -44,12 +44,6 @@ mod tests {
             mnemonic:
                 "speed accuse odor ordinary exercise truly outer mask arrest life sibling height",
             passphrase: "",
-        },
-        Fixture {
-            path: "chrome-windows-1/000005.ldb",
-            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
-        hard trigger",
-            passphrase: "t0b1m4ru",
         },
     ];
 
