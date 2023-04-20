@@ -102,4 +102,20 @@ fn test_get_regex() {
     let regex = get_regex(RegexEnum::MatchRegex);
     // /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/gu
     assert_eq!(regex, r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#);
+
+    let regex = get_regex(RegexEnum::CaptureRegex);
+    // /Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})/u
+    assert_eq!(regex, r#"Keyring[0-9][^\}]*(\{[^\{\}]*\\"\})"#);
+
+    let regex = get_regex(RegexEnum::IVRegex);
+    // /\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)/u
+    assert_eq!(regex, r#"\\"iv.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,40}=*)"#);
+
+    let regex = get_regex(RegexEnum::DataRegex);
+    // /\\"[^":,is]*\\":\\"([A-Za-z0-9+\/]*=*)/u
+    assert_eq!(regex, r#"\\"[^":,is]*\\":\\"([A-Za-z0-9+\/]*=*)"#);
+
+    let regex = get_regex(RegexEnum::SaltRegex);
+    //  /,\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)/u
+    assert_eq!(regex, r#",\\"salt.{1,4}[^A-Za-z0-9+\/]{1,10}([A-Za-z0-9+\/]{10,100}=*)"#);
 }
