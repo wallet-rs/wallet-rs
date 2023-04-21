@@ -23,6 +23,7 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     extract_vault_from_string(&data)
 }
 
+/// Splits a string with JSON objects into a vector of JSON objects.
 fn split_json(s: &str) -> Vec<Value> {
     s.split(r#"}},"#)
         .flat_map(|s| {
@@ -30,6 +31,37 @@ fn split_json(s: &str) -> Vec<Value> {
                 .or_else(|_| serde_json::from_str::<Value>(s))
         })
         .collect()
+}
+
+/// Returns the result of decrypting the vault.
+fn decrypt_vault_result(res: &str) -> Result<DecryptedVault, Box<dyn Error>> {
+    // Parse the decrypted vault data.
+    let data = serde_json::from_str::<DecryptedVault>(res);
+
+    if let Ok(vault) = data {
+        match vault.data.mnemonic {
+            StringOrBytes::String(s) => {
+                let data = MnemoicData {
+                    mnemonic: StringOrBytes::String(s),
+                    number_of_accounts: vault.data.number_of_accounts,
+                    hd_path: vault.data.hd_path,
+                };
+                let vault = DecryptedVault { r#type: vault.r#type, data };
+                return Ok(vault);
+            }
+            StringOrBytes::Bytes(b) => {
+                let data = MnemoicData {
+                    mnemonic: StringOrBytes::String(std::str::from_utf8(&b).unwrap().to_string()),
+                    number_of_accounts: vault.data.number_of_accounts,
+                    hd_path: vault.data.hd_path,
+                };
+                let vault = DecryptedVault { r#type: vault.r#type, data };
+                return Ok(vault);
+            }
+        }
+    }
+
+    Err(Box::new(data.err().unwrap()))
 }
 
 /// Extracts the vault from a file contents.
@@ -183,65 +215,18 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     let key = key_from_password(password, Some(&salt));
     let res = decrypt(password, &mut cyphertext, Some(&key))?;
 
-    // Parse the decrypted vault data.
-    let data = serde_json::from_str::<DecryptedVault>(&decode(&res));
-
-    if let Ok(vault) = data {
-        match vault.data.mnemonic {
-            StringOrBytes::String(s) => {
-                let data = MnemoicData {
-                    mnemonic: StringOrBytes::String(s),
-                    number_of_accounts: vault.data.number_of_accounts,
-                    hd_path: vault.data.hd_path,
-                };
-                let vault = DecryptedVault { r#type: vault.r#type, data };
-                return Ok(vault);
-            }
-            StringOrBytes::Bytes(b) => {
-                let data = MnemoicData {
-                    mnemonic: StringOrBytes::String(std::str::from_utf8(&b).unwrap().to_string()),
-                    number_of_accounts: vault.data.number_of_accounts,
-                    hd_path: vault.data.hd_path,
-                };
-                let vault = DecryptedVault { r#type: vault.r#type, data };
-                return Ok(vault);
-            }
-        }
+    let r = decrypt_vault_result(&decode(&res));
+    if r.is_ok() {
+        return r;
     }
 
     let json_vec = split_json(&decode(&res));
     for json_obj in json_vec {
-        println!("{}", json_obj);
-
-        let data = serde_json::from_str::<DecryptedVault>(&json_obj.to_string());
-
-        if let Ok(vault) = data {
-            match vault.data.mnemonic {
-                StringOrBytes::String(s) => {
-                    let data = MnemoicData {
-                        mnemonic: StringOrBytes::String(s),
-                        number_of_accounts: vault.data.number_of_accounts,
-                        hd_path: vault.data.hd_path,
-                    };
-                    let vault = DecryptedVault { r#type: vault.r#type, data };
-                    return Ok(vault);
-                }
-                StringOrBytes::Bytes(b) => {
-                    let data = MnemoicData {
-                        mnemonic: StringOrBytes::String(
-                            std::str::from_utf8(&b).unwrap().to_string(),
-                        ),
-                        number_of_accounts: vault.data.number_of_accounts,
-                        hd_path: vault.data.hd_path,
-                    };
-                    let vault = DecryptedVault { r#type: vault.r#type, data };
-                    return Ok(vault);
-                }
-            }
+        let res = decrypt_vault_result(&json_obj.to_string());
+        if res.is_ok() {
+            return res;
         }
     }
-    // let data = serde_json::from_str::<Value>(&decode(&res)).unwrap();
-    // println!("{:?}", data["type"]);
 
     Err("Could not decrypt vault".into())
 }
@@ -265,14 +250,10 @@ mod test {
     fn split_json_multiple() -> Result<()> {
         let s = r#"{"name":"Alice","sed":{}},{"name":"Bob","sed":{}},{"name":"Charlie","sed":{}}"#;
         let json_vec = split_json(s);
-        for json_obj in json_vec {
-            println!("{}", json_obj);
-        }
+        assert_eq!(json_vec.len(), 3);
         let data = r#"{"type":"HD Key Tree","data":{"mnemonic":[100,111,108,112,104,105,110,32,112,101,97,110,117,116,32,97,109,97,116,101,117,114,32,112,97,114,116,121,32,100,105,102,102,101,114,32,116,111,109,111,114,114,111,119,32,99,108,101,97,110,32,99,111,99,111,110,117,116,32,119,104,101,110,32,115,112,97,116,105,97,108,32,104,97,114,100,32,116,114,105,103,103,101,114],"numberOfAccounts":1,"hdPath":"m/44'/60'/0'/0"}},{"type":"Ledger Hardware","data":{"hdPath":"m/44'/60'/0'","accounts":[],"accountDetails":{},"bridgeUrl":"https://metamask.github.io/eth-ledger-bridge-keyring","implementFullBIP44":false}}"#;
         let json_vec = split_json(data);
-        for json_obj in json_vec {
-            println!("{}", json_obj);
-        }
+        assert_eq!(json_vec.len(), 2);
         Ok(())
     }
 }
