@@ -2,11 +2,13 @@
 resolver = "2"
 
 members = [
+  "bin/wallet",
   "crates/core",
   "crates/metamask",
   "tools/embedded-uniffi-bindgen",
   "tools/mpl-license-checker",
 ]
+default-members = ["bin/wallet"]
 
 [profile.dev.build-override]
 opt-level = 3
@@ -16,8 +18,10 @@ lto = "off"
 
 [workspace.dependencies]
 anyhow = "1.0.69"
+clap = "4.2.2"
 ethers-core = "2.0.2"
 ethers-signers = "2.0.2"
+eyre = "0.6.8"
 itertools = "0.10.0"
 lazy_static = "1.4.0"
 mockall = "0.11.4"

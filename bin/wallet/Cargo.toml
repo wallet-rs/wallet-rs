@@ -1,0 +1,15 @@
+[package]
+name = "wallet-cli"
+description = "A CLI for wallet-rs"
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Shun Kakinoki"]
+license = "MPL-2.0"
+repository = "https://github.com/wallet-rs/wallet-rs"
+readme = "README.md"
+
+[dependencies]
+clap = { workspace = true, features = ["derive", "cargo"] }
+eyre = { workspace = true }
+tokio = { workspace = true, features = ["sync", "macros", "rt-multi-thread"] }

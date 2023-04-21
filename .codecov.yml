@@ -6,6 +6,6 @@ coverage:
         threshold: null
         informational: true
 github_checks:
-  annotations: false
+  annotations: true
 comment:
   require_changes: true
