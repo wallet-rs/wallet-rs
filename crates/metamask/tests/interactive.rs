@@ -36,7 +36,7 @@ mod tests {
             return Err(err);
         }
 
-        // Iterate over all vaults
+        // Collect all vaults that are found
         let vaults: Vec<Vault> = a
             .unwrap()
             .iter()
@@ -54,7 +54,8 @@ mod tests {
             })
             .collect();
 
-        println!("Found {} vaults: {:?}", vaults.len(), vaults);
+        // Print the vault count
+        println!("Found {} vaults", vaults.len());
 
         vaults.iter().for_each(|vault| {
             // Ask for password from user interactively

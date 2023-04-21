@@ -62,12 +62,12 @@ mod tests {
             let s = decrypt_vault(&vault, f.passphrase).unwrap();
             println!("{:?}", s);
 
-            // Check that the mnemonic matches
-            let my_str = match s.data.mnemonic {
+            // Check that the mnemonic string matches the fixture
+            let mnemonic_str = match s.data.mnemonic {
                 StringOrBytes::String(s) => s.clone(),
                 StringOrBytes::Bytes(_) => "".to_string(),
             };
-            assert!(my_str == f.mnemonic);
+            assert!(mnemonic_str == f.mnemonic);
         }
         Ok(())
     }

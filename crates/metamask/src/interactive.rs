@@ -20,11 +20,11 @@ pub fn locate_metamask_extension() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let path = "/Users/USERNAME/Library/Application Support/Google/Chrome/Default/Local Extension Settings/nkbihfbeogaeaoehlefnkodbefgpgknn";
     let mac_chrome_vault_path = PathBuf::from(path.replace("USERNAME", &whoami::username()));
 
-    // Detect if windows or mac
-    let path = if os_info::get().os_type() == os_info::Type::Windows {
-        win_chrome_vault_path
-    } else {
-        mac_chrome_vault_path
+    // Detect if windows or mac, and set the path accordingly
+    let path = match os_info::get().os_type() {
+        os_info::Type::Windows => win_chrome_vault_path,
+        os_info::Type::Macos => mac_chrome_vault_path,
+        _ => panic!("Unsupported OS: {:?}", os_info::get().os_type()),
     };
 
     // Check if the path is a directory
