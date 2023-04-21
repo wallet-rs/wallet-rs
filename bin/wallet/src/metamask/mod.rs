@@ -21,8 +21,9 @@ impl Command {
         // Attempt to decrypt the vault
         let res = decrypt_vault(&vault, &pwd);
 
-        if let Ok(r) = res {
-            println!("Decrypted vault: {:?}", r);
+        // Print the result
+        if res.is_ok() {
+            println!("Decrypted vault");
         } else {
             println!("Failed to decrypt vault: {:?}", res);
         }
