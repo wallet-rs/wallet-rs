@@ -48,7 +48,7 @@ mod tests {
 
     /// Tests implemented from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
     #[test]
-    fn encrypts_and_decrypts() -> Result<()> {
+    fn encrypts_and_decrypts_fixtures() -> Result<()> {
         for f in FIXTURES.iter() {
             println!("Decrypting fixture: {}", f.path);
 

@@ -11,6 +11,7 @@ use wallet_metamask::vault::{decrypt_vault, extract_vault_from_file};
 mod tests {
     use super::*;
     use anyhow::{anyhow, Result};
+    use wallet_metamask::types::Vault;
 
     fn get_password() -> Result<String> {
         let name = Password::new("Your metamask password:")
@@ -36,22 +37,34 @@ mod tests {
         }
 
         // Iterate over all vaults
-        a.unwrap().iter().for_each(|a| {
-            println!("Attempting to decrypt vault: {:?}", a);
+        let vaults: Vec<Vault> = a
+            .unwrap()
+            .iter()
+            .filter_map(|a| {
+                println!("Attempting to decrypt vault: {:?}", a);
 
-            // Attempt to extract the vault from the extension
-            let vault = extract_vault_from_file(a);
+                // Attempt to extract the vault from the extension
+                let vault = extract_vault_from_file(a);
 
-            if vault.is_err() {
-                return;
-            }
+                if let Ok(vault) = vault {
+                    Some(vault)
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        println!("Found {} vaults: {:?}", vaults.len(), vaults);
+
+        vaults.iter().for_each(|vault| {
             // Ask for password from user interactively
             let pwd = get_password().unwrap();
 
             // Attempt to decrypt the vault
-            let _ = decrypt_vault(&vault.unwrap(), &pwd);
-        });
+            let res = decrypt_vault(vault, &pwd);
 
+            println!("sucess! {}", res.is_ok());
+        });
         Ok(())
     }
 }

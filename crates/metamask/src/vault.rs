@@ -188,8 +188,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
         return Ok(vault);
     }
 
-    println!("{:?}", vault);
-
     // Decode the vault data.
     // This is a workaround for a bug in the extract_vault_from_string that has redundant quotes.
     fn decode(s: &str) -> String {
@@ -198,7 +196,6 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
         }
 
         let s = &s[1..s.len() - 1];
-        println!("{}", s);
         s.to_string()
     }
 
