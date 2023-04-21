@@ -4,9 +4,30 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Vault {
     pub data: String,
     pub iv: String,
     pub salt: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StringOrBytes {
+    String(String),
+    Bytes(Vec<u8>),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MnemoicData {
+    pub mnemonic: StringOrBytes,
+    pub number_of_accounts: Option<u32>,
+    pub hd_path: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DecryptedVault {
+    pub r#type: Option<String>,
+    pub data: MnemoicData,
 }
