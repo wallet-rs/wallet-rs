@@ -151,6 +151,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
                 let salt = salt_regex.captures(a);
 
                 if let (Some(i), Some(d), Some(s)) = (iv, data, salt) {
+                    // Return with redundant quotes added
                     Some(Vault {
                         data: format!("\"{}\"", d.get(1).unwrap().as_str()),
                         iv: format!("\"{}\"", i.get(1).unwrap().as_str()),
@@ -191,9 +192,8 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
         return Ok(vault);
     }
 
-    // Decode the vault data.
-    // This is a workaround for a bug in the extract_vault_from_string that has redundant quotes.
-    fn decode(s: &str) -> String {
+    // Remove redundant quotes from the vault data.
+    fn remove_redundant_quotes(s: &str) -> String {
         if s.len() < 2 {
             return s.to_string();
         }
@@ -203,9 +203,9 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     }
 
     // Decode the vault data.
-    let data = decode(&vault.data);
-    let iv = decode(&vault.iv);
-    let salt = &vault.salt.clone().map_or("".to_string(), |s| decode(&s));
+    let data = remove_redundant_quotes(&vault.data);
+    let iv = remove_redundant_quotes(&vault.iv);
+    let salt = &vault.salt.clone().map_or("".to_string(), |s| remove_redundant_quotes(&s));
 
     // Create a vault object.
     let mut cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
@@ -216,13 +216,13 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     let res = decrypt(password, &mut cyphertext, Some(&key))?;
 
     // Attempt to decrypt the vault.
-    let r = decrypt_vault_result(&decode(&res));
+    let r = decrypt_vault_result(&remove_redundant_quotes(&res));
     if r.is_ok() {
         return r;
     }
 
     // Split the vault data into multiple json objects, and attempt to decrypt each one.
-    let json_vec = split_json(&decode(&res));
+    let json_vec = split_json(&remove_redundant_quotes(&res));
     for json_obj in json_vec {
         let res = decrypt_vault_result(&json_obj.to_string());
         if res.is_ok() {
