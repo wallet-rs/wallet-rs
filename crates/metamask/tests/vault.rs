@@ -24,8 +24,7 @@ mod tests {
     const FIXTURES: [Fixture; 4] = [
         Fixture {
             path: "chrome-windows-1/000005.ldb",
-            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial
-        hard trigger",
+            mnemonic: "dolphin peanut amateur party differ tomorrow clean coconut when spatial hard trigger",
             passphrase: "t0b1m4ru",
         },
         Fixture {

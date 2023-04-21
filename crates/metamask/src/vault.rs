@@ -9,6 +9,7 @@ use crate::{
     types::{DecryptedVault, MnemoicData, StringOrBytes, Vault},
 };
 use base64::{engine::general_purpose, Engine as _};
+use itertools::Itertools;
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
 
@@ -20,6 +21,15 @@ pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn
     let data = String::from_utf8_lossy(&data);
 
     extract_vault_from_string(&data)
+}
+
+fn split_json(s: &str) -> Vec<Value> {
+    s.split(r#"}},"#)
+        .flat_map(|s| {
+            serde_json::from_str::<Value>(&format!("{}{}", s, r#"}}"#))
+                .or_else(|_| serde_json::from_str::<Value>(s))
+        })
+        .collect()
 }
 
 /// Extracts the vault from a file contents.
@@ -91,9 +101,39 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempt 4: chromium 000005.ldb on windows
     // Attempts to match globaly
     let match_regex = regex::Regex::new(&get_regex(RegexEnum::MatchRegex)).unwrap();
+    let capture_regex = regex::Regex::new(&get_regex(RegexEnum::CaptureRegex)).unwrap();
+    let iv_regex = regex::Regex::new(&get_regex(RegexEnum::IVRegex)).unwrap();
+    let data_regex = regex::Regex::new(&get_regex(RegexEnum::DataRegex)).unwrap();
+    let salt_regex = regex::Regex::new(&get_regex(RegexEnum::SaltRegex)).unwrap();
+
     let matches = match_regex.find_iter(data);
-    for match_str in matches {
-        println!("{}", match_str.as_str());
+    let col: Vec<Vault> = matches
+        .filter_map(|m| {
+            let catches = capture_regex.captures(m.as_str());
+            if let Some(m) = catches {
+                let a = m.get(1).map_or("", |m| m.as_str());
+                let iv = iv_regex.captures(a);
+                let data = data_regex.captures(a);
+                let salt = salt_regex.captures(a);
+
+                if let (Some(i), Some(d), Some(s)) = (iv, data, salt) {
+                    Some(Vault {
+                        data: format!("\"{}\"", d.get(1).unwrap().as_str()),
+                        iv: format!("\"{}\"", i.get(1).unwrap().as_str()),
+                        salt: Some(format!("\"{}\"", s.get(1).unwrap().as_str())),
+                    })
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        })
+        .unique_by(|v| (v.iv.clone(), v.data.clone(), v.salt.clone()))
+        .collect();
+
+    if !col.is_empty() {
+        return Ok(col[0].clone());
     }
 
     Err("Could not extract vault".into())
@@ -115,6 +155,8 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
         let vault = DecryptedVault { r#type: None, data };
         return Ok(vault);
     }
+
+    println!("{:?}", vault);
 
     // Decode the vault data.
     // This is a workaround for a bug in the extract_vault_from_string that has redundant quotes.
@@ -167,6 +209,40 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
         }
     }
 
+    let json_vec = split_json(&decode(&res));
+    for json_obj in json_vec {
+        println!("{}", json_obj);
+
+        let data = serde_json::from_str::<DecryptedVault>(&json_obj.to_string());
+
+        if let Ok(vault) = data {
+            match vault.data.mnemonic {
+                StringOrBytes::String(s) => {
+                    let data = MnemoicData {
+                        mnemonic: StringOrBytes::String(s),
+                        number_of_accounts: vault.data.number_of_accounts,
+                        hd_path: vault.data.hd_path,
+                    };
+                    let vault = DecryptedVault { r#type: vault.r#type, data };
+                    return Ok(vault);
+                }
+                StringOrBytes::Bytes(b) => {
+                    let data = MnemoicData {
+                        mnemonic: StringOrBytes::String(
+                            std::str::from_utf8(&b).unwrap().to_string(),
+                        ),
+                        number_of_accounts: vault.data.number_of_accounts,
+                        hd_path: vault.data.hd_path,
+                    };
+                    let vault = DecryptedVault { r#type: vault.r#type, data };
+                    return Ok(vault);
+                }
+            }
+        }
+    }
+    // let data = serde_json::from_str::<Value>(&decode(&res)).unwrap();
+    // println!("{:?}", data["type"]);
+
     Err("Could not decrypt vault".into())
 }
 
@@ -182,6 +258,21 @@ mod test {
         // let vault = extract_vault_from_string(data);
         let vault_body: Value = serde_json::from_str(data).unwrap();
         println!("{:?}", vault_body);
+        Ok(())
+    }
+
+    #[test]
+    fn split_json_multiple() -> Result<()> {
+        let s = r#"{"name":"Alice","sed":{}},{"name":"Bob","sed":{}},{"name":"Charlie","sed":{}}"#;
+        let json_vec = split_json(s);
+        for json_obj in json_vec {
+            println!("{}", json_obj);
+        }
+        let data = r#"{"type":"HD Key Tree","data":{"mnemonic":[100,111,108,112,104,105,110,32,112,101,97,110,117,116,32,97,109,97,116,101,117,114,32,112,97,114,116,121,32,100,105,102,102,101,114,32,116,111,109,111,114,114,111,119,32,99,108,101,97,110,32,99,111,99,111,110,117,116,32,119,104,101,110,32,115,112,97,116,105,97,108,32,104,97,114,100,32,116,114,105,103,103,101,114],"numberOfAccounts":1,"hdPath":"m/44'/60'/0'/0"}},{"type":"Ledger Hardware","data":{"hdPath":"m/44'/60'/0'","accounts":[],"accountDetails":{},"bridgeUrl":"https://metamask.github.io/eth-ledger-bridge-keyring","implementFullBIP44":false}}"#;
+        let json_vec = split_json(data);
+        for json_obj in json_vec {
+            println!("{}", json_obj);
+        }
         Ok(())
     }
 }
