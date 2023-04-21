@@ -13,3 +13,4 @@ readme = "README.md"
 clap = { workspace = true, features = ["derive", "cargo"] }
 eyre = { workspace = true }
 tokio = { workspace = true, features = ["sync", "macros", "rt-multi-thread"] }
+wallet-metamask = { path = "../../crates/metamask" }
