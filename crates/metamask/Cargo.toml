@@ -24,4 +24,5 @@ regex = "1.7.3"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = "0.10.6"
+tracing = { workspace = true }
 whoami = "1.4.0"
