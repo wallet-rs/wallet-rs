@@ -40,7 +40,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: run
-          args: --bin mpl-license-checker
+          args: --package mpl-license-checker
       - if: ${{ github.event_name == 'pull_request' }}
         uses: actions-rs/clippy-check@v1
         with:
