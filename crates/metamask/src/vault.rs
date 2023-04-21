@@ -50,7 +50,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
         let vault_matches =
             regex::Regex::new(&get_regex(RegexEnum::WalletV2)).unwrap().captures(data);
         let vault: Option<Vault> = vault_matches
-            .and_then(|m| serde_json::from_str::<Vault>(m.get(1).map_or("", |m| m.as_str())).ok());
+            .and_then(|m| serde_json::from_str::<Vault>(m.get(1).unwrap().as_str()).ok());
 
         // Return the vault if it exists, otherwise return the mnemonic
         println!("Your mnemonic is not encrypted");
