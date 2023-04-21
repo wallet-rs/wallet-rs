@@ -13,6 +13,7 @@ use os_info;
 use std::{error::Error, fs, path::PathBuf};
 use whoami;
 
+// Interactively get the password from the user
 pub fn get_password() -> Result<String, Box<dyn Error>> {
     let name = Password::new("Your metamask password:")
         .with_display_mode(PasswordDisplayMode::Masked)
@@ -21,6 +22,7 @@ pub fn get_password() -> Result<String, Box<dyn Error>> {
     Ok(name)
 }
 
+// Find the metamask extension files on the system
 pub fn locate_metamask_extension() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     // For Windows
     let user_name = "USER_NAME";
@@ -61,6 +63,7 @@ pub fn locate_metamask_extension() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     Ok(files.collect())
 }
 
+// Extract all vaults from the extension files
 pub fn extract_all_vaults() -> Result<Vec<Vault>, Box<dyn Error>> {
     let a = locate_metamask_extension()?;
 
