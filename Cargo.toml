@@ -2,13 +2,13 @@
 resolver = "2"
 
 members = [
-  "bin/wallet",
+  "bin/cli",
   "crates/core",
   "crates/metamask",
   "tools/embedded-uniffi-bindgen",
   "tools/mpl-license-checker",
 ]
-default-members = ["bin/wallet"]
+default-members = ["bin/cli"]
 
 [profile.dev.build-override]
 opt-level = 3
