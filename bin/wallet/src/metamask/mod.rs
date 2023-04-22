@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use clap::Parser;
+use tracing::{debug, info};
 use wallet_metamask::{
     interactive::{extract_all_vaults, get_password},
     vault::decrypt_vault,
@@ -23,9 +24,9 @@ impl Command {
 
         // Print the result
         if res.is_ok() {
-            println!("Decrypted vault");
+            debug!("Decrypted vault");
         } else {
-            println!("Failed to decrypt vault: {:?}", res);
+            info!("Failed to decrypt vault: {:?}", res);
         }
         Ok(())
     }

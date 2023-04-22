@@ -6,8 +6,7 @@
 /// Structue of the CLI is extremely influenced from reth.
 /// https://github.com/paradigmxyz/reth/tree/main/bin/reth
 use crate::metamask;
-use clap::{Parser, Subcommand};
-
+use clap::{ArgAction, Args, Parser, Subcommand};
 /// Parse CLI options, set up logging and run the chosen command.
 pub async fn run() -> eyre::Result<()> {
     let opt = Cli::parse();
@@ -31,4 +30,25 @@ struct Cli {
     /// The command to run
     #[clap(subcommand)]
     command: Commands,
+
+    #[clap(flatten)]
+    verbosity: Verbosity,
+}
+
+#[derive(Args)]
+#[command(next_help_heading = "Display")]
+struct Verbosity {
+    /// Set the minimum log level.
+    ///
+    /// -v      Errors
+    /// -vv     Warnings
+    /// -vvv    Info
+    /// -vvvv   Debug
+    /// -vvvvv  Traces (warning: very verbose!)
+    #[clap(short, long, action = ArgAction::Count, global = true, default_value_t = 3, verbatim_doc_comment, help_heading = "Display")]
+    verbosity: u8,
+
+    /// Silence all log output.
+    #[clap(long, alias = "silent", short = 'q', global = true, help_heading = "Display")]
+    quiet: bool,
 }
