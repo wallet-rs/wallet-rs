@@ -8,9 +8,14 @@ use wallet_metamask::{
     interactive::{extract_all_vaults, get_password},
     vault::decrypt_vault,
 };
-/// Start the node
+
+/// Start the metamask command
 #[derive(Debug, Parser)]
-pub struct Command {}
+pub struct Command {
+    /// Output the decrypted mnemonic
+    #[arg(short, long)]
+    output: bool,
+}
 
 impl Command {
     pub async fn run(&self) -> eyre::Result<()> {
@@ -25,6 +30,11 @@ impl Command {
         // Print the result
         if res.is_ok() {
             debug!("Decrypted vault");
+
+            // Print the mnemonic
+            if self.output {
+                println!("{}", res.unwrap().data.mnemonic);
+            }
         } else {
             info!("Failed to decrypt vault: {:?}", res);
         }

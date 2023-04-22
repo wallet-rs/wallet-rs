@@ -18,6 +18,15 @@ pub enum StringOrBytes {
     Bytes(Vec<u8>),
 }
 
+impl std::fmt::Display for StringOrBytes {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            StringOrBytes::String(s) => write!(f, "{}", s),
+            StringOrBytes::Bytes(_) => Ok(()),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MnemoicData {

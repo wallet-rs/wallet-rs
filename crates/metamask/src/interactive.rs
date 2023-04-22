@@ -76,6 +76,7 @@ pub fn extract_all_vaults() -> Result<Vec<Vault>, Box<dyn Error>> {
             // Attempt to extract the vault from the extension
             let vault = extract_vault_from_file(a);
 
+            // Return the vault if it exists, continue otherwise
             if let Ok(vault) = vault {
                 Some(vault)
             } else {
