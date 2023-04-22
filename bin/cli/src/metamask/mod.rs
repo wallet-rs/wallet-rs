@@ -3,6 +3,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use clap::Parser;
+use eth_keystore::encrypt_key;
+use ethers_signers::{coins_bip39::English, MnemonicBuilder};
 use tracing::{debug, info};
 use wallet_metamask::{
     interactive::{extract_all_vaults, get_password},
@@ -15,6 +17,10 @@ pub struct Command {
     /// Output the decrypted mnemonic
     #[arg(short, long)]
     output: bool,
+
+    /// The path to the vault file
+    #[arg(short, long)]
+    vault: Option<String>,
 }
 
 impl Command {
@@ -33,8 +39,28 @@ impl Command {
 
             // Print the mnemonic
             if self.output {
-                println!("{}", res.unwrap().data.mnemonic);
+                println!("{}", &res.unwrap().data.mnemonic);
+                return Ok(());
             }
+
+            if self.vault.is_some() {
+                let index = 0u32;
+                let phrase = &res.unwrap().data.mnemonic.to_string();
+
+                let wallet = MnemonicBuilder::<English>::default()
+                    .phrase(phrase.as_str())
+                    .index(index)
+                    .unwrap()
+                    .build()
+                    .unwrap();
+
+                let pk = wallet.signer();
+                let mut rng = rand::thread_rng();
+                let _ =
+                    encrypt_key(self.vault.clone().unwrap(), &mut rng, pk.to_bytes(), pwd, None);
+            }
+
+            // let a = Wallet::<SigningKey>::new_keystore("", &mut rng, "randpsswd", None).unwrap();
         } else {
             info!("Failed to decrypt vault: {:?}", res);
         }
