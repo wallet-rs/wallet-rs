@@ -14,11 +14,11 @@ use wallet_metamask::{
 /// Start the metamask command
 #[derive(Debug, Parser)]
 pub struct Command {
-    /// Output the decrypted mnemonic
+    /// Output the decrypted mnemonic to stdout
     #[arg(short, long)]
     output: bool,
 
-    /// The path to the keystore file
+    /// The path to the keystore file, if you want to export the encrypted keystore
     #[arg(short, long)]
     keystore: Option<String>,
 }
