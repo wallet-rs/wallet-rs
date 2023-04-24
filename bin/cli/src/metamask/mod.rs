@@ -18,9 +18,9 @@ pub struct Command {
     #[arg(short, long)]
     output: bool,
 
-    /// The path to the vault file
+    /// The path to the keystore file
     #[arg(short, long)]
-    vault: Option<String>,
+    keystore: Option<String>,
 }
 
 impl Command {
@@ -43,7 +43,7 @@ impl Command {
                 return Ok(());
             }
 
-            if self.vault.is_some() {
+            if self.keystore.is_some() {
                 let index = 0u32;
                 let phrase = &res.unwrap().data.mnemonic.to_string();
 
@@ -57,7 +57,7 @@ impl Command {
                 let pk = wallet.signer();
                 let mut rng = rand::thread_rng();
                 let _ =
-                    encrypt_key(self.vault.clone().unwrap(), &mut rng, pk.to_bytes(), pwd, None);
+                    encrypt_key(self.keystore.clone().unwrap(), &mut rng, pk.to_bytes(), pwd, None);
             }
 
             // let a = Wallet::<SigningKey>::new_keystore("", &mut rng, "randpsswd", None).unwrap();
