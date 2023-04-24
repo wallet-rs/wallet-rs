@@ -17,4 +17,4 @@ eyre = { workspace = true }
 rand = { workspace = true }
 tokio = { workspace = true, features = ["sync", "macros", "rt-multi-thread"] }
 tracing = { workspace = true }
-wallet-metamask = { path = "../../crates/metamask" }
+wallet-metamask = { workspace = true }
