@@ -7,6 +7,8 @@ use std::fs;
 
 fn main() {
     let dirs = [
+        "bin/**/src/**/*.rs",
+        "bin/**/tests/**/*.rs",
         "crates/**/src/**/*.rs",
         "crates/**/tests/**/*.rs",
         "tools/**/src/**/*.rs",

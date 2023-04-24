@@ -3,13 +3,10 @@ name = "wallet-metamask"
 description = "Metamask vaults, cryptography and utilities"
 version = "0.1.0"
 edition = "2021"
-
 authors = ["Shun Kakinoki"]
 license = "MPL-2.0"
 repository = "https://github.com/wallet-rs/wallet-rs"
-
-[lib]
-name = "wallet_metamask"
+readme = "README.md"
 
 [dependencies]
 aes-gcm = "0.10.1"
@@ -27,4 +24,5 @@ regex = "1.7.3"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = "0.10.6"
+tracing = { workspace = true }
 whoami = "1.4.0"
