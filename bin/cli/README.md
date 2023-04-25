@@ -1,1 +1,1 @@
-# wallet-cli
+# wallet-rs-cli

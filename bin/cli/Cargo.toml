@@ -1,5 +1,5 @@
 [package]
-name = "wallet-cli"
+name = "wallet-rs-cli"
 description = "A CLI for wallet-rs"
 version = "0.1.1"
 edition = "2021"
