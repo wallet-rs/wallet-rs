@@ -7,9 +7,15 @@
 /// https://github.com/paradigmxyz/reth/tree/main/bin/reth
 use crate::metamask;
 use clap::{ArgAction, Args, Parser, Subcommand};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
 /// Parse CLI options, set up logging and run the chosen command.
 pub async fn run() -> eyre::Result<()> {
     let opt = Cli::parse();
+
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer().with_ansi(opt.verbosity.verbosity >= 3))
+        .init();
 
     match opt.command {
         Commands::Metamask(m) => m.run().await,
