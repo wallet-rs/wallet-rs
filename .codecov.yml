@@ -10,6 +10,10 @@ coverage:
       default:
         target: auto
         threshold: 5%
-        base: auto 
+        branches: 
+          - main
+        if_ci_failed: error
+        informational: true
+        only_pulls: false
 ignore:
   - "tools/**/*"
