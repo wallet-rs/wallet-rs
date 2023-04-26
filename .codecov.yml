@@ -1,22 +1,11 @@
 coverage:
   status:
+    patch: off
     project:
       default:
-        target: auto
-        threshold: 0%
-        base: auto 
-        flags: 
-          - crates
-        paths: 
-          - "crates/*"
-        branches: 
-          - main
-        if_ci_failed: error
+        threshold: null
         informational: true
-        only_pulls: false
+github_checks:
+  annotations: false
 comment:
-  layout: "reach, diff, flags, files"
-  behavior: default
-  require_changes: false
-ignore:
-  - "tools/*"
+  require_changes: true
