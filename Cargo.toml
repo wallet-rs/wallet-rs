@@ -37,4 +37,4 @@ tracing-test = "0.2.4"
 uniffi = "0.23.0"
 uniffi_build = "0.23.0"
 uniffi_macros = "0.23.0"
-wallet-metamask = { version = "0.2.0", path = "crates/metamask", default-features = false }
+wallet-metamask = { version = "*", path = "crates/metamask", default-features = false }
