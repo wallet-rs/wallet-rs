@@ -1,0 +1,17 @@
+[package]
+name = "wallet-keychain"
+description = "Keychain utilities for wallet-rs"
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Shun Kakinoki"]
+license = "MPL-2.0"
+repository = "https://github.com/wallet-rs/wallet-rs"
+readme = "README.md"
+
+[dependencies]
+uniffi = { workspace = true }
+uniffi_macros = { workspace = true }
+
+[build-dependencies]
+uniffi_build = { workspace = true, features = ["builtin-bindgen"] }

@@ -6,8 +6,6 @@ pub fn rust_greeting(to: String) -> String {
     format!("Hello World, {}!", to)
 }
 
-uniffi_macros::include_scaffolding!("WalletCore");
-
 #[cfg(test)]
 mod tests {
     use super::*;
