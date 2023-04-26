@@ -4,3 +4,11 @@ comment:
   require_changes: false
   require_base: no
   require_head: yes
+coverage:
+  status:
+    project:
+      default: # This can be anything, but it needs to exist as the name
+        # basic settings
+        target: auto
+        threshold: 5%
+        base: auto 
