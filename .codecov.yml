@@ -8,4 +8,14 @@ coverage:
 github_checks:
   annotations: true
 comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
   require_changes: true
+status:
+  project:
+    default:
+      target: auto
+      threshold: 0%
+      base: auto
+ignore:
+  - "tools/*"
