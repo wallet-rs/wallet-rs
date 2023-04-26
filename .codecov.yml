@@ -1,12 +1,11 @@
 coverage:
   status:
-    patch: off
+    patch: true
     project:
       default:
-        threshold: null
-        informational: true
-github_checks:
-  annotations: true
+        target: auto
+        threshold: 0%
+        base: auto
 comment:
   layout: "reach, diff, flags, files"
   behavior: default
