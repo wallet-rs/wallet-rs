@@ -7,3 +7,13 @@ pub fn rust_greeting(to: String) -> String {
 }
 
 uniffi_macros::include_scaffolding!("WalletCore");
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rust_greeting() {
+        assert_eq!(rust_greeting("Rust".to_string()), "Hello World, Rust!".to_string());
+    }
+}

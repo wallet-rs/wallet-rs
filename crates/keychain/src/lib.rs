@@ -5,3 +5,13 @@
 pub fn rust_greeting(to: String) -> String {
     format!("Hello World, {}!", to)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rust_greeting() {
+        assert_eq!(rust_greeting("Rust".to_string()), "Hello World, Rust!".to_string());
+    }
+}
