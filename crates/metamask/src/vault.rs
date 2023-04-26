@@ -12,6 +12,7 @@ use base64::{engine::general_purpose, Engine as _};
 use itertools::Itertools;
 use serde_json::Value;
 use std::{error::Error, fs::File, io::Read, path::Path};
+use tracing::{info, warn};
 
 /// Extracts the vault from a file.
 pub fn extract_vault_from_file<P: AsRef<Path>>(path: P) -> Result<Vault, Box<dyn Error>> {
@@ -74,6 +75,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Try to parse as a JSON object
     // This is the case for objects that have not been encrypted
     if let Ok(vault) = serde_json::from_str::<Vault>(data) {
+        info!("Found raw vault");
         return Ok(vault);
     }
 
@@ -82,7 +84,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Warns that the vault is not encrypted
     let matches = regex::Regex::new(&get_regex(RegexEnum::WalletSeed)).unwrap().captures(data);
     if let Some(m) = matches {
-        println!("Found pre-v3 vault");
+        info!("Found pre-v3 vault");
 
         // Extract the mnemonic and parse it
         let mnemonic = m.get(1).map_or("", |m| m.as_str());
@@ -96,7 +98,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
             .and_then(|m| serde_json::from_str::<Vault>(m.get(1).unwrap().as_str()).ok());
 
         // Return the vault if it exists, otherwise return the mnemonic
-        println!("Your mnemonic is not encrypted");
+        warn!("Your mnemonic is not encrypted");
         if let Some(vault) = vault {
             return Ok(vault);
         }
@@ -106,7 +108,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Attempt 3: chromium 000003.log file on linux
     let matches = regex::Regex::new(&get_regex(RegexEnum::Keyring)).unwrap().captures(data);
     if let Some(m) = matches {
-        println!("Found chromium vault");
+        info!("Found chromium vault");
 
         // Extract the vault
         // Extra replace is to remove the extra backslashes
@@ -169,6 +171,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
 
     // Return the first vault
     if !col.is_empty() {
+        info!("Found chromium ldb vault");
         return Ok(col[0].clone());
     }
 

@@ -27,6 +27,9 @@ impl Command {
     pub async fn run(&self) -> eyre::Result<()> {
         // Get the vaults and the password
         let vaults = extract_all_vaults().unwrap();
+
+        info!("Found {} vaults", vaults.len());
+
         let vault = vaults[0].clone();
         let pwd = get_password().unwrap();
 
@@ -39,7 +42,7 @@ impl Command {
 
             // Print the mnemonic
             if self.output {
-                println!("{}", &res.unwrap().data.mnemonic);
+                print!("{}", &res.unwrap().data.mnemonic);
                 return Ok(());
             }
 

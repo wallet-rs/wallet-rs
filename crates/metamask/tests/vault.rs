@@ -5,6 +5,7 @@
 /// Test cases are from:
 /// https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
 use std::path::PathBuf;
+use tracing_test::traced_test;
 use wallet_metamask::{
     types::StringOrBytes,
     vault::{decrypt_vault, extract_vault_from_file},
@@ -47,6 +48,7 @@ mod tests {
     ];
 
     /// Tests implemented from: https://github.com/MetaMask/vault-decryptor/blob/master/app/lib.test.js
+    #[traced_test]
     #[test]
     fn encrypts_and_decrypts_fixtures() -> Result<()> {
         for f in FIXTURES.iter() {
@@ -57,6 +59,9 @@ mod tests {
                 extract_vault_from_file(PathBuf::from("tests/fixtures").join(f.path)).unwrap();
             println!("vault:");
             println!("{:?}", vault);
+
+            // Check that the logs contain the word "vault" (logs on found)
+            assert!(logs_contain("vault"));
 
             // Decrypt the vault
             let s = decrypt_vault(&vault, f.passphrase).unwrap();

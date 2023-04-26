@@ -11,6 +11,7 @@ use crate::vault::extract_vault_from_file;
 use inquire::{Password, PasswordDisplayMode};
 use os_info;
 use std::{error::Error, fs, path::PathBuf};
+use tracing::{debug, trace};
 use whoami;
 
 // Interactively get the password from the user
@@ -42,7 +43,7 @@ pub fn locate_metamask_extension() -> Result<Vec<PathBuf>, Box<dyn Error>> {
 
     // Check if the path is a directory
     if !path.exists() && !path.is_dir() {
-        println!("Could not find MetaMask extension at: {:?}", path);
+        debug!("Could not find MetaMask extension at: {:?}", path);
         return Err("Could not find MetaMask extension".into());
     }
 
@@ -71,7 +72,7 @@ pub fn extract_all_vaults() -> Result<Vec<Vault>, Box<dyn Error>> {
     let vaults: Vec<Vault> = a
         .iter()
         .filter_map(|a| {
-            println!("Attempting to decrypt vault: {:?}", a);
+            trace!("Attempting to decrypt vault: {:?}", a);
 
             // Attempt to extract the vault from the extension
             let vault = extract_vault_from_file(a);

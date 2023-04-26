@@ -7,9 +7,16 @@
 /// https://github.com/paradigmxyz/reth/tree/main/bin/reth
 use crate::metamask;
 use clap::{ArgAction, Args, Parser, Subcommand};
+use tracing::{metadata::LevelFilter, Level};
+use tracing_subscriber::{filter::Directive, EnvFilter};
+
 /// Parse CLI options, set up logging and run the chosen command.
 pub async fn run() -> eyre::Result<()> {
     let opt = Cli::parse();
+
+    let filter =
+        EnvFilter::builder().with_default_directive(opt.verbosity.directive()).from_env_lossy();
+    tracing_subscriber::fmt().with_env_filter(filter).init();
 
     match opt.command {
         Commands::Metamask(m) => m.run().await,
@@ -25,7 +32,7 @@ pub enum Commands {
 }
 
 #[derive(Parser)]
-#[command(author, version = "0.1", about = "Reth", long_about = None)]
+#[command(author, version = "0.1", about = "wallet-rs-cli", long_about = None)]
 struct Cli {
     /// The command to run
     #[clap(subcommand)]
@@ -51,4 +58,24 @@ struct Verbosity {
     /// Silence all log output.
     #[clap(long, alias = "silent", short = 'q', global = true, help_heading = "Display")]
     quiet: bool,
+}
+
+impl Verbosity {
+    /// Get the corresponding [Directive] for the given verbosity, or none if the verbosity
+    /// corresponds to silent.
+    fn directive(&self) -> Directive {
+        if self.quiet {
+            LevelFilter::OFF.into()
+        } else {
+            let level = match self.verbosity - 1 {
+                0 => Level::ERROR,
+                1 => Level::WARN,
+                2 => Level::INFO,
+                3 => Level::DEBUG,
+                _ => Level::TRACE,
+            };
+
+            level.into()
+        }
+    }
 }
