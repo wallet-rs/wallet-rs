@@ -79,3 +79,29 @@ impl Verbosity {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_verbosity() {
+        let verbosity = Verbosity { verbosity: 1, quiet: false };
+        assert_eq!(verbosity.directive(), LevelFilter::ERROR.into());
+
+        let verbosity = Verbosity { verbosity: 2, quiet: false };
+        assert_eq!(verbosity.directive(), LevelFilter::WARN.into());
+
+        let verbosity = Verbosity { verbosity: 3, quiet: false };
+        assert_eq!(verbosity.directive(), LevelFilter::INFO.into());
+
+        let verbosity = Verbosity { verbosity: 4, quiet: false };
+        assert_eq!(verbosity.directive(), LevelFilter::DEBUG.into());
+
+        let verbosity = Verbosity { verbosity: 5, quiet: false };
+        assert_eq!(verbosity.directive(), LevelFilter::TRACE.into());
+
+        let verbosity = Verbosity { verbosity: 1, quiet: true };
+        assert_eq!(verbosity.directive(), LevelFilter::OFF.into());
+    }
+}
