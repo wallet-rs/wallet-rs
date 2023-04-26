@@ -75,6 +75,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
     // Try to parse as a JSON object
     // This is the case for objects that have not been encrypted
     if let Ok(vault) = serde_json::from_str::<Vault>(data) {
+        info!("Found raw vault");
         return Ok(vault);
     }
 
@@ -170,6 +171,7 @@ pub fn extract_vault_from_string(data: &str) -> Result<Vault, Box<dyn Error>> {
 
     // Return the first vault
     if !col.is_empty() {
+        info!("Found chromium ldb vault");
         return Ok(col[0].clone());
     }
 

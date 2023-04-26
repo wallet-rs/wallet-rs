@@ -42,7 +42,7 @@ impl Command {
 
             // Print the mnemonic
             if self.output {
-                println!("{}", &res.unwrap().data.mnemonic);
+                print!("{}", &res.unwrap().data.mnemonic);
                 return Ok(());
             }
 
