@@ -1,10 +1,19 @@
 comment:
-  require_changes: true
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
 coverage:
   status:
     project:
       default:
-        threshold: null
+        target: auto
+        threshold: 5%
+        branches: 
+          - main
+        if_ci_failed: error
         informational: true
+        only_pulls: false
 ignore:
   - "tools/**/*"
