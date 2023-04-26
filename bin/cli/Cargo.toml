@@ -24,3 +24,4 @@ tracing-subscriber = { workspace = true, features = [
     "tracing-log",
 ] }
 wallet-metamask = { workspace = true }
+wallet-keychain = { workspace = true }
