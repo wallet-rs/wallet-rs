@@ -83,6 +83,15 @@ impl Verbosity {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use eyre::Result;
+
+    #[test]
+    fn test_cli_parse() -> Result<()> {
+        // Test that the Cli struct can be parsed from command line arguments
+        let cli = Cli::parse_from(["wallet-rs-cli", "metamask"]);
+        assert!(matches!(cli.command, Commands::Metamask(_)));
+        Ok(())
+    }
 
     #[test]
     fn test_verbosity() {
