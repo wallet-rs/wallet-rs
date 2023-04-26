@@ -1,11 +1,3 @@
-coverage:
-  status:
-    patch: true
-    project:
-      default:
-        target: auto
-        threshold: 0%
-        base: auto
 comment:
   layout: "reach, diff, flags, files"
   behavior: default
