@@ -40,3 +40,17 @@ pub struct DecryptedVault {
     pub r#type: Option<String>,
     pub data: MnemoicData,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_string_or_bytes_display() {
+        let string = StringOrBytes::String("hello".to_string());
+        let bytes = StringOrBytes::Bytes(vec![0x68, 0x65, 0x6c, 0x6c, 0x6f]);
+
+        assert_eq!(format!("{}", string), "hello");
+        assert_eq!(format!("{}", bytes), "");
+    }
+}
