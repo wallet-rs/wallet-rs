@@ -13,3 +13,23 @@ async fn main() {
         std::process::exit(1);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::process::Command;
+
+    #[test]
+    fn test_main() {
+        // Run the CLI with no arguments
+        let output =
+            Command::new("cargo").args(["run"]).output().expect("Failed to execute command");
+        println!("output: {:?}", output);
+
+        // Check that the CLI exited with an error (waiting status)
+        assert!(!output.status.success());
+
+        // Check that the CLI printed the help message
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(stderr.contains("wallet-rs-cli"));
+    }
+}
