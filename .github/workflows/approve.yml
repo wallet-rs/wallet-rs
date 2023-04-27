@@ -18,4 +18,4 @@ jobs:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
           token: ${{ secrets.KAKI_TOKEN }}
       - run: |
-          git commit --allow-empty -m "Trigger workflow"
+          git commit --allow-empty -m "chore: trigger workflow"
