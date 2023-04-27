@@ -7,6 +7,10 @@ coverage:
         target: auto
         threshold: null
         informational: true
-    patch: off
+    patch:
+      default:
+        target: auto
+        threshold: null
+        informational: true
 ignore:
   - "tools/**/*"
