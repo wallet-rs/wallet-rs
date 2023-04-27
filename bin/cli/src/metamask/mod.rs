@@ -30,13 +30,22 @@ pub struct Command {
 impl Command {
     pub async fn run(&self) -> eyre::Result<()> {
         // Get the vaults and the password
-        let vaults = extract_all_vaults().unwrap();
+        let vaults = extract_all_vaults();
+
+        // Print the error and exit if there was an error
+        if let Err(e) = vaults {
+            error!("Failed to extract vaults: {:?}", e);
+            return Ok(());
+        }
 
         // Exit if this is a test run
         if self.test {
             info!("cargo test, exiting");
             return Ok(());
         }
+
+        // Unwrap the vaults
+        let vaults = vaults.unwrap();
 
         // Print the number of vaults
         info!("Found {} vaults", vaults.len());
