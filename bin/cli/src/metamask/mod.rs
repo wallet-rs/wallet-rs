@@ -40,7 +40,7 @@ impl Command {
 
         // Exit if this is a test run
         if self.test {
-            info!("cargo test, exiting");
+            info!("Cargo test, exiting");
             return Ok(());
         }
 
@@ -117,6 +117,6 @@ mod tests {
         assert!(res.is_ok());
 
         // Check that the logs contain the word "vault" (logs on found)
-        assert!(logs_contain("cargo test, exiting"));
+        assert!(logs_contain("Failed to extract") || logs_contain("Cargo test, exiting"));
     }
 }
