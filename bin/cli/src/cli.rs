@@ -12,12 +12,15 @@ use tracing_subscriber::{filter::Directive, EnvFilter};
 
 /// Parse CLI options, set up logging and run the chosen command.
 pub async fn run() -> eyre::Result<()> {
+    // Parse CLI options
     let opt = Cli::parse();
 
+    // Set up logging based on the verbosity level
     let filter =
         EnvFilter::builder().with_default_directive(opt.verbosity.directive()).from_env_lossy();
     tracing_subscriber::fmt().with_env_filter(filter).init();
 
+    // Run the chosen command
     match opt.command {
         Commands::Metamask(m) => m.run().await,
     }
@@ -51,7 +54,7 @@ struct Verbosity {
     /// -vv     Warnings
     /// -vvv    Info
     /// -vvvv   Debug
-    /// -vvvvv  Traces (warning: very verbose!)
+    /// -vvvvv  Traces
     #[clap(short, long, action = ArgAction::Count, global = true, default_value_t = 3, verbatim_doc_comment, help_heading = "Display")]
     verbosity: u8,
 
@@ -95,6 +98,7 @@ mod tests {
 
     #[test]
     fn test_verbosity() {
+        // Test that the verbosity level is correctly parsed
         let verbosity = Verbosity { verbosity: 1, quiet: false };
         assert_eq!(verbosity.directive(), LevelFilter::ERROR.into());
 
