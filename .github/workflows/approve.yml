@@ -1,0 +1,21 @@
+name: Approve
+on:
+  issue_comment:
+    types:
+      - created
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/approve')
+    steps:
+      - uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
+          token: ${{ secrets.KAKI_TOKEN }}
+      - run: |
+          git commit --allow-empty -m "Trigger workflow"
