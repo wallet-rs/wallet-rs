@@ -10,8 +10,12 @@ repository = "https://github.com/wallet-rs/wallet-rs"
 readme = "README.md"
 
 [dependencies]
+thiserror = { workspace = true }
 uniffi = { workspace = true }
 uniffi_macros = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+security-framework = "2.6.1"
 
 [build-dependencies]
 uniffi_build = { workspace = true, features = ["builtin-bindgen"] }
