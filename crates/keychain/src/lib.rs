@@ -2,10 +2,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#[cfg(target_os = "macos")]
 use crate::macos::MacOSKeychain;
-mod macos;
+#[cfg(target_os = "macos")]
 use security_framework::base::Error;
-
+#[cfg(target_os = "macos")]
+mod macos;
 /// Keychain is a trait that defines the interface for a keychain implementation
 /// It is dependent on the OS, now we only support Linux and macOS
 /// The keychain is used to store and retrieve secrets.
