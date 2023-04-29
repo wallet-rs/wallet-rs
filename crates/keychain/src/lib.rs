@@ -61,7 +61,6 @@ impl Default for Keychain {
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
 pub enum KeychainError {
     /// A runtime invariant violation.
-    /// The error will be sent to Sentry, so it should not contain any user data.
     #[error("Fatal Error: '{error}'")]
     Fatal { error: String },
     /// The keychain item was not found.
