@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-rs-v0.2.0...wallet-rs-v0.3.0) (2023-04-27)
+
+
+### Features
+
+* ini wallet keychain ([#23](https://github.com/wallet-rs/wallet-rs/issues/23)) ([e4452e7](https://github.com/wallet-rs/wallet-rs/commit/e4452e790ae390adcb8fac84be5e15132540760d))
+
 ## [0.2.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-rs-v0.1.0...wallet-rs-v0.2.0) (2023-04-24)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-metamask-v0.2.0...wallet-metamask-v0.3.0) (2023-04-27)
+
+
+### Features
+
+* ini tracing subscriber ([#19](https://github.com/wallet-rs/wallet-rs/issues/19)) ([e8d81aa](https://github.com/wallet-rs/wallet-rs/commit/e8d81aa96c808ece9fbd1034674d61ffdd52f7f7))
+
+
+### Performance Improvements
+
+* ini tracing test ([#29](https://github.com/wallet-rs/wallet-rs/issues/29)) ([62cb53c](https://github.com/wallet-rs/wallet-rs/commit/62cb53ca756d7e199b8313a88502a375a9f282f4))
+
 ## [0.2.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-metamask-v0.1.0...wallet-metamask-v0.2.0) (2023-04-24)
 
 
