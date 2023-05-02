@@ -38,6 +38,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
+      - if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get install -y libpq-dev
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
