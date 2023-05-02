@@ -12,6 +12,7 @@ use security_framework::base::Error;
 mod in_memory;
 #[cfg(target_os = "macos")]
 mod macos;
+
 /// Keychain is a trait that defines the interface for a keychain implementation
 /// It is dependent on the OS, now we only support Linux and macOS
 /// The keychain is used to store and retrieve secrets.
