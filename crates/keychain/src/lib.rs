@@ -35,6 +35,8 @@ pub trait KeychainImpl {
 pub struct Keychain {
     #[cfg(target_os = "macos")]
     keychain: MacOSKeychain,
+    #[cfg(target_os = "linux")]
+    keychain: InMemoryKeychain,
 }
 
 impl Keychain {
