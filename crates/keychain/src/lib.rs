@@ -4,8 +4,11 @@
 
 #[cfg(target_os = "macos")]
 use crate::macos::MacOSKeychain;
+#[cfg(target_os = "linux")]
+use in_memory::InMemoryKeychain;
 #[cfg(target_os = "macos")]
 use security_framework::base::Error;
+mod in_memory;
 #[cfg(target_os = "macos")]
 mod macos;
 /// Keychain is a trait that defines the interface for a keychain implementation
@@ -38,6 +41,12 @@ impl Keychain {
     #[cfg(target_os = "macos")]
     pub fn new() -> Self {
         let keychain = MacOSKeychain::new();
+        Self { keychain }
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn new() -> Self {
+        let keychain = InMemoryKeychain::new();
         Self { keychain }
     }
 
@@ -76,6 +85,7 @@ impl<T> From<std::sync::PoisonError<T>> for KeychainError {
     }
 }
 
+#[cfg(target_os = "macos")]
 impl From<Error> for KeychainError {
     fn from(err: Error) -> Self {
         KeychainError::Fatal { error: err.to_string() }
