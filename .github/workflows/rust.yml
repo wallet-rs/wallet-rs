@@ -46,11 +46,6 @@ jobs:
         with:
           command: fmt
           args: --all --check
-      - name: Rust Clippy Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
       - name: License Check
         uses: actions-rs/cargo@v1
         with:
@@ -77,3 +72,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
           fail_ci_if_error: false
+      - name: Rust Clippy Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
