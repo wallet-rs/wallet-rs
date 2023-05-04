@@ -11,11 +11,11 @@ use ios::IOSKeychain;
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 use security_framework::base::Error;
 #[cfg(target_os = "linux")]
-mod in_memory;
+pub mod in_memory;
 #[cfg(target_os = "ios")]
-mod ios;
+pub mod ios;
 #[cfg(target_os = "macos")]
-mod macos;
+pub mod macos;
 
 /// Keychain is a trait that defines the interface for a keychain implementation
 /// It is dependent on the OS, now we only support Linux and macOS

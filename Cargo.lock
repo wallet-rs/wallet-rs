@@ -2745,9 +2745,11 @@ dependencies = [
 name = "wallet-rs"
 version = "0.3.0"
 dependencies = [
+ "eyre",
  "uniffi",
  "uniffi_build",
  "uniffi_macros",
+ "wallet-keychain",
 ]
 
 [[package]]

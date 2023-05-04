@@ -12,7 +12,7 @@ env:
   RUSTFLAGS: -D warnings
   CARGO_TERM_COLOR: always
 jobs:
-  ios-test:
+  ios:
     runs-on: macos-latest
     steps:
       - name: Fetch Head

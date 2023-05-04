@@ -12,9 +12,10 @@ struct WalletCoreApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
-        Button("Print") {
-            print(rustGreeting(name: "Bob"))
-        }
+      Button("Print") {
+        print(rustGreeting(name: "Bob"))
+        print(setKeychain(key: "Bob"))
+      }
     }
   }
 }
