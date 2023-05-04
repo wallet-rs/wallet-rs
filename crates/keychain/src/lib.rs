@@ -8,7 +8,7 @@ use crate::macos::MacOSKeychain;
 use in_memory::InMemoryKeychain;
 #[cfg(target_os = "ios")]
 use ios::IOSKeychain;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "ios"))]
 use security_framework::base::Error;
 #[cfg(target_os = "linux")]
 mod in_memory;
