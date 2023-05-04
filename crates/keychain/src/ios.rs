@@ -37,6 +37,13 @@ impl IOSKeychain {
     }
 }
 
+/// Default implementation for `IOSKeychain`.
+impl Default for IOSKeychain {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Debug implementation for `IOSKeychain`.
 impl Debug for IOSKeychain {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
