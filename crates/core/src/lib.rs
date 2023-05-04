@@ -2,10 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#[cfg(target_os = "linux")]
-use in_memory::InMemoryKeychain;
 #[cfg(any(target_os = "linux", target_os = "macos", target_os = "ios"))]
 use std::sync::Arc;
+#[cfg(target_os = "linux")]
+use wallet_keychain::in_memory::InMemoryKeychain;
 #[cfg(target_os = "ios")]
 use wallet_keychain::ios::IOSKeychain;
 #[cfg(target_os = "macos")]
