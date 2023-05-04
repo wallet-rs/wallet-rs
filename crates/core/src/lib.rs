@@ -29,18 +29,6 @@ pub fn set_keychain(to: String) -> String {
     format!("Hello World, {}!", to)
 }
 
-#[cfg(target_os = "ios")]
-pub fn set_keychain(to: String) -> String {
-    let keychain = Arc::new(IOSKeychain::new());
-    #[allow(clippy::redundant_clone)]
-    let _keychain2 = keychain.clone();
-
-    // Test that we can set and get a value.
-    _keychain2.set("test", &to).unwrap();
-
-    format!("Hello World, {}!", to)
-}
-
 #[cfg(target_os = "linux")]
 pub fn set_keychain(to: String) -> String {
     let keychain = Arc::new(InMemoryKeychain::new());
