@@ -45,6 +45,7 @@
 		A64994CB2A04455900018832 /* WalletCoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WalletCoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A64994CF2A04455900018832 /* WalletCoreUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreUITests.swift; sourceTree = "<group>"; };
 		A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		A64994DE2A04462A00018832 /* WalletCoreSource */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = WalletCoreSource; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				A64994B22A04455800018832 /* WalletCore */,
+				A64994DE2A04462A00018832 /* WalletCoreSource */,
 				A64994C42A04455900018832 /* WalletCoreTests */,
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
