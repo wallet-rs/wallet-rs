@@ -4,10 +4,10 @@
 
 #[cfg(target_os = "macos")]
 use crate::macos::MacOSKeychain;
-#[cfg(target_os = "ios")]
-use in_memory::IOSKeychain;
 #[cfg(target_os = "linux")]
 use in_memory::InMemoryKeychain;
+#[cfg(target_os = "ios")]
+use ios::IOSKeychain;
 #[cfg(target_os = "macos")]
 use security_framework::base::Error;
 #[cfg(target_os = "linux")]
@@ -101,7 +101,7 @@ impl<T> From<std::sync::PoisonError<T>> for KeychainError {
     }
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "ios"))]
 impl From<Error> for KeychainError {
     fn from(err: Error) -> Self {
         KeychainError::Fatal { error: err.to_string() }
