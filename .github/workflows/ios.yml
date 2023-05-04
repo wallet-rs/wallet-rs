@@ -1,0 +1,32 @@
+name: iOS
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+env:
+  RUSTFLAGS: -D warnings
+  CARGO_TERM_COLOR: always
+jobs:
+  ios-test:
+    runs-on: macos-latest
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Install Rust Toolchain (nightly)
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          components: rustfmt, clippy
+      - name: Make iOS
+        run: |
+          make ios
+      - name: Build App
+        working-directory: ./ios
+        run: |
+          xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO

@@ -1,6 +1,6 @@
 STATIC_LIB_NAME := libwallet_core.a
 
-apple:
+ios:
 	@make build-targets
 	@make bindgen-swift
 	@make assemble-frameworks
