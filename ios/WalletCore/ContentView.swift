@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  wallet-rs
+//  WalletCore
 //
 //  Created by Shun Kakinoki on 5/4/23.
 //
