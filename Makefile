@@ -1,4 +1,4 @@
-STATIC_LIB_NAME := libuniffi_wallet_core.a
+STATIC_LIB_NAME := libwallet_core.a
 
 apple:
 	@make build-targets
@@ -8,9 +8,9 @@ apple:
 	@make cp-xcframework-source
 
 build-targets:
-	cargo build --release --target x86_64-apple-ios
-	cargo +nightly build --release --target aarch64-apple-ios-sim
-	cargo build --release --target aarch64-apple-ios
+	cargo build --release --target x86_64-apple-ios --package wallet-rs
+	cargo +nightly build --release --target aarch64-apple-ios-sim --package wallet-rs
+	cargo build --release --target aarch64-apple-ios --package wallet-rs
 
 bindgen-swift:
 	cargo uniffi-bindgen generate crates/core/src/WalletCore.udl --language swift
@@ -29,4 +29,4 @@ xcframework:
 
 cp-xcframework-source:
 	cp -r target/WalletCoreFFI.xcframework ios
-	cp crates/core/src/WalletCore.swift ios/WalletCore/Sources/Generated
+	cp crates/core/src/WalletCore.swift ios/WalletCoreSource/Sources/Generated
