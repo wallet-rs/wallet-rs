@@ -39,7 +39,6 @@ jobs:
           profile: minimal
           toolchain: nightly
           components: rustfmt, clippy
-          target: ${{ matrix.target }}
       - name: Rust Cache
         uses: actions/cache@v3
         continue-on-error: false
