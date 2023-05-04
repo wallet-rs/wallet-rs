@@ -18,12 +18,15 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            test: true
           # - os: ubuntu-latest
           #   target: x86_64-linux-android 
           - os: macos-latest
             target: x86_64-apple-ios
+            test: false
           - os: macos-latest
             target: x86_64-apple-darwin
+            test: true
           # - os: windows-latest
           #   target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
@@ -47,8 +50,8 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
       - name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
@@ -64,17 +67,21 @@ jobs:
         with:
           command: build
           args: --target ${{ matrix.target }}
-      - name: Rust Test
+      - if: matrix.test
+        name: Rust Test
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --target ${{ matrix.target }}
-      - name: Rust Coverage Install
+      - if: matrix.test
+        name: Rust Coverage Install
         uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Rust Coverage
+      - if: matrix.test
+        name: Rust Coverage
         run: |
           cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-      - name: Codecov
+      - if: matrix.test
+        name: Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -94,4 +101,4 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
