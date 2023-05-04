@@ -47,10 +47,10 @@ jobs:
           command: fmt
           args: --all --check
       - name: Rust Clippy Check
-        uses: actions-rs/clippy-check@v1
+        uses: actions-rs/cargo@v1
         with:
-          args: --all --all-features
-          token: ${{ secrets.GITHUB_TOKEN }}
+          command: clippy
+          args: -- -D warnings
       - name: License Check
         uses: actions-rs/cargo@v1
         with:
