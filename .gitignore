@@ -40,3 +40,10 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+## User settings
+xcuserdata/
+
+## Xcode 8 and earlier
+*.xcscmblueprint
+*.xccheckout
