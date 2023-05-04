@@ -14,6 +14,10 @@
 		A64994C62A04455900018832 /* WalletCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64994C52A04455900018832 /* WalletCoreTests.swift */; };
 		A64994D02A04455900018832 /* WalletCoreUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64994CF2A04455900018832 /* WalletCoreUITests.swift */; };
 		A64994D22A04455900018832 /* WalletCoreUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */; };
+		A64994E12A0451E600018832 /* WalletCoreSource in Frameworks */ = {isa = PBXBuildFile; productRef = A64994E02A0451E600018832 /* WalletCoreSource */; };
+		A64994E32A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
+		A64994E42A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
+		A64994E52A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +50,7 @@
 		A64994CF2A04455900018832 /* WalletCoreUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreUITests.swift; sourceTree = "<group>"; };
 		A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A64994DE2A04462A00018832 /* WalletCoreSource */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = WalletCoreSource; sourceTree = "<group>"; };
+		A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WalletCoreFFI.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A64994E12A0451E600018832 /* WalletCoreSource in Frameworks */,
+				A64994E32A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A64994E42A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,6 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A64994E52A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,9 +87,11 @@
 			children = (
 				A64994B22A04455800018832 /* WalletCore */,
 				A64994DE2A04462A00018832 /* WalletCoreSource */,
+				A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */,
 				A64994C42A04455900018832 /* WalletCoreTests */,
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
+				A64994DF2A0451E600018832 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,6 +142,13 @@
 			path = WalletCoreUITests;
 			sourceTree = "<group>";
 		};
+		A64994DF2A0451E600018832 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -147,6 +165,9 @@
 			dependencies = (
 			);
 			name = WalletCore;
+			packageProductDependencies = (
+				A64994E02A0451E600018832 /* WalletCoreSource */,
+			);
 			productName = WalletCore;
 			productReference = A64994B02A04455800018832 /* WalletCore.app */;
 			productType = "com.apple.product-type.application";
@@ -437,7 +458,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ios.WalletCore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -473,7 +496,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ios.WalletCore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -606,6 +631,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A64994E02A0451E600018832 /* WalletCoreSource */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WalletCoreSource;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A64994A82A04455800018832 /* Project object */;
 }
