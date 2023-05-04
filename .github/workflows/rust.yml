@@ -28,38 +28,51 @@ jobs:
           #   target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Install Rust Toolchain (stable)
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: nightly
           components: rustfmt, clippy
           target: ${{ matrix.target }}
-      - uses: Swatinem/rust-cache@v2
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-      - uses: actions-rs/cargo@v1
+      - name: Rust Format Check
+        uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all --check
-      - uses: actions-rs/clippy-check@v1
+      - name: Rust Clippy Check
+        uses: actions-rs/clippy-check@v1
         with:
           args: --all --all-features
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions-rs/cargo@v1
+      - name: License Check
+        uses: actions-rs/cargo@v1
         with:
           command: run
           args: --package mpl-license-checker
-      - uses: actions-rs/cargo@v1
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target ${{ matrix.target }}
-      - uses: actions-rs/cargo@v1
+      - name: Rust Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
           args: --target ${{ matrix.target }}
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - run: |
+      - name: Rust Coverage Install
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Rust Coverage
+        run: |
           cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-      - uses: codecov/codecov-action@v3
+      - name: Codecov
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
