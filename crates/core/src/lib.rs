@@ -8,6 +8,12 @@ pub fn rust_greeting(to: String) -> String {
     format!("Hello World, {}!", to)
 }
 
+pub fn set_keychain(key: String) -> String {
+    let keychain = Keychain::new();
+    let _ = keychain.set(&key, &key);
+    format!("Set {}", key)
+}
+
 pub fn get_keychain(key: String) -> String {
     let keychain = Keychain::new();
     let _ = keychain.get(&key);

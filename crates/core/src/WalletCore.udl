@@ -4,6 +4,7 @@
 
 namespace WalletCore {
     string rust_greeting(string name);
-    string set_keychain(string key);
+    string set_keychain(string key, string value);
+    string get_keychain(string key);
     string delete_keychain(string key);
 };
