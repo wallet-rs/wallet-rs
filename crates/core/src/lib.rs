@@ -2,55 +2,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "ios"))]
-use std::sync::Arc;
-#[cfg(target_os = "linux")]
-use wallet_keychain::in_memory::InMemoryKeychain;
-#[cfg(target_os = "ios")]
-use wallet_keychain::ios::IOSKeychain;
-#[cfg(target_os = "macos")]
-use wallet_keychain::macos::MacOSKeychain;
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "ios"))]
-use wallet_keychain::KeychainImpl;
+use wallet_keychain::Keychain;
 
 pub fn rust_greeting(to: String) -> String {
     format!("Hello World, {}!", to)
 }
 
-#[cfg(target_os = "ios")]
-pub fn set_keychain(to: String) -> String {
-    let keychain = Arc::new(IOSKeychain::new());
-    #[allow(clippy::redundant_clone)]
-    let _keychain2 = keychain.clone();
-
-    // Test that we can set and get a value.
-    _keychain2.set("test", &to).unwrap();
-
-    format!("Hello World, {}!", to)
+pub fn get_keychain(key: String) -> String {
+    let keychain = Keychain::new();
+    let _ = keychain.get(&key);
+    format!("Get {}", key)
 }
 
-#[cfg(target_os = "linux")]
-pub fn set_keychain(to: String) -> String {
-    let keychain = Arc::new(InMemoryKeychain::new());
-    #[allow(clippy::redundant_clone)]
-    let _keychain2 = keychain.clone();
-
-    // Test that we can set and get a value.
-    _keychain2.set("test", &to).unwrap();
-
-    format!("Hello World, {}!", to)
-}
-
-#[cfg(target_os = "macos")]
-pub fn set_keychain(to: String) -> String {
-    let keychain = Arc::new(MacOSKeychain::new());
-    #[allow(clippy::redundant_clone)]
-    let _keychain2 = keychain.clone();
-
-    // Test that we can set and get a value.
-    _keychain2.set("test", &to).unwrap();
-
-    format!("Hello World, {}!", to)
+pub fn delete_keychain(key: String) -> String {
+    let keychain = Keychain::new();
+    let _ = keychain.delete(&key);
+    format!("Delete {}", key)
 }
 
 uniffi_macros::include_scaffolding!("WalletCore");
