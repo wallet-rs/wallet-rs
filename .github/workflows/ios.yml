@@ -27,13 +27,13 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest
+      - name: Make iOS
+        run: |
+          make ios
       - name: Prepare iOS Simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: 'iPhone 13'
-      - name: Make iOS
-        run: |
-          make ios
       - name: Build App
         working-directory: ./ios
         run: |
