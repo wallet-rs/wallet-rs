@@ -23,6 +23,13 @@ impl InMemoryKeychain {
     }
 }
 
+/// Default implementation for `InMemoryKeychain`.
+impl Default for InMemoryKeychain {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Debug implementation for `InMemoryKeychain`.
 impl Debug for InMemoryKeychain {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
