@@ -36,7 +36,7 @@ jobs:
       - name: Run Unit Tests
         working-directory: ./ios
         run: |
-          set -o pipefail && xcodebuild test-without-building -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator,,name=iPhone 14' -resultBundlePath TestResults.xcresult | xcpretty --color --simple
+          set -o pipefail && xcodebuild test-without-building -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator' -resultBundlePath TestResults.xcresult | xcpretty --color --simple
       # - name: Build App
       #   working-directory: ./ios
       #   run: |
