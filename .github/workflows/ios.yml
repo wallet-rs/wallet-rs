@@ -34,8 +34,9 @@ jobs:
       #   run: |
       #     xcversion simulators --install='iOS 16.0'
       - name: Run Unit Tests
+        working-directory: ./ios
         run: |
-          xcodebuild test -project WalletCore.xcodeproj -scheme WalletCoreTests 'platform=iOS Simulator,name=iPhone 14,OS=latest' | xcpretty
+          xcodebuild test -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
       - name: Build App
         working-directory: ./ios
         run: |
