@@ -30,14 +30,15 @@ jobs:
       - name: Make iOS
         run: |
           make ios
-      # - name: Prepare iOS Simulator
-      #   run: |
-      #     xcversion simulators --install='iOS 16.0'
       - name: Run Unit Tests
         working-directory: ./ios
         run: |
-          xcodebuild test -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
-      - name: Build App
-        working-directory: ./ios
-        run: |
-          xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          set -o pipefail && xcodebuild test-without-building -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' -resultBundlePath TestResults.xcresult | xcpretty --color --simple
+      # - name: Build App
+      #   working-directory: ./ios
+      #   run: |
+      #     xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - if: always()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: ios/TestResults.xcresult
