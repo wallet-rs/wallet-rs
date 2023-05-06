@@ -30,10 +30,12 @@ jobs:
       - name: Make iOS
         run: |
           make ios
-      - name: Prepare iOS Simulator
-        uses: futureware-tech/simulator-action@v2
-        with:
-          model: 'iPhone 14'
+      # - name: Prepare iOS Simulator
+      #   run: |
+      #     xcversion simulators --install='iOS 16.0'
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test -project WalletCore.xcodeproj -scheme WalletCoreTests 'platform=iOS Simulator,name=iPhone 14,OS=latest' | xcpretty
       - name: Build App
         working-directory: ./ios
         run: |
