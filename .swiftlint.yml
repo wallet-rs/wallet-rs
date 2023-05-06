@@ -4,7 +4,7 @@ included:
 excluded:
   - crates/core/src/WalletCore.swift
   - ios/WalletCore/.build
-  - ios/WalletCoreSource/Sources/Generated
+  - ios/WalletCoreSource/Sources/Generated/WalletCore.swift
 disabled_rules:
   - unused_optional_binding
   - closure_parameter_position
