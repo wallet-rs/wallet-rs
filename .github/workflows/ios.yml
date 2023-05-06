@@ -33,8 +33,8 @@ jobs:
       - name: Prepare iOS Simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: 'iPhone 13'
+          model: 'iPhone 14'
       - name: Build App
         working-directory: ./ios
         run: |
-          xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
