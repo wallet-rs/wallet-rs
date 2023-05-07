@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-brew-
-      - name: Install dependencies
+      - name: Install Homebrew dependencies
         run: |
           brew update
           brew bundle --file=./Brewfile
