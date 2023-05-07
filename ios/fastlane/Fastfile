@@ -25,7 +25,10 @@ end
 lane :test do
   run_tests(
     scheme: "WalletCoreTests",
-    configuration: "Debug",
-    devices: ["iPhone 8"]
+    devices: ["iPhone 14"],
+    clean: true,
+    reset_simulator: true,
+    parallel_testing: false,
+    testplan: "FullTest"
   )
 end
