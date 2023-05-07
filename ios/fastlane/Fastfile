@@ -24,11 +24,11 @@ end
 
 lane :test do
   run_tests(
-    scheme: "WalletCoreTests",
+    scheme: "WalletCore",
     devices: ["iPhone 14"],
     clean: true,
     reset_simulator: true,
     parallel_testing: false,
-    testplan: "FullTest"
+    testplan: "WalletCore"
   )
 end
