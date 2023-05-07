@@ -26,5 +26,6 @@ lane :test do
   run_tests(
     scheme: "WalletCoreTests",
     configuration: "Debug",
+    devices: ["iPhone 8"]
   )
 end
