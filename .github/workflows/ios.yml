@@ -19,12 +19,17 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Install SwiftLint
+      - name: Cache Homebrew packages
+        uses: actions/cache@v2
+        with:
+          path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+      - name: Install dependencies
         run: |
-          brew install swiftlint
-      - name: Install SwiftFormat
-        run: |
-          brew install swiftformat
+          brew update
+          brew bundle --file=./Brewfile
       - name: Swift Format & Lint
         uses: wearerequired/lint-action@v2
         with:
