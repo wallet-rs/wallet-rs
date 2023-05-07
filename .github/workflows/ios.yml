@@ -30,17 +30,21 @@ jobs:
           profile: minimal
           toolchain: nightly
           components: rustfmt, clippy
+      - name: Install Ruby Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "14.1"
       - name: Make iOS
         run: |
           make ios
       - name: Run Unit Tests
         working-directory: ./ios
         run: |
-          set -o pipefail && xcodebuild test-without-building -project WalletCore.xcodeproj -scheme WalletCoreTests -destination 'platform=iOS Simulator' -resultBundlePath TestResults.xcresult | xcpretty --color --simple
-      # - name: Build App
-      #   working-directory: ./ios
-      #   run: |
-      #     xcodebuild -project WalletCore.xcodeproj -scheme WalletCore -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=latest' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          bundle exec fastlane test
       - if: always()
         uses: kishikawakatsumi/xcresulttool@v1
         with:

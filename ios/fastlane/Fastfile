@@ -23,12 +23,9 @@ platform :ios do
 end
 
 lane :test do
-  gym(
+  run_tests(
     scheme: "WalletCoreTests",
-    clean: true,
-    skip_archive: true,
-    skip_codesigning: true,
     configuration: "Debug",
-    destination: "platform=iOS Simulator,name=iPhone 14"
+    devices: ["iPhone 8"]
   )
 end
