@@ -48,4 +48,4 @@ jobs:
       - if: always()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          path: ios/TestResults.xcresult
+          path: ios/test_result/TestResults.xcresult
