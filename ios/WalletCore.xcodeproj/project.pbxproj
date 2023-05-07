@@ -51,6 +51,7 @@
 		A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A64994DE2A04462A00018832 /* WalletCoreSource */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = WalletCoreSource; sourceTree = "<group>"; };
 		A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WalletCoreFFI.xcframework; sourceTree = "<group>"; };
+		A65074D02A07ADC900E20141 /* WalletCoreTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WalletCoreTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +93,7 @@
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
 				A64994DF2A0451E600018832 /* Frameworks */,
+				A65074CF2A07AD9000E20141 /* Testplans */,
 			);
 			sourceTree = "<group>";
 		};
@@ -147,6 +149,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A65074CF2A07AD9000E20141 /* Testplans */ = {
+			isa = PBXGroup;
+			children = (
+				A65074D02A07ADC900E20141 /* WalletCoreTests.xctestplan */,
+			);
+			path = Testplans;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

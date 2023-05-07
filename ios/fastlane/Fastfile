@@ -29,6 +29,6 @@ lane :test do
     clean: true,
     reset_simulator: true,
     parallel_testing: false,
-    testplan: "WalletCore"
+    testplan: "WalletCoreTests"
   )
 end
