@@ -12,60 +12,104 @@ env:
   RUSTFLAGS: -D warnings
   CARGO_TERM_COLOR: always
 jobs:
-  rust-build:
-    runs-on: ubuntu-latest
+  rust:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            test: true
+          # - os: ubuntu-latest
+          #   target: x86_64-linux-android 
+          - os: macos-latest
+            target: x86_64-apple-ios
+            test: false
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            test: true
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+    env:
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
-      - uses: Swatinem/rust-cache@v2
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Install Rust Toolchain (nightly)
+        uses: actions-rs/toolchain@v1
         with:
-          cache-on-failure: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-  rust-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
-        with:
+          profile: minimal
+          toolchain: nightly
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
         with:
-          cache-on-failure: true
-      - uses: actions-rs/cargo@v1
+          version: "v0.4.0"
+      - name: Rust Cache
+        uses: actions/cache@v3
+        continue-on-error: false
         with:
-          command: check
-          args: --all --all-features
-      - uses: actions-rs/cargo@v1
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
+      - name: Rust Format Check
+        uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all --check
-      - uses: actions-rs/cargo@v1
+      - name: License Check
+        uses: actions-rs/cargo@v1
         with:
           command: run
           args: --package mpl-license-checker
-      - if: ${{ github.event_name == 'pull_request' }}
-        uses: actions-rs/clippy-check@v1
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
         with:
-          args: --all --all-features
-          token: ${{ secrets.GITHUB_TOKEN }}
-  rust-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
-      - uses: Swatinem/rust-cache@v2
-        with:
-          cache-on-failure: true
-      - uses: actions-rs/cargo@v1
+          command: build
+          args: --target ${{ matrix.target }}
+      - if: matrix.test
+        name: Rust Test
+        uses: actions-rs/cargo@v1
         with:
           command: test
-      - uses: taiki-e/install-action@cargo-llvm-cov
-      - run: |
+          args: --target ${{ matrix.target }}
+      - if: matrix.test
+        name: Rust Coverage Install
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - if: matrix.test
+        name: Rust Coverage
+        run: |
           cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-      - uses: codecov/codecov-action@v3
+      - if: matrix.test
+        name: Codecov
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
           fail_ci_if_error: false
+      - name: Rust Clippy Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+      - name: Print sccache stats
+        run: |
+          ${SCCACHE_PATH} --show-stats
+      - name: Save Rust Cache
+        uses: actions/cache/save@v3
+        if: failure()
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}

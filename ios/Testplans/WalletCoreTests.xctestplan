@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "50BB3A0F-1350-47FB-B3CF-85EEC5C4E3FE",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:WalletCore.xcodeproj",
+        "identifier" : "A64994C02A04455900018832",
+        "name" : "WalletCoreTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:WalletCore.xcodeproj",
+        "identifier" : "A64994CA2A04455900018832",
+        "name" : "WalletCoreUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

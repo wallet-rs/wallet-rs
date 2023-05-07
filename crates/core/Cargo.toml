@@ -11,10 +11,13 @@ readme = "README.md"
 
 [lib]
 name = "wallet_core"
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
+eyre = { workspace = true }
 uniffi = { workspace = true }
 uniffi_macros = { workspace = true }
+wallet-keychain = { workspace = true }
 
 [build-dependencies]
 uniffi_build = { workspace = true, features = ["builtin-bindgen"] }

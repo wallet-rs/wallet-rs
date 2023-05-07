@@ -18,7 +18,7 @@ jobs:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
           token: ${{ secrets.KAKI_TOKEN }}
       - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git commit --allow-empty -m "chore: trigger workflow"
           git push

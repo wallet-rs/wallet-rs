@@ -1,0 +1,14 @@
+{
+  "name": "wallet-rs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "swift-format:lint": "swift-format lint --recursive .",
+    "swift-format:format": "swift-format --in-place --recursive .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

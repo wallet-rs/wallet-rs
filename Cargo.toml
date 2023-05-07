@@ -9,6 +9,7 @@ members = [
   "tools/embedded-uniffi-bindgen",
   "tools/mpl-license-checker",
 ]
+
 default-members = ["bin/cli"]
 
 [profile.dev.build-override]
