@@ -17,53 +17,36 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            sccache-path: /home/runner/.cache/sccache
             target: x86_64-unknown-linux-gnu
             test: true
           # - os: ubuntu-latest
           #   target: x86_64-linux-android 
           - os: macos-latest
-            sccache-path: /Users/runner/Library/Caches/Mozilla.sccache
             target: x86_64-apple-ios
             test: false
           - os: macos-latest
-            sccache-path: /Users/runner/Library/Caches/Mozilla.sccache
             target: x86_64-apple-darwin
             test: true
           # - os: windows-latest
           #   target: x86_64-pc-windows-msvc
     env:
-      RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      RUSTV: nightly
-      SCCACHE_CACHE_SIZE: 2G
-      SCCACHE_DIR: ${{ matrix.sccache-path }}
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
-      - name: Install sccache (ubuntu-latest)
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          LINK: https://github.com/mozilla/sccache/releases/download
-          SCCACHE_VERSION: 0.2.13
-        run: |
-          SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-          mkdir -p $HOME/.local/bin
-          curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-          mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-      - name: Install sccache (macos-latest)
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew update
-          brew install sccache
       - name: Install Rust Toolchain (nightly)
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           components: rustfmt, clippy
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+        with:
+          version: "v0.4.0"
       - name: Rust Cache
         uses: actions/cache@v3
         continue-on-error: false
@@ -76,16 +59,6 @@ jobs:
             target/
           key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
-      - name: Save sccache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: ${{ matrix.sccache-path }}
-          key: ${{ matrix.os }}-${{ matrix.target }}-sccache-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-sccache-
-      - name: Start sccache server
-        run: |
-          sccache --start-server
       - name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
@@ -128,11 +101,7 @@ jobs:
           args: -- -D warnings
       - name: Print sccache stats
         run: |
-          sccache --show-stats
-      - name: Stop sccache server
-        if: always()
-        run: |
-          sccache --stop-server || true
+          ${SCCACHE_PATH} --show-stats
       - name: Save Rust Cache
         uses: actions/cache/save@v3
         if: failure()
