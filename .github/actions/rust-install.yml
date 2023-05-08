@@ -1,0 +1,27 @@
+name: Rust Install
+runs:
+  using: "composite"
+  steps:
+    - name: Install Rust Toolchain (nightly)
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        components: rustfmt, clippy
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.3
+      with:
+        version: "v0.4.0"
+    - name: Rust Cache
+      uses: actions/cache@v3
+      continue-on-error: false
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
+        

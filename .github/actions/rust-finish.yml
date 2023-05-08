@@ -1,0 +1,18 @@
+name: Rust Finish
+runs:
+  using: "composite"
+  steps:
+    - name: Print sccache stats
+      run: |
+        ${SCCACHE_PATH} --show-stats
+    - name: Save Rust Cache
+      uses: actions/cache/save@v3
+      if: failure()
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}

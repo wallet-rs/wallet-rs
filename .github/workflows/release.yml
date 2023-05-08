@@ -12,7 +12,8 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
     steps:
-      - id: release
+      - name: Get Release Info
+        id: release
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: rust
@@ -22,18 +23,19 @@ jobs:
           default-branch: main
   cargo:
     needs: release-please
-    # if: ${{ needs.release-please.outputs.release_created == 'false' }}
+    if: ${{ needs.release-please.outputs.release_created == 'false' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
-      - uses: Swatinem/rust-cache@v2
-        with:
-          cache-on-failure: true
-      - uses: actions-rs/cargo@v1
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
         with:
           command: build
-      - uses: katyo/publish-crates@v2
+      - name: Publish Crates
+        uses: katyo/publish-crates@v2
         with:
           ignore-unpublished-changes: true
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
