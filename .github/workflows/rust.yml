@@ -37,28 +37,12 @@ jobs:
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
-      - name: Install Rust Toolchain (nightly)
-        uses: actions-rs/toolchain@v1
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
         with:
-          profile: minimal
-          toolchain: nightly
-          components: rustfmt, clippy
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.3
-        with:
-          version: "v0.4.0"
-      - name: Rust Cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
+          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
       - name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
@@ -99,17 +83,5 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
-      - name: Print sccache stats
-        run: |
-          ${SCCACHE_PATH} --show-stats
-      - name: Save Rust Cache
-        uses: actions/cache/save@v3
-        if: failure()
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Rust Finish
+        uses: ./.github/actions/rust-finish
