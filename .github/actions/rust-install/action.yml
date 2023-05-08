@@ -1,4 +1,27 @@
 name: Rust Install
+# Borrowd from https://github.com/paradigmxyz/reth/pull/1355/files
+inputs:
+  sccache_version:
+    description: Version of sccache to install
+    default: v0.4.0-pre.7
+    required: false
+  sccache_region:
+    description: Region of sccache s3 bucket
+    default: auto
+    required: false
+  sccache_bucket:
+    description: Sccache s3 bucket name
+    default: sccache
+    required: false
+  sccache_endpoint:
+    description: Sccache s3 endpoint
+    required: true
+  sccache_key_id:
+    description: Sccache s3 key id
+    required: true
+  sccache_secret:
+    description: Sccache s3 key secret
+    required: true
 runs:
   using: "composite"
   steps:
@@ -8,10 +31,37 @@ runs:
         profile: minimal
         toolchain: nightly
         components: rustfmt, clippy
-    - name: Run sccache-cache
-      uses: mozilla-actions/sccache-action@v0.0.3
+    - name: Install Rust Utilities
+      uses: taiki-e/install-action@v1
       with:
-        version: "v0.4.0"
+        tool: nextest,cargo-llvm-cov
+    - name: Install Mold
+      uses: rui314/setup-mold@v1
+    - name: Bootstrap Environment (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/${{ inputs.sccache_version }}/sccache-${{ inputs.sccache_version }}-$(uname -m)-unknown-linux-musl.tar.gz 
+        tar -xvzf sccache.tar.gz
+        mv sccache-${{ inputs.sccache_version }}-$(uname -m)-unknown-linux-musl/sccache /home/runner/.cargo/bin/sccache
+        rm -rf sccache*
+        chmod +x /home/runner/.cargo/bin/sccache
+    - name: Bootstrap Environment (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/${{ inputs.sccache_version }}/sccache-${{ inputs.sccache_version }}-x86_64-apple-darwin.tar.gz
+        tar -xvzf sccache.tar.gz
+        mv sccache-${{ inputs.sccache_version }}-x86_64-apple-darwin/sccache /Users/runner/.cargo/bin/sccache
+        rm -rf sccache*
+        chmod +x /Users/runner/.cargo/bin/sccache
+    - name: Bootstrap Environment (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/${{ inputs.sccache_version }}/sccache-${{ inputs.sccache_version }}-x86_64-pc-windows-msvc.tar.gz 
+        tar -xvzf sccache.tar.gz
+        mv sccache-${{ inputs.sccache_version }}-x86_64-pc-windows-msvc/sccache.exe C:/Users/runneradmin/.cargo/bin/sccache.exe
     - name: Rust Cache
       uses: actions/cache@v3
       continue-on-error: false
@@ -24,4 +74,20 @@ runs:
           target/
         key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
-        
+    - name: Set sccache environments
+      shell: bash
+      run: |
+        echo "SCCACHE_IDLE_TIMEOUT=0" >> $GITHUB_ENV
+        echo "SCCACHE_S3_USE_SSL=true" >> $GITHUB_ENV
+        echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
+        echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+    - name: Start sccache
+      shell: bash
+      run: |
+        sccache --start-server
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.sccache_key_id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.sccache_secret }}
+        SCCACHE_BUCKET: ${{ inputs.sccache_bucket }}
+        SCCACHE_ENDPOINT: ${{ inputs.sccache_endpoint }}
+        SCCACHE_REGION: ${{ inputs.sccache_region }}

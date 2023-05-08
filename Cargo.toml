@@ -12,11 +12,6 @@ members = [
 
 default-members = ["bin/cli"]
 
-[profile.dev.build-override]
-opt-level = 3
-
-[profile.release]
-lto = "off"
 
 [workspace.dependencies]
 anyhow = "1.0.69"
