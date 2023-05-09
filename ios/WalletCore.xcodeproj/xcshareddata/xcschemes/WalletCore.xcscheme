@@ -27,12 +27,12 @@
       selectedDebuggerIdentifier = ""
       selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <TestPlans>
+      <WalletCoreTestplans>
          <TestPlanReference
-            reference = "container:Testplans/WalletCoreTests.xctestplan"
+            reference = "container:WalletCoreTestplans/WalletCoreTests.xctestplan"
             default = "YES">
          </TestPlanReference>
-      </TestPlans>
+      </WalletCoreTestplans>
       <Testables>
          <TestableReference
             skipped = "NO"

@@ -93,7 +93,7 @@
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
 				A64994DF2A0451E600018832 /* Frameworks */,
-				A65074CF2A07AD9000E20141 /* Testplans */,
+				A65074CF2A07AD9000E20141 /* WalletCoreTestplans */,
 			);
 			sourceTree = "<group>";
 		};
@@ -151,12 +151,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		A65074CF2A07AD9000E20141 /* Testplans */ = {
+		A65074CF2A07AD9000E20141 /* WalletCoreTestplans */ = {
 			isa = PBXGroup;
 			children = (
 				A65074D02A07ADC900E20141 /* WalletCoreTests.xctestplan */,
 			);
-			path = Testplans;
+			path = WalletCoreTestplans;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
