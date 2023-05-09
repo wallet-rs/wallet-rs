@@ -2,6 +2,9 @@
 uniffi-bindgen = ["run", "--package", "embedded-uniffi-bindgen", "--"]
 mpl-license-checker = ["run", "--package", "mpl-license-checker", "--"]
 
+[build]
+rustc-wrapper = "sccache"
+
 [target.x86_64-apple-darwin]
 rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]
 

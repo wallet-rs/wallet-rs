@@ -29,7 +29,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Testplans/WalletCoreTests.xctestplan"
+            reference = "container:WalletCoreTestplans/WalletCoreTests.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
