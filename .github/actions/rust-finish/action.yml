@@ -5,7 +5,7 @@ runs:
     - name: Print sccache stats
       shell: bash
       run: |
-        sccache --show-stats
+        ${SCCACHE_PATH} --show-stats
     - name: Save Rust Cache
       uses: actions/cache/save@v3
       if: failure()
