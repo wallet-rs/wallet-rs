@@ -24,3 +24,4 @@ runs:
         shell: bash
         run: |
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          echo "RUST_ANDROID_GRADLE_CARGO_COMMAND=$HOME/.cargo/bin" >> $GITHUB_ENV
