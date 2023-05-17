@@ -16,15 +16,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             test: true
           # - os: ubuntu-latest
           #   target: x86_64-linux-android 
-          - os: macos-latest
+          - os: macos-12
             target: x86_64-apple-ios
             test: false
-          - os: macos-latest
+          - os: macos-12
             target: x86_64-apple-darwin
             test: true
           # - os: windows-latest

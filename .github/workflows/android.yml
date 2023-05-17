@@ -17,7 +17,7 @@ jobs:
       RUSTFLAGS: -D warnings
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
@@ -29,6 +29,10 @@ jobs:
           sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
           sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
           sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
       - name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
@@ -57,7 +61,7 @@ jobs:
           report-path: build/reports/*.xml
         continue-on-error: false
   android-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3

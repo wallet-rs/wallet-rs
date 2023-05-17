@@ -8,7 +8,7 @@ permissions:
   pull-requests: write
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
     steps:
@@ -24,7 +24,7 @@ jobs:
   cargo:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'false' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
