@@ -27,7 +27,7 @@ jobs:
         uses: ./.github/actions/java-install
       - name: Gradle Lint
         run: |
-          ./gradlew lint
+          ./gradlew lint --debug
       - uses: yutailang0119/action-android-lint@v3
         with:
           report-path: build/reports/*.xml
@@ -47,4 +47,4 @@ jobs:
         uses: ./.github/actions/java-install
       - name: Gradle Test
         run: |
-          ./gradlew test
+          ./gradlew test --debug
