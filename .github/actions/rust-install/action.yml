@@ -31,7 +31,6 @@ runs:
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        default: true
         override: true
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
