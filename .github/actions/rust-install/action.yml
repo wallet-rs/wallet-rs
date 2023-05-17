@@ -22,7 +22,11 @@ runs:
   using: "composite"
   steps:
     - name: Install Rust Toolchain (nightly)
-      uses: dsherret/rust-toolchain-file@v1
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        override: true
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
       with:
