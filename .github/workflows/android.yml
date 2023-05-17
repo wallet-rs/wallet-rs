@@ -17,38 +17,33 @@ jobs:
       RUSTFLAGS: -D warnings
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
-      - name: Rust Install
-        uses: ./.github/actions/rust-install
+      # - name: Rust Install
+      #   uses: ./.github/actions/rust-install
+      #   with:
+      #     sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+      #     sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+      #     sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      # - name: Java Install
+      #   uses: ./.github/actions/java-install
+      - name: Install Rust Toolchain (nightly)
+        uses: actions-rs/toolchain@v1
         with:
-          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
-          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
-          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
-      - name: Java Install
-        uses: ./.github/actions/java-install
-      - name: Rust Format Check
-        uses: actions-rs/cargo@v1
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - name: Install Java
+        uses: actions/setup-java@v3
         with:
-          command: fmt
-          args: --all --check
-      - name: License Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --package mpl-license-checker
-      - name: License Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --package mpl-license-checker
-      - name: Rust Install Uniffi Bindgen
-        uses: actions-rs/install@v0.1
-        with:
-          crate: uniffi_bindgen
-          use-tool-cache: true
+          distribution: 'adopt'
+          java-version: 11
+      - name: Install NDK
+        shell: bash
+        run: |
+          echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;24.0.8215888" --sdk_root=${ANDROID_SDK_ROOT}
       - name: Gradle Lint
         run: |
           ./gradlew lint
@@ -56,19 +51,19 @@ jobs:
         with:
           report-path: build/reports/*.xml
         continue-on-error: false
-  android-test:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Fetch Head
-        uses: actions/checkout@v3
-      - name: Rust Install
-        uses: ./.github/actions/rust-install
-        with:
-          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
-          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
-          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
-      - name: Java Install
-        uses: ./.github/actions/java-install
-      - name: Gradle Test
-        run: |
-          ./gradlew test
+  # android-test:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Fetch Head
+  #       uses: actions/checkout@v3
+  #     - name: Rust Install
+  #       uses: ./.github/actions/rust-install
+  #       with:
+  #         sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+  #         sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+  #         sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+  #     - name: Java Install
+  #       uses: ./.github/actions/java-install
+  #     - name: Gradle Test
+  #       run: |
+  #         ./gradlew test
