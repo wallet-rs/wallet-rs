@@ -29,16 +29,6 @@ jobs:
           sccache_secret: ${{ secrets.SCCACHE_SECRET }}
       - name: Java Install
         uses: ./.github/actions/java-install
-      - name: Reinstall Rust Toolchain (nightly)
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-      - name: Rust Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
       - name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
