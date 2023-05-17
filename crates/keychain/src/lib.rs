@@ -4,13 +4,13 @@
 
 #[cfg(target_os = "macos")]
 use crate::macos::MacOSKeychain;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "android"))]
 use in_memory::InMemoryKeychain;
 #[cfg(target_os = "ios")]
 use ios::IOSKeychain;
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 use security_framework::base::Error;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "android"))]
 pub mod in_memory;
 #[cfg(target_os = "ios")]
 pub mod ios;
@@ -43,7 +43,7 @@ pub struct Keychain {
     keychain: IOSKeychain,
     #[cfg(target_os = "macos")]
     keychain: MacOSKeychain,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     keychain: InMemoryKeychain,
 }
 
@@ -54,7 +54,7 @@ impl Keychain {
         Self { keychain }
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     pub fn new() -> Self {
         let keychain = InMemoryKeychain::new();
         Self { keychain }
