@@ -20,7 +20,7 @@ runs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-    - name: Add cargo to path
-      shell: bash
-      run: |
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Add cargo to path
+        shell: bash
+        run: |
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
