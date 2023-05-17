@@ -23,4 +23,4 @@ runs:
     - name: Set cargo environments
       shell: bash
       run: |
-        echo "RUST_ANDROID_GRADLE_CARGO_COMMAND=`which cargo`" >> $GITHUB_ENV
+        echo "RUST_ANDROID_GRADLE_CARGO_COMMAND=$HOME/.cargo/bin" >> $GITHUB_ENV
