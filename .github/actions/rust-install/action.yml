@@ -22,11 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Install Rust Toolchain (nightly)
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: nightly
-        components: rustfmt, clippy
+      uses: dsherret/rust-toolchain-file@v1
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
       with:
