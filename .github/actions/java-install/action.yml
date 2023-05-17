@@ -26,3 +26,8 @@ runs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-audit
+          version: latest
+          use-tool-cache: true
