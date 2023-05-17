@@ -62,10 +62,6 @@ jobs:
       - name: Gradle Lint
         run: |
           ./gradlew lint
-      - uses: yutailang0119/action-gradle-lint@v3
-        with:
-          report-path: build/reports/*.xml
-        continue-on-error: false
   gradle-test:
     runs-on: ubuntu-20.04
     steps:
