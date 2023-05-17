@@ -22,6 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Install Rust and Cargo
+      shell: bash
       run: |
         if ! command -v cargo &> /dev/null; then
           curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -30,7 +31,7 @@ runs:
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: nightly
+        default: true
         override: true
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
