@@ -20,3 +20,7 @@ runs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+    - name: Set cargo environments
+      shell: bash
+      run: |
+        echo "RUST_ANDROID_GRADLE_CARGO_COMMAND=`which cargo`" >> $GITHUB_ENV
