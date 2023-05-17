@@ -13,18 +13,37 @@ env:
   CARGO_TERM_COLOR: always
 jobs:
   android-lint:
+    env:
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
-      - name: Java Install
-        uses: ./.github/actions/java-install
+      # - name: Java Install
+      #   uses: ./.github/actions/java-install
       - name: Rust Install
         uses: ./.github/actions/rust-install
         with:
           sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
           sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
           sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Rust Format Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all --check
+      - name: License Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
+          args: --package mpl-license-checker
+      - name: License Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
+          args: --package mpl-license-checker
       - name: Rust Install Uniffi Bindgen
         uses: actions-rs/install@v0.1
         with:
