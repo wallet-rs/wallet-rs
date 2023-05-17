@@ -21,6 +21,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install Rust and Cargo
+      run: |
+        if ! command -v cargo &> /dev/null; then
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+        fi
     - name: Install Rust Toolchain (nightly)
       uses: actions-rs/toolchain@v1
       with:
