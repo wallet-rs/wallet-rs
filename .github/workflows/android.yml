@@ -17,14 +17,14 @@ jobs:
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
+      - name: Java Install
+        uses: ./.github/actions/java-install
       - name: Rust Install
         uses: ./.github/actions/rust-install
         with:
           sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
           sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
           sccache_secret: ${{ secrets.SCCACHE_SECRET }}
-      - name: Java Install
-        uses: ./.github/actions/java-install
       - name: Rust Install Uniffi Bindgen
         uses: actions-rs/install@v0.1
         with:
