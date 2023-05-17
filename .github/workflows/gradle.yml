@@ -1,0 +1,84 @@
+name: Gradle
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+env:
+  RUSTFLAGS: -D warnings
+  CARGO_TERM_COLOR: always
+jobs:
+  gradle-lint:
+    env:
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
+        with:
+          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Java Install
+        uses: ./.github/actions/java-install
+      - name: Reinstall Rust Toolchain (nightly)
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Rust Format Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all --check
+      - name: License Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
+          args: --package mpl-license-checker
+      - name: License Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: run
+          args: --package mpl-license-checker
+      - name: Rust Install Uniffi Bindgen
+        uses: actions-rs/install@v0.1
+        with:
+          crate: uniffi_bindgen
+          use-tool-cache: true
+      - name: Gradle Lint
+        run: |
+          ./gradlew lint
+      - uses: yutailang0119/action-gradle-lint@v3
+        with:
+          report-path: build/reports/*.xml
+        continue-on-error: false
+  gradle-test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
+        with:
+          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Java Install
+        uses: ./.github/actions/java-install
+      - name: Gradle Test
+        run: |
+          ./gradlew test
