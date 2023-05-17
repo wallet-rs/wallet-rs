@@ -26,7 +26,7 @@ runs:
       with:
         profile: minimal
         toolchain: nightly
-        components: rustfmt, clippy
+        override: true
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
       with:
