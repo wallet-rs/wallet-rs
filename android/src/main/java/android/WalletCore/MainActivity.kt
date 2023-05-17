@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
-    Text(text = "Hello ${rustGreeting("Android")}!")
+    Text(text = "Hello Android")
 }
 
 @Preview(showBackground = true)
