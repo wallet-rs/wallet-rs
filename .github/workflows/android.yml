@@ -28,6 +28,8 @@ jobs:
       - name: Gradle Lint
         run: |
           ./gradlew lint
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - uses: yutailang0119/action-android-lint@v3
         with:
           report-path: build/reports/*.xml
