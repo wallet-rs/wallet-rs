@@ -47,6 +47,9 @@ jobs:
           override: true
       - name: Java Install
         uses: ./.github/actions/java-install
+      - name: Gradle Build
+        run: |
+          ./gradlew assembleDebug --stacktrace
       - name: Gradle Test
         run: |
           ./gradlew test
