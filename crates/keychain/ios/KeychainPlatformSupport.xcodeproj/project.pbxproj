@@ -33,6 +33,27 @@
 			remoteGlobalIDString = A600E1852A17014900AB17BF;
 			remoteInfo = KeychainPlatformSupportApp;
 		};
+		A667B5942A17033600DA34C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A64994B02A04455800018832;
+			remoteInfo = WalletCore;
+		};
+		A667B5962A17033600DA34C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A64994C12A04455900018832;
+			remoteInfo = WalletCoreTests;
+		};
+		A667B5982A17033600DA34C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A64994CB2A04455900018832;
+			remoteInfo = WalletCoreUITests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +78,7 @@
 		A6314A442A16EED000402F76 /* KeychainPlatformSupportTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeychainPlatformSupportTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6314A492A16EED000402F76 /* KeychainPlatformSupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPlatformSupportTests.swift; sourceTree = "<group>"; };
 		A6314A602A16EFC300402F76 /* KeychainPlatformSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPlatformSupport.swift; sourceTree = "<group>"; };
+		A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WalletCore.xcodeproj; path = ../../../ios/WalletCore.xcodeproj; sourceTree = "<group>"; };
 		A6B906112A16F75D00AB96D5 /* KeychainPlatformSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainPlatformSupport.h; sourceTree = "<group>"; };
 		A6B906142A16F83100AB96D5 /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keychain.swift; sourceTree = "<group>"; };
 		A6B906152A16F83100AB96D5 /* keychainFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keychainFFI.h; sourceTree = "<group>"; };
@@ -111,6 +133,7 @@
 		A600E1942A17016400AB17BF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -152,6 +175,16 @@
 				A6314A492A16EED000402F76 /* KeychainPlatformSupportTests.swift */,
 			);
 			path = KeychainPlatformSupportTests;
+			sourceTree = "<group>";
+		};
+		A667B58F2A17033600DA34C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A667B5952A17033600DA34C0 /* WalletCore.app */,
+				A667B5972A17033600DA34C0 /* WalletCoreTests.xctest */,
+				A667B5992A17033600DA34C0 /* WalletCoreUITests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		A6B906132A16F83100AB96D5 /* Generated */ = {
@@ -253,6 +286,12 @@
 			mainGroup = A6314A302A16EECF00402F76;
 			productRefGroup = A6314A3B2A16EECF00402F76 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A667B58F2A17033600DA34C0 /* Products */;
+					ProjectRef = A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A600E1762A16F9FA00AB17BF /* KeychainPlatformSupport */,
@@ -261,6 +300,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A667B5952A17033600DA34C0 /* WalletCore.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = WalletCore.app;
+			remoteRef = A667B5942A17033600DA34C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A667B5972A17033600DA34C0 /* WalletCoreTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = WalletCoreTests.xctest;
+			remoteRef = A667B5962A17033600DA34C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A667B5992A17033600DA34C0 /* WalletCoreUITests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = WalletCoreUITests.xctest;
+			remoteRef = A667B5982A17033600DA34C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A600E1842A17014900AB17BF /* Resources */ = {
