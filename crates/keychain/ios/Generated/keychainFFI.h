@@ -46,23 +46,27 @@ typedef struct RustCallStatus {
 // ⚠️ increment the version suffix in all instances of UNIFFI_SHARED_HEADER_V4 in this file.           ⚠️
 #endif // def UNIFFI_SHARED_H
 
-void keychain_3667_init_platform_support(
-      
+void ffi_keychain_5057_KeychainBridge_init_callback(
+      ForeignCallback  _Nonnull callback_stub,
     RustCallStatus *_Nonnull out_status
     );
-RustBuffer ffi_keychain_3667_rustbuffer_alloc(
+void keychain_5057_init_platform_support(
+      uint64_t keychain,
+    RustCallStatus *_Nonnull out_status
+    );
+RustBuffer ffi_keychain_5057_rustbuffer_alloc(
       int32_t size,
     RustCallStatus *_Nonnull out_status
     );
-RustBuffer ffi_keychain_3667_rustbuffer_from_bytes(
+RustBuffer ffi_keychain_5057_rustbuffer_from_bytes(
       ForeignBytes bytes,
     RustCallStatus *_Nonnull out_status
     );
-void ffi_keychain_3667_rustbuffer_free(
+void ffi_keychain_5057_rustbuffer_free(
       RustBuffer buf,
     RustCallStatus *_Nonnull out_status
     );
-RustBuffer ffi_keychain_3667_rustbuffer_reserve(
+RustBuffer ffi_keychain_5057_rustbuffer_reserve(
       RustBuffer buf,int32_t additional,
     RustCallStatus *_Nonnull out_status
     );

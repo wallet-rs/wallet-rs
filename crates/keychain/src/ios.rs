@@ -17,6 +17,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+pub trait KeychainBridge: Send + Sync + Debug {
+    fn get_signing_key(&self, identifier: String) -> Result<String, KeychainError>;
+}
+
 /// Keychain struct for iOS.
 pub struct IOSKeychain {
     // We use an internal mutex to ensure that we only have one thread accessing the keychain at a

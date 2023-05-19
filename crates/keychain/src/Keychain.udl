@@ -1,3 +1,14 @@
-namespace keychain {
-    void init_platform_support();
+[Error]
+interface KeychainError {
+    Fatal(string error); 
+    NotFound(string name);
+};
+
+callback interface KeychainBridge {
+    [Throws=KeychainError]
+    string get_signing_key(string identifier);
+};
+
+namespace keychain_platform_support {
+    void init_platform_support(KeychainBridge keychain);
 };

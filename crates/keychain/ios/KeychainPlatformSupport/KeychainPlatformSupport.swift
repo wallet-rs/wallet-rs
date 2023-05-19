@@ -7,8 +7,14 @@
 
 import Foundation
 
-public final class KeychainPlatformSupport {
-  init() {
-    initPlatformSupport()
+public final class PlatformSupport {
+  public static let shared = KeychainPlatformSupport()
+
+  private let keychain: Keychain
+
+  private init() {
+    self.keychain = Keychain()
+
+    initPlatformSupport(keychain: self.keychain)
   }
 }

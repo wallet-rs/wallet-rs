@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import KeychainPlatformSupport
+
 
 @main
-struct KeychainPlatformSupportAppApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+struct KeychainPlatformSupportApp: App {
+//    private let keychain = KeychainPlatformSupport.shared
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
     }
+  }
 }

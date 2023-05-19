@@ -19,7 +19,7 @@ bindgen-swift:
 	sed -i '' 's/module\ WalletCoreFFI/framework\ module\ WalletCoreFFI/' crates/core/src/WalletCoreFFI.modulemap
 
 bindgen-keychain-swift:
-	cargo uniffi-bindgen generate crates/keychain/src/Keychain.udl --language swift --out-dir crates/keychain/Generated --config crates/keychain/uniffi.toml --no-format
+	cargo uniffi-bindgen generate crates/keychain/src/Keychain.udl --language swift --out-dir crates/keychain/ios/Generated --config crates/keychain/uniffi.toml --no-format
 
 assemble-frameworks:
 	find . -type d -name WalletCoreFFI.framework -exec rm -rf {} \; || echo "rm failed"
