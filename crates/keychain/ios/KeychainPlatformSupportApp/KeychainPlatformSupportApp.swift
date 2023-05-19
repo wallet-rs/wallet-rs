@@ -11,7 +11,7 @@ import KeychainPlatformSupport
 
 @main
 struct KeychainPlatformSupportApp: App {
-//    private let keychain = KeychainPlatformSupport.shared
+    private let keychain = KeychainPlatformSupport.shared
   var body: some Scene {
     WindowGroup {
       ContentView()

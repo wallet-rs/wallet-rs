@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A600E17E2A16FA3B00AB17BF /* keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B906142A16F83100AB96D5 /* keychain.swift */; };
-		A600E17F2A16FAD200AB17BF /* keychainFFI.h in Sources */ = {isa = PBXBuildFile; fileRef = A6B906152A16F83100AB96D5 /* keychainFFI.h */; };
-		A600E1802A16FAD500AB17BF /* KeychainPlatformSupport.h in Sources */ = {isa = PBXBuildFile; fileRef = A6B906112A16F75D00AB96D5 /* KeychainPlatformSupport.h */; };
+		A600E17E2A16FA3B00AB17BF /* keychain_platform_support.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B906142A16F83100AB96D5 /* keychain_platform_support.swift */; };
+		A600E17F2A16FAD200AB17BF /* keychain_platform_supportFFI.h in Sources */ = {isa = PBXBuildFile; fileRef = A6B906152A16F83100AB96D5 /* keychain_platform_supportFFI.h */; };
 		A600E1892A17014900AB17BF /* KeychainPlatformSupportApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A600E1882A17014900AB17BF /* KeychainPlatformSupportApp.swift */; };
 		A600E18B2A17014900AB17BF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A600E18A2A17014900AB17BF /* ContentView.swift */; };
 		A600E18D2A17014B00AB17BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A600E18C2A17014B00AB17BF /* Assets.xcassets */; };
@@ -17,6 +16,7 @@
 		A600E1952A17016500AB17BF /* libKeychainPlatformSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A600E1772A16F9FA00AB17BF /* libKeychainPlatformSupport.a */; };
 		A6314A4A2A16EED000402F76 /* KeychainPlatformSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6314A492A16EED000402F76 /* KeychainPlatformSupportTests.swift */; };
 		A667B5A12A17105B00DA34C0 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667B5A02A17105B00DA34C0 /* Keychain.swift */; };
+		A667B5A32A1719A400DA34C0 /* KeychainPlatformSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6314A602A16EFC300402F76 /* KeychainPlatformSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,9 +82,9 @@
 		A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WalletCore.xcodeproj; path = ../../../ios/WalletCore.xcodeproj; sourceTree = "<group>"; };
 		A667B5A02A17105B00DA34C0 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		A6B906112A16F75D00AB96D5 /* KeychainPlatformSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainPlatformSupport.h; sourceTree = "<group>"; };
-		A6B906142A16F83100AB96D5 /* keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = keychain.swift; path = Generated/keychain.swift; sourceTree = "<group>"; };
-		A6B906152A16F83100AB96D5 /* keychainFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keychainFFI.h; path = Generated/keychainFFI.h; sourceTree = "<group>"; };
-		A6B906162A16F83100AB96D5 /* keychainFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = keychainFFI.modulemap; path = Generated/keychainFFI.modulemap; sourceTree = "<group>"; };
+		A6B906142A16F83100AB96D5 /* keychain_platform_support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = keychain_platform_support.swift; path = Generated/keychain_platform_support.swift; sourceTree = "<group>"; };
+		A6B906152A16F83100AB96D5 /* keychain_platform_supportFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keychain_platform_supportFFI.h; path = Generated/keychain_platform_supportFFI.h; sourceTree = "<group>"; };
+		A6B906162A16F83100AB96D5 /* keychain_platform_supportFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = keychain_platform_supportFFI.modulemap; path = Generated/keychain_platform_supportFFI.modulemap; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,9 +201,9 @@
 		A6B906132A16F83100AB96D5 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				A6B906142A16F83100AB96D5 /* keychain.swift */,
-				A6B906152A16F83100AB96D5 /* keychainFFI.h */,
-				A6B906162A16F83100AB96D5 /* keychainFFI.modulemap */,
+				A6B906142A16F83100AB96D5 /* keychain_platform_support.swift */,
+				A6B906152A16F83100AB96D5 /* keychain_platform_supportFFI.h */,
+				A6B906162A16F83100AB96D5 /* keychain_platform_supportFFI.modulemap */,
 			);
 			name = Generated;
 			sourceTree = "<group>";
@@ -360,10 +360,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A600E1802A16FAD500AB17BF /* KeychainPlatformSupport.h in Sources */,
 				A667B5A12A17105B00DA34C0 /* Keychain.swift in Sources */,
-				A600E17F2A16FAD200AB17BF /* keychainFFI.h in Sources */,
-				A600E17E2A16FA3B00AB17BF /* keychain.swift in Sources */,
+				A667B5A32A1719A400DA34C0 /* KeychainPlatformSupport.swift in Sources */,
+				A600E17F2A16FAD200AB17BF /* keychain_platform_supportFFI.h in Sources */,
+				A600E17E2A16FA3B00AB17BF /* keychain_platform_support.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,7 +410,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = Generated/keychainFFI.h;
+				SWIFT_OBJC_BRIDGING_HEADER = Generated/keychain_platform_supportFFI.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -426,7 +426,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = Generated/keychainFFI.h;
+				SWIFT_OBJC_BRIDGING_HEADER = Generated/keychain_platform_supportFFI.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = NO;

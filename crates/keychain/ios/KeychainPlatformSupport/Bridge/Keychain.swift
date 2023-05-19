@@ -1,6 +1,8 @@
 import Foundation
 
-final class Keychain {
+final class Keychain {}
+
+extension Keychain: KeychainBridge {
   func getSigningKey(identifier: String) throws -> String {
     do {
       return try! "from native swift"

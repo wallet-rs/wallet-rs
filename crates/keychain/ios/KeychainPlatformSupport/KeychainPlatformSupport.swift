@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class PlatformSupport {
+public final class KeychainPlatformSupport {
   public static let shared = KeychainPlatformSupport()
 
   private let keychain: Keychain
