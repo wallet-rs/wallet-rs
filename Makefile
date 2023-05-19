@@ -18,6 +18,9 @@ bindgen-swift:
 	cargo uniffi-bindgen generate crates/core/src/WalletCore.udl --language swift
 	sed -i '' 's/module\ WalletCoreFFI/framework\ module\ WalletCoreFFI/' crates/core/src/WalletCoreFFI.modulemap
 
+bindgen-keychain-swift:
+	cargo uniffi-bindgen generate crates/keychain/src/Keychain.udl --language swift --out-dir crates/keychain/Generated --config crates/keychain/uniffi.toml --no-format
+
 assemble-frameworks:
 	find . -type d -name WalletCoreFFI.framework -exec rm -rf {} \; || echo "rm failed"
 	cd target/x86_64-apple-ios/release && mkdir -p WalletCoreFFI.framework && cd WalletCoreFFI.framework && mkdir Headers Modules Resources && cp ../../../../crates/core/src/WalletCoreFFI.modulemap ./Modules/module.modulemap && cp ../../../../crates/core/src/WalletCoreFFI.h ./Headers/WalletCoreFFI.h && cp ../$(STATIC_LIB_NAME) ./WalletCoreFFI && cp ../../../../crates/core/misc/apple/Info.plist ./Resources

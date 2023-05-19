@@ -108,6 +108,10 @@ impl From<Error> for KeychainError {
     }
 }
 
+pub fn init_platform_support() {
+    println!("Hello World, Keychain!")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
