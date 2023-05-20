@@ -3,16 +3,16 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #![feature(allocator_api)]
 
-// #[cfg(target_os = "ios")]
+#[cfg(target_os = "ios")]
+use once_cell::sync::OnceCell;
+#[cfg(target_os = "ios")]
 use std::sync::Mutex;
-// #[cfg(target_os = "ios")]
-use std::{cell::OnceCell, sync::Mutex};
 
 #[cfg(target_os = "macos")]
 use crate::macos::MacOSKeychain;
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use in_memory::InMemoryKeychain;
-// #[cfg(target_os = "ios")]
+#[cfg(target_os = "ios")]
 use ios::{IOSKeychain, KeychainBridge};
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 use security_framework::base::Error;
@@ -114,16 +114,22 @@ impl From<Error> for KeychainError {
     }
 }
 
+#[cfg(target_os = "ios")]
 static BRIDGE_COLLECTION: OnceCell<BridgeCollection> = OnceCell::new();
 
-// #[cfg(target_os = "ios")]
-#[derive(Debug, Sync)]
+#[cfg(target_os = "ios")]
+#[derive(Debug)]
 struct BridgeCollection {
     keychain: Mutex<Box<dyn KeychainBridge>>,
 }
 
+#[cfg(target_os = "ios")]
 pub fn init_platform_support(keychain: Box<dyn KeychainBridge>) {
     let bridge_collection = BridgeCollection { keychain: Mutex::new(keychain) };
+
+    BRIDGE_COLLECTION
+        .set(bridge_collection)
+        .expect("Cannot call init_platform_support() more than once");
 }
 
 #[cfg(test)]

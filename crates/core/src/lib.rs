@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use wallet_keychain::Keychain;
+use wallet_keychain::*;
 
 pub fn rust_greeting(to: String) -> String {
     format!("Hello World, {}!", to)

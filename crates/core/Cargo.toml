@@ -11,7 +11,7 @@ readme = "README.md"
 
 [lib]
 name = "wallet_core"
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib", "lib"]
 
 [dependencies]
 eyre = { workspace = true }

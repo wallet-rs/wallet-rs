@@ -11,8 +11,13 @@ ios:
 
 build-targets:
 	cargo build --release --target x86_64-apple-ios --package wallet-rs
-	cargo +nightly build --release --target aarch64-apple-ios-sim --package wallet-rs
+	cargo build --release --target aarch64-apple-ios-sim --package wallet-rs
 	cargo build --release --target aarch64-apple-ios --package wallet-rs
+
+build-targets-debug:
+	cargo build --target x86_64-apple-ios --package wallet-rs
+	cargo build --target aarch64-apple-ios-sim --package wallet-rs
+	cargo build --target aarch64-apple-ios --package wallet-rs
 
 bindgen-swift:
 	cargo uniffi-bindgen generate crates/core/src/WalletCore.udl --language swift

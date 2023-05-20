@@ -17,6 +17,7 @@
 		A6314A4A2A16EED000402F76 /* KeychainPlatformSupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6314A492A16EED000402F76 /* KeychainPlatformSupportTests.swift */; };
 		A667B5A12A17105B00DA34C0 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667B5A02A17105B00DA34C0 /* Keychain.swift */; };
 		A667B5A32A1719A400DA34C0 /* KeychainPlatformSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6314A602A16EFC300402F76 /* KeychainPlatformSupport.swift */; };
+		A667B5AC2A171EA400DA34C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A667B5A82A171EA400DA34C0 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,8 @@
 		A6314A602A16EFC300402F76 /* KeychainPlatformSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainPlatformSupport.swift; sourceTree = "<group>"; };
 		A667B58E2A17033600DA34C0 /* WalletCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = WalletCore.xcodeproj; path = ../../../ios/WalletCore.xcodeproj; sourceTree = "<group>"; };
 		A667B5A02A17105B00DA34C0 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		A667B5A82A171EA400DA34C0 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A667B5B02A17235A00DA34C0 /* KeychainPlatformSupportApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainPlatformSupportApp.h; sourceTree = "<group>"; };
 		A6B906112A16F75D00AB96D5 /* KeychainPlatformSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainPlatformSupport.h; sourceTree = "<group>"; };
 		A6B906142A16F83100AB96D5 /* keychain_platform_support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = keychain_platform_support.swift; path = Generated/keychain_platform_support.swift; sourceTree = "<group>"; };
 		A6B906152A16F83100AB96D5 /* keychain_platform_supportFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keychain_platform_supportFFI.h; path = Generated/keychain_platform_supportFFI.h; sourceTree = "<group>"; };
@@ -116,6 +119,8 @@
 		A600E1872A17014900AB17BF /* KeychainPlatformSupportApp */ = {
 			isa = PBXGroup;
 			children = (
+				A667B5B02A17235A00DA34C0 /* KeychainPlatformSupportApp.h */,
+				A667B5A82A171EA400DA34C0 /* AppDelegate.swift */,
 				A600E1882A17014900AB17BF /* KeychainPlatformSupportApp.swift */,
 				A600E18A2A17014900AB17BF /* ContentView.swift */,
 				A600E18C2A17014B00AB17BF /* Assets.xcassets */,
@@ -371,6 +376,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A667B5AC2A171EA400DA34C0 /* AppDelegate.swift in Sources */,
 				A600E18B2A17014900AB17BF /* ContentView.swift in Sources */,
 				A600E1892A17014900AB17BF /* KeychainPlatformSupportApp.swift in Sources */,
 			);
@@ -438,6 +444,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"KeychainPlatformSupportApp/Preview Content\"";
@@ -454,9 +461,13 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../../../target/aarch64-apple-ios/debug/libwallet_core.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=arm64]" = "$(PROJECT_DIR)/../../../target/aarch64-apple-ios-sim/debug/libwallet_core.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=x86_64]" = "$(PROJECT_DIR)/../../../target/x86_64-apple-ios/debug/libwallet_core.a";
 				PRODUCT_BUNDLE_IDENTIFIER = ios.KeychainPlatformSupportApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = KeychainPlatformSupportApp/KeychainPlatformSupportApp.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -467,6 +478,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"KeychainPlatformSupportApp/Preview Content\"";
@@ -483,9 +495,13 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../../../target/aarch64-apple-ios/release/libwallet_core.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=arm64]" = "$(PROJECT_DIR)/../../../target/aarch64-apple-ios-sim/release/libwallet_core.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=x86_64]" = "$(PROJECT_DIR)/../../../target/x86_64-apple-ios/release/libwallet_core.a";
 				PRODUCT_BUNDLE_IDENTIFIER = ios.KeychainPlatformSupportApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = KeychainPlatformSupportApp/KeychainPlatformSupportApp.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -548,6 +564,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";

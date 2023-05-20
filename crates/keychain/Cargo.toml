@@ -13,6 +13,7 @@ readme = "README.md"
 crate-type = ["staticlib", "cdylib", "lib"]
 
 [dependencies]
+once_cell = { version = "1.17.1" }
 thiserror = { workspace = true }
 uniffi = { workspace = true }
 uniffi_macros = { workspace = true }
