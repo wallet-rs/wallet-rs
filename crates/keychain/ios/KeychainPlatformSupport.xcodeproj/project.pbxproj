@@ -21,13 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A600E1962A17016500AB17BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A6314A312A16EECF00402F76 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A600E1762A16F9FA00AB17BF;
-			remoteInfo = KeychainPlatformSupport;
-		};
 		A600E1982A17018400AB17BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A6314A312A16EECF00402F76 /* Project object */;
@@ -244,7 +237,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A600E1972A17016500AB17BF /* PBXTargetDependency */,
 			);
 			name = KeychainPlatformSupportApp;
 			productName = KeychainPlatformSupportApp;
@@ -393,11 +385,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A600E1972A17016500AB17BF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A600E1762A16F9FA00AB17BF /* KeychainPlatformSupport */;
-			targetProxy = A600E1962A17016500AB17BF /* PBXContainerItemProxy */;
-		};
 		A600E1992A17018400AB17BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A600E1852A17014900AB17BF /* KeychainPlatformSupportApp */;
