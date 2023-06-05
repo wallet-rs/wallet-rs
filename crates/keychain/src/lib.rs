@@ -132,6 +132,10 @@ pub fn init_platform_support(keychain: Box<dyn KeychainBridge>) {
         .expect("Cannot call init_platform_support() more than once");
 }
 
+pub fn rust_greeting(to: String) -> String {
+    format!("Hello World, {}!", to)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

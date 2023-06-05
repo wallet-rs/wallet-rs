@@ -10,5 +10,6 @@ callback interface KeychainBridge {
 };
 
 namespace keychain_platform_support {
+    string rust_greeting(string name);
     void init_platform_support(KeychainBridge keychain);
 };
