@@ -28,7 +28,7 @@ jobs:
           echo "Release PRs: ${{ steps.release.outputs.prs }}"
   cargo:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'false' }}
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Head
@@ -50,7 +50,7 @@ jobs:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   pod:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'false' }}
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Head
@@ -72,7 +72,7 @@ jobs:
           pod trunk push crates/signer/WalletRsSigner.podspec
   npm:
       needs: release-please
-      if: ${{ needs.release-please.outputs.release_created == 'false' }}
+      if: ${{ needs.release-please.outputs.release_created == 'true' }}
       runs-on: ubuntu-latest
       steps:
         - name: Fetch Head
