@@ -3,7 +3,6 @@ included:
   - ios/WalletCoreSource/Tests
 excluded:
   - crates/core/src/WalletCore.swift
-  - crates/keychain/ios/Generated/keychain_platform_support.swift
   - ios/WalletCore/.build
   - ios/WalletCoreSource/Sources/Generated/WalletCore.swift
 disabled_rules:

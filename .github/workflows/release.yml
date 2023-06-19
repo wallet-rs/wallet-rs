@@ -43,3 +43,48 @@ jobs:
         with:
           ignore-unpublished-changes: true
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  pod:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
+        with:
+          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Publish to CocoaPod register
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          pod trunk push crates/signer/.podspec
+  npm:
+      needs: release-please
+      if: ${{ needs.release-please.outputs.release_created == 'false' }}
+      runs-on: ubuntu-latest
+      steps:
+        - name: Fetch Head
+          uses: actions/checkout@v3
+        - name: Rust Install
+          uses: ./.github/actions/rust-install
+          with:
+            sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+            sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+            sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+        - name: Rust Build
+          uses: actions-rs/cargo@v1
+          with:
+            command: build
+        - name: Publish to NPM
+          env:
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          run: |
+            cd crates/signer
+            npm publish

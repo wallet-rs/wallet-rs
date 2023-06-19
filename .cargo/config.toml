@@ -1,4 +1,5 @@
 [alias]
+cbindgen = ["run", "--package", "embedded-cbindgen", "--"]
 uniffi-bindgen = ["run", "--package", "embedded-uniffi-bindgen", "--"]
 mpl-license-checker = ["run", "--package", "mpl-license-checker", "--"]
 

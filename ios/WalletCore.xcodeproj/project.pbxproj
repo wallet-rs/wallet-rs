@@ -18,7 +18,6 @@
 		A64994E32A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
 		A64994E42A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
 		A64994E52A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */; };
-		A667B59D2A17037300DA34C0 /* libKeychainPlatformSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A667B59C2A17037300DA34C0 /* libKeychainPlatformSupport.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +53,6 @@
 		A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WalletCoreFFI.xcframework; sourceTree = "<group>"; };
 		A65074D02A07ADC900E20141 /* WalletCoreTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WalletCoreTests.xctestplan; sourceTree = "<group>"; };
 		A667B59B2A17036C00DA34C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		A667B59C2A17037300DA34C0 /* libKeychainPlatformSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libKeychainPlatformSupport.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +62,6 @@
 			files = (
 				A64994E12A0451E600018832 /* WalletCoreSource in Frameworks */,
 				A64994E32A04524F00018832 /* WalletCoreFFI.xcframework in Frameworks */,
-				A667B59D2A17037300DA34C0 /* libKeychainPlatformSupport.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,7 +93,6 @@
 				A64994C42A04455900018832 /* WalletCoreTests */,
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
-				A64994DF2A0451E600018832 /* Frameworks */,
 				A65074CF2A07AD9000E20141 /* WalletCoreTestplans */,
 			);
 			sourceTree = "<group>";
@@ -147,14 +143,6 @@
 				A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */,
 			);
 			path = WalletCoreUITests;
-			sourceTree = "<group>";
-		};
-		A64994DF2A0451E600018832 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				A667B59C2A17037300DA34C0 /* libKeychainPlatformSupport.a */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A65074CF2A07AD9000E20141 /* WalletCoreTestplans */ = {

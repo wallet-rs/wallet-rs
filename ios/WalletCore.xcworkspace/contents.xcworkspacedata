@@ -4,7 +4,4 @@
    <FileRef
       location = "group:WalletCore.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:../crates/keychain/ios/KeychainPlatformSupport.xcodeproj">
-   </FileRef>
 </Workspace>

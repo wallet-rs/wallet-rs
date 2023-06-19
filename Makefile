@@ -19,22 +19,9 @@ build-targets-debug:
 	cargo build --target aarch64-apple-ios-sim --package wallet-rs
 	cargo build --target aarch64-apple-ios --package wallet-rs
 
-build-targets-keychain:
-	cargo build --release --target x86_64-apple-ios --package wallet-keychain
-	cargo build --release --target aarch64-apple-ios-sim --package wallet-keychain
-	cargo build --release --target aarch64-apple-ios --package wallet-keychain
-
-build-targets-debug-keychain:
-	cargo build --target x86_64-apple-ios --package wallet-keychain
-	cargo build --target aarch64-apple-ios-sim --package wallet-keychain
-	cargo build --target aarch64-apple-ios --package wallet-keychain
-
 bindgen-swift:
 	cargo uniffi-bindgen generate crates/core/src/WalletCore.udl --language swift
 	sed -i '' 's/module\ WalletCoreFFI/framework\ module\ WalletCoreFFI/' crates/core/src/WalletCoreFFI.modulemap
-
-bindgen-keychain-swift:
-	cargo uniffi-bindgen generate crates/keychain/src/Keychain.udl --language swift --out-dir crates/keychain/ios/Generated --config crates/keychain/uniffi.toml --no-format
 
 assemble-frameworks:
 	find . -type d -name WalletCoreFFI.framework -exec rm -rf {} \; || echo "rm failed"

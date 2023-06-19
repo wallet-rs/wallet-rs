@@ -4,8 +4,9 @@ resolver = "2"
 members = [
   "bin/cli",
   "crates/core",
-  "crates/keychain",
   "crates/metamask",
+  "crates/signer",
+  "tools/embedded-cbindgen",
   "tools/embedded-uniffi-bindgen",
   "tools/mpl-license-checker",
 ]
@@ -45,5 +46,5 @@ tracing-test = "0.2.4"
 uniffi = "0.23.0"
 uniffi_build = "0.23.0"
 uniffi_macros = "0.23.0"
-wallet-keychain = { version = "0.1.0", path = "crates/keychain", default-features = false }
 wallet-metamask = { version = "0.3.0", path = "crates/metamask", default-features = false }
+wallet-signer = { version = "0.1.0", path = "crates/signer", default-features = false }

@@ -14,7 +14,6 @@ struct WalletCoreApp: App {
       ContentView()
       Button("Print") {
         print(rustGreeting(name: "Bob"))
-        print(setKeychain(key: "Bob"))
       }
     }
   }

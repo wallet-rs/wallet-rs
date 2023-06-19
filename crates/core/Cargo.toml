@@ -17,7 +17,7 @@ crate-type = ["staticlib", "cdylib", "lib"]
 eyre = { workspace = true }
 uniffi = { workspace = true }
 uniffi_macros = { workspace = true }
-wallet-keychain = { workspace = true }
+wallet-signer = { workspace = true }
 
 [build-dependencies]
 uniffi_build = { workspace = true, features = ["builtin-bindgen"] }
