@@ -62,7 +62,7 @@ jobs:
         working-directory: ./ios
         run: |
           bundle exec fastlane test
-  android-check:
+  ios-check:
     if: always()
     needs:
       - ios-lint
