@@ -21,6 +21,11 @@ jobs:
           monorepo-tags: true
           token: ${{ secrets.GITHUB_TOKEN }}
           default-branch: main
+      - name: Print Release Info
+        run: |
+          echo "Release Created: ${{ steps.release.outputs.release_created }}"
+          echo "Release PR: ${{ steps.release.outputs.pr }}"
+          echo "Release PRs: ${{ steps.release.outputs.prs }}"
   cargo:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'false' }}
