@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "workspaces": [
+    "crates/*"
+  ],
   "scripts": {
     "swift-format:lint": "swift-format lint --recursive .",
     "swift-format:format": "swift-format --in-place --recursive .",
