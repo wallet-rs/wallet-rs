@@ -52,6 +52,7 @@
 		A64994DE2A04462A00018832 /* WalletCoreSource */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = WalletCoreSource; sourceTree = "<group>"; };
 		A64994E22A04524F00018832 /* WalletCoreFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WalletCoreFFI.xcframework; sourceTree = "<group>"; };
 		A65074D02A07ADC900E20141 /* WalletCoreTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WalletCoreTests.xctestplan; sourceTree = "<group>"; };
+		A667B59B2A17036C00DA34C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +93,6 @@
 				A64994C42A04455900018832 /* WalletCoreTests */,
 				A64994CE2A04455900018832 /* WalletCoreUITests */,
 				A64994B12A04455800018832 /* Products */,
-				A64994DF2A0451E600018832 /* Frameworks */,
 				A65074CF2A07AD9000E20141 /* WalletCoreTestplans */,
 			);
 			sourceTree = "<group>";
@@ -110,6 +110,7 @@
 		A64994B22A04455800018832 /* WalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				A667B59B2A17036C00DA34C0 /* Info.plist */,
 				A64994B32A04455800018832 /* WalletCoreApp.swift */,
 				A64994B52A04455800018832 /* ContentView.swift */,
 				A64994B72A04455900018832 /* Assets.xcassets */,
@@ -142,13 +143,6 @@
 				A64994D12A04455900018832 /* WalletCoreUITestsLaunchTests.swift */,
 			);
 			path = WalletCoreUITests;
-			sourceTree = "<group>";
-		};
-		A64994DF2A0451E600018832 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A65074CF2A07AD9000E20141 /* WalletCoreTestplans */ = {
@@ -451,6 +445,7 @@
 				DEVELOPMENT_TEAM = HTTZ58G6XS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WalletCore/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -490,6 +485,7 @@
 				DEVELOPMENT_TEAM = HTTZ58G6XS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WalletCore/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

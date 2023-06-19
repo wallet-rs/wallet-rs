@@ -1,0 +1,12 @@
+[package]
+name = "embedded-cbindgen"
+version = "0.1.0"
+authors = ["Shun Kakinoki"]
+edition = "2021"
+
+license = "MPL-2.0"
+
+publish = false
+
+[dependencies]
+cbindgen = { version = "0.24.5" }

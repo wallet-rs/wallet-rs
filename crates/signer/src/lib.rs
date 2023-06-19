@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-namespace WalletCore {
-    string rust_greeting(string name);
-};
+#[no_mangle]
+pub extern "C" fn hello_world() {
+    println!("Hello, world!");
+}

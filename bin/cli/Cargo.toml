@@ -26,4 +26,4 @@ tracing-subscriber = { workspace = true, features = [
 ] }
 tracing-test = { workspace = true, features = ["no-env-filter"] }
 wallet-metamask = { workspace = true }
-wallet-keychain = { workspace = true }
+wallet-signer = { workspace = true }

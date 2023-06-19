@@ -1,0 +1,14 @@
+[package]
+name = "wallet-signer"
+description = "Signer utilities for wallet-rs"
+version = "0.1.0"
+edition = "2021"
+
+authors = ["Shun Kakinoki"]
+license = "MPL-2.0"
+repository = "https://github.com/wallet-rs/wallet-rs"
+readme = "README.md"
+
+[lib]
+crate-type = ["lib", "staticlib"]
+name = "wallet_signer"

@@ -24,6 +24,7 @@ end
 
 lane :test do
   run_tests(
+    workspace: "WalletCore.xcworkspace",
     scheme: "WalletCore",
     devices: ["iPhone 14"],
     clean: true,
