@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-rs-v0.4.0...wallet-rs-v0.5.0) (2023-06-19)
+
+
+### Features
+
+* ini android ([#41](https://github.com/wallet-rs/wallet-rs/issues/41)) ([9998cf4](https://github.com/wallet-rs/wallet-rs/commit/9998cf4a6dd78459dd1eac9a53e6475a7b9d7095))
+
 ## [0.4.0](https://github.com/wallet-rs/wallet-rs/compare/wallet-rs-v0.3.0...wallet-rs-v0.4.0) (2023-05-07)
 
 
