@@ -1,9 +1,10 @@
 {
   "name": "@wallet-rs/signer",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A signer library for wallet-rs",
   "files": [
-    "ios/**/*"
+    "ios/**/*",
+    "WalletRsSigner.podspec"
   ],
   "repository": {
     "type": "git",
