@@ -12,6 +12,10 @@
     {
       "type": "cargo-workspace",
       "merge": false
+    },
+    {
+      "type": "node-workspace",
+      "merge": false
     }
   ]
 }

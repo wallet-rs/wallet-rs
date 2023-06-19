@@ -82,6 +82,10 @@ jobs:
           uses: actions-rs/cargo@v1
           with:
             command: build
+        - name: Install Node
+          uses: actions/setup-node@v1
+          with:
+            registry-url: 'https://registry.npmjs.org'
         - name: Publish to NPM
           env:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
