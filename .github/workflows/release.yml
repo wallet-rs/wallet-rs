@@ -64,7 +64,7 @@ jobs:
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
-          pod trunk push crates/signer/.podspec
+          pod trunk push crates/signer/WalletRsSigner.podspec
   npm:
       needs: release-please
       if: ${{ needs.release-please.outputs.release_created == 'false' }}
