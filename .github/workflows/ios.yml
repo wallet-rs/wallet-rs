@@ -67,7 +67,7 @@ jobs:
     needs:
       - ios-lint
       - ios-test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Check All Green
         uses: re-actors/alls-green@release/v1
