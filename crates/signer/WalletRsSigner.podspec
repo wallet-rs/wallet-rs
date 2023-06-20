@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { "author" => "shunkakinoki@gmail.com" }
   s.platforms    = { :ios => "15.0" }
-  s.source       = { :git => "https://github.com/wallet-rs/wallet-rs.git", :tag => "wallet-metamask-v#{s.version}" }
+  s.source       = { :git => "https://github.com/wallet-rs/wallet-rs.git", :tag => "wallet-signer-v#{s.version}" }
 
   s.source_files = "ios/*.h"
   s.public_header_files = "ios/*.h"
