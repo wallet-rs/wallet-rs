@@ -1,11 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "packages": {
+    "bin/cli": {
+      "release-type": "rust"
+    },
     "crates/core": {
       "release-type": "rust"
     },
     "crates/metamask": {
       "release-type": "rust"
+    },
+    "crates/signer": {
+      "release-type": "rust"
+    },
+    "@wallet-rs/signer": {
+      "release-type": "node"
     }
   },
   "plugins": [
