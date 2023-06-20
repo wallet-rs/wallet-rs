@@ -7,11 +7,11 @@ Pod::Spec.new do |spec|
   spec.author       = { "author" => "shunkakinoki@gmail.com" }
 
   spec.platforms    = { :ios => "15.0" }
-  spec.source       = { :git => "https://github.com/wallet-rs/wallet-rs.git" }
+  spec.source       = { :git => "https://github.com/wallet-rs/wallet-rs.git", :tag => "feat/ini-binaries" }
   
-  spec.source_files = "ios/*.h"
-  spec.public_header_files = "ios/*.h"
-  spec.preserve_paths = "ios/*.h"
-  spec.vendored_libraries = "ios/libwallet_signer.a"
-  spec.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/#{spec.name}/ios/**" }
+  spec.source_files = "lib/*.h"
+  spec.public_header_files = "lib/*.h"
+  spec.preserve_paths = "lib/*.h"
+  spec.vendored_libraries = "lib/libwallet_signer.a"
+  spec.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/#{spec.name}/lib/**" }
 end
