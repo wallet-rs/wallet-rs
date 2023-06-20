@@ -46,7 +46,7 @@ jobs:
   npm:
       needs: release-please
       if: ${{ needs.release-please.outputs.release_created == 'true' }}
-      runs-on: ubuntu-latest
+      runs-on: macos-latest
       steps:
         - name: Fetch Head
           uses: actions/checkout@v3
