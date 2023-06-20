@@ -30,7 +30,7 @@
       "type": "linked-versions",
       "groupName": "signer",
       "components": [
-        "crates/signer", "@wallet-rs/signer"
+        "crates/signer", "packages/signer"
       ]
     }
   ]
