@@ -1,4 +1,4 @@
-name: Rust Install
+name: Java Install
 runs:
   using: "composite"
   steps:
