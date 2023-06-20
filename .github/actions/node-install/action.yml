@@ -1,0 +1,11 @@
+name: Node Install
+runs:
+  using: "composite"
+  steps:
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
