@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "workspaces": [
-    "crates/*"
+    "packages/*"
   ],
   "scripts": {
     "swift-format:lint": "swift-format lint --recursive .",

@@ -3,5 +3,5 @@
   "crates/metamask": "0.3.0",
   "crates/core": "0.5.0",
   "crates/signer": "0.1.0",
-  "@wallet-rs/signer": "0.1.0"
+  "packages/signer": "0.1.0"
 }
