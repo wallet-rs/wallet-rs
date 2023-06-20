@@ -70,8 +70,6 @@ jobs:
           with:
             registry-url: 'https://registry.npmjs.org'
         - name: Publish to NPM
+          uses: author/action-publish@stable
           env:
-            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          run: |
-            cd packages/signer
-            npm publish
+            REGISTRY_TOKEN: "${{ secrets.NPM_TOKEN }}"
