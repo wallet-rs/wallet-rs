@@ -37,3 +37,6 @@ xcframework:
 cp-xcframework-source:
 	cp -r target/WalletCoreFFI.xcframework ios
 	cp crates/core/src/WalletCore.swift ios/WalletCoreSource/Sources/Generated
+
+signer:
+	cd crates/signer && make
