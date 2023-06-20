@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "rome:format": "rome format . --write",
     "lint": "rome ci .",
     "swift-format:lint": "swift-format lint --recursive .",
     "swift-format:format": "swift-format --in-place --recursive .",

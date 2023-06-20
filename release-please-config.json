@@ -29,9 +29,7 @@
     {
       "type": "linked-versions",
       "groupName": "signer",
-      "components": [
-        "crates/signer", "packages/signer"
-      ]
+      "components": ["crates/signer", "packages/signer"]
     }
   ]
 }

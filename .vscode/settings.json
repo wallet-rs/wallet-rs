@@ -1,4 +1,4 @@
 {
-    "swiftlint.autoLintWorkspace": false,
-    "swiftlint.enable": false
+  "swiftlint.autoLintWorkspace": false,
+  "swiftlint.enable": false
 }
