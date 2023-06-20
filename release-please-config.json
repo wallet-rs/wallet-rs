@@ -25,6 +25,13 @@
     {
       "type": "node-workspace",
       "merge": false
+    },
+    {
+      "type": "linked-versions",
+      "groupName": "signer",
+      "components": [
+        "crates/signer", "@wallet-rs/signer"
+      ]
     }
   ]
 }
