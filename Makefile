@@ -2,6 +2,8 @@ STATIC_LIB_NAME := libwallet_core.a
 
 .PHONY: ios
 
+all: ios signer
+
 ios:
 	@make build-targets
 	@make bindgen-swift
