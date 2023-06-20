@@ -60,6 +60,9 @@ jobs:
           uses: actions-rs/cargo@v1
           with:
             command: build
+        - name: Run Make
+          run: |
+            make
         - name: Install Node
           uses: actions/setup-node@v1
           with:

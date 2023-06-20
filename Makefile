@@ -2,6 +2,8 @@ STATIC_LIB_NAME := libwallet_core.a
 
 .PHONY: ios
 
+all: ios signer
+
 ios:
 	@make build-targets
 	@make bindgen-swift
@@ -37,3 +39,6 @@ xcframework:
 cp-xcframework-source:
 	cp -r target/WalletCoreFFI.xcframework ios
 	cp crates/core/src/WalletCore.swift ios/WalletCoreSource/Sources/Generated
+
+signer:
+	cd crates/signer && make
