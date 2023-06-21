@@ -1,5 +1,5 @@
 name: Rust Install
-# Borrowd from https://github.com/paradigmxyz/reth/pull/1355/files
+# Borrowed from https://github.com/paradigmxyz/reth/pull/1355/files
 inputs:
   sccache_region:
     description: Region of sccache s3 bucket

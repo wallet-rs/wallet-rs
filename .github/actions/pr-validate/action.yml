@@ -1,8 +1,14 @@
 name: PR Validate
+inputs:
+  github_token:
+    description: Github token
+    required: true
 runs:
   using: "composite"
   steps:
       - name: Validate PR title
         uses: amannn/action-semantic-pull-request@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ inputs.github_token }}
+        with:
+          wip: true
