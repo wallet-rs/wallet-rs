@@ -28,7 +28,7 @@ jobs:
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
     needs: release-please
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
