@@ -58,7 +58,7 @@ jobs:
       - name: Node Install
         uses: ./.github/actions/node-install
       - name: Node Build
-        uses: |
+        run: |
           pnpm run build
       - name: Rust Build
         uses: actions-rs/cargo@v1
