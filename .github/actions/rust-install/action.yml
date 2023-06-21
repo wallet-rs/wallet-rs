@@ -64,3 +64,9 @@ runs:
         SCCACHE_BUCKET: ${{ inputs.sccache_bucket }}
         SCCACHE_ENDPOINT: ${{ inputs.sccache_endpoint }}
         SCCACHE_REGION: ${{ inputs.sccache_region }}
+    - if: runner.os == 'Linux'
+      shell: bash
+      name: Install missing dependencies
+      run: |
+        sudo apt update && \
+        sudo apt install -y libgtk-3-dev
