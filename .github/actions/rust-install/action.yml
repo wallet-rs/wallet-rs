@@ -1,5 +1,5 @@
 name: Rust Install
-# Borrowd from https://github.com/paradigmxyz/reth/pull/1355/files
+# Borrowed from https://github.com/paradigmxyz/reth/pull/1355/files
 inputs:
   sccache_region:
     description: Region of sccache s3 bucket
@@ -64,3 +64,8 @@ runs:
         SCCACHE_BUCKET: ${{ inputs.sccache_bucket }}
         SCCACHE_ENDPOINT: ${{ inputs.sccache_endpoint }}
         SCCACHE_REGION: ${{ inputs.sccache_region }}
+    - if: runner.os == 'Linux'
+      name: Install missing dependencies
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: libwebkit2gtk-4.0-dev build-essential curl wget libglib2.0-dev libssl-dev libgtk-3-dev libappindicator3-dev librsvg2-dev libappindicator-dev libgdk3.0-cil libatk1.0-dev

@@ -4,10 +4,14 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "TAMAGUI_TARGET=native npx expo start -c",
-    "android": "TAMAGUI_TARGET=native npx expo run:android",
-    "ios": "TAMAGUI_TARGET=native npx expo run:ios",
-    "eject": "npx expo eject"
+    "dev": "expo start",
+    "build": "expo export --output-dir ./build --platform all",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eas-build-pre-install": "npm install --global pnpm@7.x",
+    "eas-build-post-install": "pnpm run -w build:mobile"
   },
   "dependencies": {
     "@babel/runtime": "^7.18.9",
@@ -16,7 +20,7 @@
     "@types/react-native": "^0.71.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "burnt": "^0.10.0",
-    "expo": "^48.0.7",
+    "expo": "^48.0.19",
     "expo-constants": "^14.2.1",
     "expo-dev-client": "^2.1.5",
     "expo-font": "^11.1.1",
@@ -38,7 +42,6 @@
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@expo/metro-config": "^0.3.21",
-    "@tamagui/babel-plugin": "latest",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "metro-minify-terser": "^0.74.1",
     "typescript": "^5.1.3"

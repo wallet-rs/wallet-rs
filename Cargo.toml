@@ -2,6 +2,7 @@
 resolver = "2"
 
 members = [
+  "apps/tauri/src-tauri",
   "bin/cli",
   "crates/core",
   "crates/metamask",
