@@ -1,6 +1,8 @@
 name: PR
 on:
   pull_request_target:
+permissions:
+  pull-requests: read
 jobs:
   pr-lint:
     name: PR
