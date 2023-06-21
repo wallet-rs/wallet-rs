@@ -6,6 +6,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
+env:
+  RUSTFLAGS: -D warnings
+  CARGO_TERM_COLOR: always
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -20,6 +23,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           default-branch: main
   cargo:
+    env:
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     needs: release-please
     runs-on: ubuntu-latest
     steps:
@@ -41,29 +48,34 @@ jobs:
           ignore-unpublished-changes: true
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
   npm:
-      needs: release-please
-      runs-on: macos-latest
-      steps:
-        - name: Fetch Head
-          uses: actions/checkout@v3
-        - name: Rust Install
-          uses: ./.github/actions/rust-install
-          with:
-            sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
-            sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
-            sccache_secret: ${{ secrets.SCCACHE_SECRET }}
-        - name: Rust Build
-          uses: actions-rs/cargo@v1
-          with:
-            command: build
-        - name: Run Make
-          run: |
-            make
-        - name: Install Node
-          uses: actions/setup-node@v1
-          with:
-            registry-url: 'https://registry.npmjs.org'
-        - name: Publish to NPM
-          uses: author/action-publish@stable
-          env:
-            REGISTRY_TOKEN: "${{ secrets.NPM_TOKEN }}"
+    env:
+      RUSTFLAGS: -D warnings
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+    needs: release-please
+    runs-on: macos-latest
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+      - name: Rust Install
+        uses: ./.github/actions/rust-install
+        with:
+          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
+          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
+          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
+      - name: Rust Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Run Make
+        run: |
+          make
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://registry.npmjs.org'
+      - name: Publish to NPM
+        continue-on-error: true
+        uses: author/action-publish@stable
+        env:
+          REGISTRY_TOKEN: "${{ secrets.NPM_TOKEN }}"

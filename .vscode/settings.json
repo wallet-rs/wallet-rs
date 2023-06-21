@@ -1,4 +1,6 @@
 {
   "swiftlint.autoLintWorkspace": false,
-  "swiftlint.enable": false
+  "swiftlint.enable": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
