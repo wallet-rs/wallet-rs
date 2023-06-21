@@ -8,8 +8,10 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
     "rome:format": "rome format . --write",
-    "lint": "rome ci .",
     "swift-format:lint": "swift-format lint --recursive .",
     "swift-format:format": "swift-format --in-place --recursive .",
     "test": "echo \"Error: no test specified\""
