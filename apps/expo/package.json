@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "expo start",
-    "lint": "eslint --ext js,ts,tsx .",
     "build": "expo export --output-dir ./build --platform all",
     "start": "expo start",
     "android": "expo start --android",
