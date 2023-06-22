@@ -10,5 +10,3 @@ runs:
         uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ inputs.github_token }}
-        with:
-          wip: true
