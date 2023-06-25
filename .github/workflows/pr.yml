@@ -5,6 +5,10 @@ on:
       - opened
       - edited
       - synchronize
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 permissions:
   pull-requests: read
 jobs:

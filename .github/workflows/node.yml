@@ -5,6 +5,12 @@ on:
       - main
   pull_request:
   merge_group:
+  workflow_call:
+    secrets:
+      TURBO_TEAM:
+        required: true
+      TURBO_TOKEN:
+        required: true
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true

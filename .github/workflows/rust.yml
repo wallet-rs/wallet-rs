@@ -5,6 +5,16 @@ on:
       - main
   pull_request:
   merge_group:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+      SCCACHE_ENDPOINT:
+        required: true
+      SCCACHE_KEY_ID:
+        required: true
+      SCCACHE_SECRET:
+        required: true
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
