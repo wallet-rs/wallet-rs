@@ -1,6 +1,10 @@
 name: PR
 on:
   pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
   workflow_call:
     secrets:
       GITHUB_TOKEN:
