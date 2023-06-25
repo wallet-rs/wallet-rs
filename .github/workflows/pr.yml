@@ -1,6 +1,10 @@
 name: PR
 on:
   pull_request_target:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 permissions:
   pull-requests: read
 jobs:
