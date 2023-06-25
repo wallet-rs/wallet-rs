@@ -32,7 +32,7 @@ jobs:
           ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3
         with:
-          report-path: build/reports/*.xml
+          report-path: android/build/reports/*.xml
         continue-on-error: false
   android-test:
     runs-on: ubuntu-20.04
