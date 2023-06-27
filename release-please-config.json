@@ -12,24 +12,12 @@
     },
     "crates/signer": {
       "release-type": "rust"
-    },
-    "packages/signer": {
-      "release-type": "node"
     }
   },
   "plugins": [
     {
       "type": "cargo-workspace",
       "merge": false
-    },
-    {
-      "type": "node-workspace",
-      "merge": false
-    },
-    {
-      "type": "linked-versions",
-      "groupName": "signer",
-      "components": ["crates/signer", "packages/signer"]
     }
   ]
 }

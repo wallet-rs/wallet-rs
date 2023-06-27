@@ -10,6 +10,7 @@ jobs:
   approve:
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/approve')
+    timeout-minutes: 3
     steps:
       - name: Get PR Branch
         uses: xt0rted/pull-request-comment-branch@v1
