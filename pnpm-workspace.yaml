@@ -1,3 +1,6 @@
 packages:
+  - "android"
   - "apps/*"
+  - "crates"
+  - "ios"
   - "packages/*"

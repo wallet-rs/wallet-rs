@@ -21,6 +21,12 @@ importers:
         specifier: ^1.10.5
         version: 1.10.5
 
+  android:
+    dependencies:
+      crates:
+        specifier: workspace:*
+        version: link:../crates
+
   apps/tauri:
     dependencies:
       '@tauri-apps/api':
@@ -36,6 +42,14 @@ importers:
       vite:
         specifier: ^4.3.9
         version: 4.3.9
+
+  crates: {}
+
+  ios:
+    dependencies:
+      crates:
+        specifier: workspace:*
+        version: link:../crates
 
   packages/signer: {}
 
