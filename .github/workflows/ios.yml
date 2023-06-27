@@ -59,6 +59,8 @@ jobs:
     needs:
       - ios-turbo
     runs-on: macos-latest
+    timeout-minutes: 90
+    if: needs.ios-turbo.outputs.trigger == 'true'
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
