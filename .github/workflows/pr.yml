@@ -9,8 +9,8 @@ permissions:
   pull-requests: read
 jobs:
   pr-lint:
-    name: PR
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
