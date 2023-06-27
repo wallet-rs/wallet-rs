@@ -3,4 +3,3 @@ packages:
   - "apps/*"
   - "crates"
   - "ios"
-  - "packages/*"

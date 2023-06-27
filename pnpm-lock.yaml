@@ -51,8 +51,6 @@ importers:
         specifier: workspace:*
         version: link:../crates
 
-  packages/signer: {}
-
 packages:
 
   /@babel/runtime@7.22.5:
