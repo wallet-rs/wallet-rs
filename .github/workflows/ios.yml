@@ -23,7 +23,7 @@ jobs:
         id: turbo
         uses: ./.github/actions/turbo-trigger
         with:
-          workspace: "@lightdotso/ios"
+          workspace: "ios"
   ios-lint:
     needs:
       - ios-turbo

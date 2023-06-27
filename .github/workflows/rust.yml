@@ -28,7 +28,7 @@ jobs:
         id: turbo
         uses: ./.github/actions/turbo-trigger
         with:
-          workspace: "@lightdotso/crates"
+          workspace: "crates"
   rust:
     strategy:
       matrix:
