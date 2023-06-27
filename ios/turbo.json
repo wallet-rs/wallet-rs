@@ -1,0 +1,20 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "WalletCore/**",
+        "WalletCore.xcodeproj/**",
+        "WalletCore.xcworkspace/**",
+        "WalletCoreCore/**",
+        "WalletCoreTestplans/**",
+        "WalletCoreTests/**",
+        "WalletCoreUITests/**"
+      ],
+      "outputs": ["build/**"]
+    }
+  }
+}

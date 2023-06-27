@@ -12,10 +12,27 @@ env:
   RUSTFLAGS: -D warnings
   CARGO_TERM_COLOR: always
 jobs:
-  android-lint:
-    env:
-      RUSTFLAGS: -D warnings
+  android-turbo:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      trigger: ${{ steps.turbo.outputs.trigger }}
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Turbo Trigger
+        id: turbo
+        uses: ./.github/actions/turbo-trigger
+        with:
+          workspace: "android"
+  android-lint:
+    needs:
+      - android-turbo
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: needs.android-turbo.outputs.trigger == 'true'
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
@@ -32,10 +49,14 @@ jobs:
           ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3
         with:
-          report-path: android/build/reports/*.xml
+          report-path: build/reports/*.xml
         continue-on-error: false
   android-test:
-    runs-on: ubuntu-20.04
+    needs:
+      - android-turbo
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: needs.android-turbo.outputs.trigger == 'true'
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
@@ -54,13 +75,16 @@ jobs:
         run: |
           ./gradlew test
   android-check:
-    if: always()
     needs:
+      - android-turbo
       - android-lint
       - android-test
+    if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Check All Green
         uses: re-actors/alls-green@release/v1
         with:
+          allowed-skips: android-lint,android-test
           jobs: ${{ toJSON(needs) }}

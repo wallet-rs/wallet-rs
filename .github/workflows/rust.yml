@@ -14,6 +14,21 @@ env:
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
 jobs:
+  rust-turbo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      trigger: ${{ steps.turbo.outputs.trigger }}
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Turbo Trigger
+        id: turbo
+        uses: ./.github/actions/turbo-trigger
+        with:
+          workspace: "crates"
   rust:
     strategy:
       matrix:
@@ -35,7 +50,11 @@ jobs:
       RUSTFLAGS: -D warnings
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
+    needs:
+      - rust-turbo
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    if: needs.rust-turbo.outputs.trigger == 'true'
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
@@ -95,10 +114,13 @@ jobs:
   rust-check:
     if: always()
     needs:
+      - rust-turbo
       - rust
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Check All Green
         uses: re-actors/alls-green@release/v1
         with:
+          allowed-skips: rust
           jobs: ${{ toJSON(needs) }}

@@ -8,12 +8,31 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-env:
-  RUSTFLAGS: -D warnings
-  CARGO_TERM_COLOR: always
 jobs:
-  ios-lint:
+  ios-turbo:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      trigger: ${{ steps.turbo.outputs.trigger }}
+    steps:
+      - name: Fetch Head
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Turbo Trigger
+        id: turbo
+        uses: ./.github/actions/turbo-trigger
+        with:
+          workspace: "ios"
+  ios-lint:
+    needs:
+      - ios-turbo
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: needs.ios-turbo.outputs.trigger == 'true'
+    env:
+      RUSTFLAGS: -D warnings
+      CARGO_TERM_COLOR: always
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3
@@ -37,6 +56,8 @@ jobs:
         run: |
           swift-format lint --recursive .
   ios-test:
+    needs:
+      - ios-turbo
     runs-on: macos-latest
     steps:
       - name: Fetch Head
@@ -65,11 +86,14 @@ jobs:
   ios-check:
     if: always()
     needs:
+      - ios-turbo
       - ios-lint
       - ios-test
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Check All Green
         uses: re-actors/alls-green@release/v1
         with:
+          allowed-skips: ios-lint,ios-test
           jobs: ${{ toJSON(needs) }}
