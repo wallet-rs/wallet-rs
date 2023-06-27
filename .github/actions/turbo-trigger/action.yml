@@ -11,15 +11,9 @@ runs:
   using: "composite"
   steps:
     - name: Fetch Head
-      if: github.event_name == 'push' || github.event_name == 'pull_request'
       uses: actions/checkout@v3
       with:
-        fetch-depth: 3
-    - name: Fetch Head
-      if: github.event_name == 'merge_group'
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.base_ref }}
+        fetch-depth: 2
     - name: Turbo Pull Request
       id: turbo
       shell: bash
