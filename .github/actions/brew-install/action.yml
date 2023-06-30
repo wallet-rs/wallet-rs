@@ -15,4 +15,5 @@ runs:
         shell: bash
         run: |
           brew update
+          brew upgrade
           brew bundle --file=./Brewfile
