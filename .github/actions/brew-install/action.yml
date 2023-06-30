@@ -1,0 +1,17 @@
+name: Brew Install
+runs:
+  using: "composite"
+  steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Cache Homebrew packages
+        uses: actions/cache@v2
+        with:
+          path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+      - name: Install Homebrew dependencies
+        run: |
+          brew update
+          brew bundle --file=./Brewfile
