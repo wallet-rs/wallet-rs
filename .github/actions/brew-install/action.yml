@@ -14,5 +14,4 @@ runs:
       - name: Install Homebrew dependencies
         shell: bash
         run: |
-          brew update
           brew bundle --file=./Brewfile
