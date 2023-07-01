@@ -16,3 +16,5 @@ runs:
         run: |
           brew update --preinstall
           brew bundle --file=./Brewfile
+        env:
+          HOMEBREW_NO_INSTALL_CLEANUP: true
