@@ -8,7 +8,7 @@ runs:
         uses: actions/cache@v2
         with:
           path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor
-          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile.lock.json') }}
+          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
           restore-keys: |
             ${{ runner.os }}-brew-
       - name: Install Homebrew dependencies
