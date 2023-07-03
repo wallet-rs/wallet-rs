@@ -83,7 +83,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }} --workspace
       - name: Deny Check
         run: |
           cargo deny check
@@ -92,7 +92,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }} --workspace
       - if: matrix.test
         name: Rust Coverage Install
         uses: taiki-e/install-action@cargo-llvm-cov
@@ -111,7 +111,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: --workspace -- -D warnings
       - name: Rust Finish
         uses: ./.github/actions/rust-finish
   rust-check:
