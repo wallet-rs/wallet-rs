@@ -30,7 +30,7 @@ runs:
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
       with:
-        tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt
+        tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt,cargo-deny
     - name: Install Mold
       uses: rui314/setup-mold@v1
     - name: Run sccache-cache
