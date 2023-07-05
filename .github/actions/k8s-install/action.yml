@@ -1,0 +1,25 @@
+name: Kubernetes Install
+inputs:
+  google_credentials:
+    description: Google Cloud Platform credentials
+    required: true
+  gke_cluster_name:
+    description: Cluster name for GKE
+    required: true
+  gke_cluster_region:
+    description: Cluster region for GKE
+    required: true
+runs:
+  using: "composite"
+  steps:
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Install GCP Credentials
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ inputs.google_credentials }}
+      - name: Install GKE Credentials
+        uses: "google-github-actions/get-gke-credentials@v1"
+        with:
+          cluster_name: ${{ inputs.gke_cluster_name }}
+          location: ${{ inputs.gke_cluster_region }}
