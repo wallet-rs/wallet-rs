@@ -4,17 +4,7 @@ runs:
   steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Cache Homebrew packages
-        uses: actions/cache@v2
-        with:
-          path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor
-          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-brew-
       - name: Install Homebrew dependencies
         shell: bash
         run: |
-          brew update --preinstall
           brew bundle --file=./Brewfile
-        env:
-          HOMEBREW_NO_INSTALL_CLEANUP: true
