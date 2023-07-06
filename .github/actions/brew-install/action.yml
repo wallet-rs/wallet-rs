@@ -13,9 +13,8 @@ runs:
             ${{ runner.os }}-brew-
       - name: Install Homebrew dependencies
         shell: bash
-        continues-on-error: true
         run: |
           brew update --preinstall
-          brew bundle --file=./Brewfile
+          brew bundle --file=./Brewfile || true
         env:
           HOMEBREW_NO_INSTALL_CLEANUP: true
