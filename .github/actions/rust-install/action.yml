@@ -56,9 +56,6 @@ runs:
         echo "SCCACHE_S3_USE_SSL=true" >> $GITHUB_ENV
         echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
         echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
-        echo "SCCACHE_BUCKET=${{ inputs.sccache_bucket }}" >> $GITHUB_ENV
-        echo "SCCACHE_ENDPOINT=${{ inputs.sccache_endpoint }}" >> $GITHUB_ENV
-        echo "SCCACHE_REGION=${{ inputs.sccache_region }}" >> $GITHUB_ENV
     - name: Start sccache
       shell: bash
       run: |
