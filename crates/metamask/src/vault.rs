@@ -216,7 +216,7 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     // Attempt to decrypt the vault.
     let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;
     let key = key_from_password(password, Some(&salt));
-    let res = decrypt(password, &mut cyphertext, Some(&key))?;
+    let res = decrypt(password, &cyphertext, Some(&key))?;
 
     // Attempt to decrypt the vault.
     let r = decrypt_vault_result(&remove_redundant_quotes(&res));
