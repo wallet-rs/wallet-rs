@@ -31,7 +31,7 @@ pub type Aes256Gcm = AesGcm<Aes256, U16>;
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
 pub fn encrypt(
     password: &str,
-    data: &mut Vec<u8>,
+    data: &Vec<u8>,
     key: Option<&[u8]>,
     salt: Option<&str>,
 ) -> Result<String, Box<dyn Error>> {
@@ -68,7 +68,7 @@ pub fn encrypt(
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
 pub fn decrypt(
     password: &str,
-    ciphertext: &mut Vault,
+    ciphertext: &Vault,
     key: Option<&[u8]>,
 ) -> Result<String, Box<dyn Error>> {
     // Decode the nonce and encrypted data.
