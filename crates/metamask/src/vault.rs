@@ -211,7 +211,7 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     let salt = &vault.salt.clone().map_or("".to_string(), |s| remove_redundant_quotes(&s));
 
     // Create a vault object.
-    let mut cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
+    let cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
 
     // Attempt to decrypt the vault.
     let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;
