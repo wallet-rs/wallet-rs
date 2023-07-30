@@ -64,7 +64,8 @@ jobs:
           sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
           sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
           sccache_secret: ${{ secrets.SCCACHE_SECRET }}
-      - name: Rust Format Check
+      - if: matrix.os == 'ubuntu-latest'
+        name: Rust Format Check
         uses: actions-rs/cargo@v1
         with:
           command: fmt
