@@ -1,5 +1,6 @@
 [toolchain]
-channel = "nightly-2022-07-24"
+channel = "nightly-2023-06-15"
+
 targets = [
     "aarch64-linux-android",
     "armv7-linux-androideabi",
