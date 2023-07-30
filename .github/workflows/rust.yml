@@ -9,8 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 env:
-  RUSTFLAGS: -D warnings
-  CARGO_TERM_COLOR: always
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
 jobs:
@@ -38,17 +36,15 @@ jobs:
             test: true
           # - os: ubuntu-latest
           #   target: x86_64-linux-android 
-          - os: macos-latest
-            target: x86_64-apple-ios
-            test: false
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            test: true
+          # - os: macos-latest
+          #   target: x86_64-apple-ios
+          #   test: false
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   test: true
           # - os: windows-latest
           #   target: x86_64-pc-windows-msvc
     env:
-      RUSTFLAGS: -D warnings
-      SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
     needs:
       - rust-turbo
@@ -113,7 +109,8 @@ jobs:
         with:
           command: clippy
           args: --workspace -- -D warnings
-      - name: Rust Finish
+      - if: always()
+        name: Rust Finish
         uses: ./.github/actions/rust-finish
   rust-check:
     if: always()

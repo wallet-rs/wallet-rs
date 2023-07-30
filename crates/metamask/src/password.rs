@@ -31,7 +31,7 @@ pub type Aes256Gcm = AesGcm<Aes256, U16>;
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L32
 pub fn encrypt(
     password: &str,
-    data: &mut Vec<u8>,
+    data: &Vec<u8>,
     key: Option<&[u8]>,
     salt: Option<&str>,
 ) -> Result<String, Box<dyn Error>> {
@@ -68,7 +68,7 @@ pub fn encrypt(
 /// https://github.com/MetaMask/browser-passworder/blob/a8574c40d1e42b2bc2c2b3d330b0ea50aa450017/src/index.ts#L103
 pub fn decrypt(
     password: &str,
-    ciphertext: &mut Vault,
+    ciphertext: &Vault,
     key: Option<&[u8]>,
 ) -> Result<String, Box<dyn Error>> {
     // Decode the nonce and encrypted data.
@@ -137,14 +137,14 @@ mod tests {
         let key = key_from_password("password", Some(&salt));
 
         // encrypts the data
-        let mut data = serde_json::to_vec(&data).unwrap();
+        let data = serde_json::to_vec(&data).unwrap();
         println!("data: {:?}", data);
-        let ciphertext = encrypt("password", &mut data, Some(&key), Some("salt")).unwrap();
+        let ciphertext = encrypt("password", &data, Some(&key), Some("salt")).unwrap();
         println!("encrypted: {:?}", ciphertext);
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Vault>(&ciphertext).unwrap();
-        let res = decrypt("password", &mut ciphertext, Some(&key));
+        let ciphertext: Vault = serde_json::from_str::<Vault>(&ciphertext).unwrap();
+        let res = decrypt("password", &ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
         Ok(())
     }
@@ -164,8 +164,8 @@ mod tests {
         let key = key_from_password("JooXegoodowu8mohf2ietah5kohgah5", Some(&salt));
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Vault>(data).unwrap();
-        let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &mut ciphertext, Some(&key));
+        let ciphertext = serde_json::from_str::<Vault>(data).unwrap();
+        let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
         Ok(())
     }

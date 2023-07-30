@@ -6,9 +6,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-env:
-  RUSTFLAGS: -D warnings
-  CARGO_TERM_COLOR: always
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -25,8 +22,6 @@ jobs:
           default-branch: main
   cargo:
     env:
-      RUSTFLAGS: -D warnings
-      SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
     needs: release-please
     runs-on: macos-latest

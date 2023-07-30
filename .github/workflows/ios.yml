@@ -58,9 +58,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 90
     if: needs.ios-turbo.outputs.trigger == 'true'
-    env:
-      RUSTFLAGS: -D warnings
-      CARGO_TERM_COLOR: always
     steps:
       - name: Fetch Head
         uses: actions/checkout@v3

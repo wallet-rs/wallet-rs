@@ -211,12 +211,12 @@ pub fn decrypt_vault(vault: &Vault, password: &str) -> Result<DecryptedVault, Bo
     let salt = &vault.salt.clone().map_or("".to_string(), |s| remove_redundant_quotes(&s));
 
     // Create a vault object.
-    let mut cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
+    let cyphertext = Vault { data, iv, salt: Some(salt.to_string()) };
 
     // Attempt to decrypt the vault.
     let salt = general_purpose::STANDARD.decode(cyphertext.salt.clone().unwrap().as_bytes())?;
     let key = key_from_password(password, Some(&salt));
-    let res = decrypt(password, &mut cyphertext, Some(&key))?;
+    let res = decrypt(password, &cyphertext, Some(&key))?;
 
     // Attempt to decrypt the vault.
     let r = decrypt_vault_result(&remove_redundant_quotes(&res));
