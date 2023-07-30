@@ -137,14 +137,14 @@ mod tests {
         let key = key_from_password("password", Some(&salt));
 
         // encrypts the data
-        let mut data = serde_json::to_vec(&data).unwrap();
+        let data = serde_json::to_vec(&data).unwrap();
         println!("data: {:?}", data);
-        let ciphertext = encrypt("password", &mut data, Some(&key), Some("salt")).unwrap();
+        let ciphertext = encrypt("password", &data, Some(&key), Some("salt")).unwrap();
         println!("encrypted: {:?}", ciphertext);
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Vault>(&ciphertext).unwrap();
-        let res = decrypt("password", &mut ciphertext, Some(&key));
+        let ciphertext: Vault = serde_json::from_str::<Vault>(&ciphertext).unwrap();
+        let res = decrypt("password", &ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
         Ok(())
     }
@@ -164,8 +164,8 @@ mod tests {
         let key = key_from_password("JooXegoodowu8mohf2ietah5kohgah5", Some(&salt));
 
         // decrypts the data
-        let mut ciphertext = serde_json::from_str::<Vault>(data).unwrap();
-        let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &mut ciphertext, Some(&key));
+        let ciphertext = serde_json::from_str::<Vault>(data).unwrap();
+        let res = decrypt("JooXegoodowu8mohf2ietah5kohgah5", &ciphertext, Some(&key));
         println!("decrypted: {:?}", res);
         Ok(())
     }
