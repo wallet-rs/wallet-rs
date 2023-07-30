@@ -56,14 +56,11 @@ runs:
         echo "SCCACHE_IDLE_TIMEOUT=0" >> $GITHUB_ENV
         echo "SCCACHE_S3_USE_SSL=true" >> $GITHUB_ENV
         echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY_ID=${{ inputs.sccache_key_id }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ inputs.sccache_secret }}" >> $GITHUB_ENV
         echo "SCCACHE_BUCKET=${{ inputs.sccache_bucket }}" >> $GITHUB_ENV
         echo "SCCACHE_ENDPOINT=${{ inputs.sccache_endpoint }}" >> $GITHUB_ENV
         echo "SCCACHE_REGION=${{ inputs.sccache_region }}" >> $GITHUB_ENV
-    - name: Add credentials to aws
-      shell: bash
-      run: |
-        aws configure set aws_access_key_id ${{ inputs.sccache_key_id }} --profile default
-        aws configure set aws_secret_access_key ${{ inputs.sccache_secret }} --profile default
     - name: Start sccache
       shell: bash
       run: |
