@@ -56,19 +56,18 @@ runs:
         echo "SCCACHE_IDLE_TIMEOUT=0" >> $GITHUB_ENV
         echo "SCCACHE_S3_USE_SSL=true" >> $GITHUB_ENV
         echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
-        echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
         echo "SCCACHE_BUCKET=${{ inputs.sccache_bucket }}" >> $GITHUB_ENV
         echo "SCCACHE_ENDPOINT=${{ inputs.sccache_endpoint }}" >> $GITHUB_ENV
         echo "SCCACHE_REGION=${{ inputs.sccache_region }}" >> $GITHUB_ENV
-    - name: Start sccache
-      shell: bash
-      run: |
-        ${SCCACHE_PATH} --start-server
     - name: Add credentials to aws
       shell: bash
       run: |
         aws configure set aws_access_key_id ${{ inputs.sccache_key_id }} --profile default
         aws configure set aws_secret_access_key ${{ inputs.sccache_secret }} --profile default
+    - name: Start sccache
+      shell: bash
+      run: |
+        ${SCCACHE_PATH} --start-server
     - if: runner.os == 'Linux'
       name: Install missing dependencies
       uses: awalsh128/cache-apt-pkgs-action@latest
