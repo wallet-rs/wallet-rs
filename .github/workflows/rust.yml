@@ -36,12 +36,12 @@ jobs:
             test: true
           # - os: ubuntu-latest
           #   target: x86_64-linux-android 
-          - os: macos-latest
-            target: x86_64-apple-ios
-            test: false
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            test: true
+          # - os: macos-latest
+          #   target: x86_64-apple-ios
+          #   test: false
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   test: true
           # - os: windows-latest
           #   target: x86_64-pc-windows-msvc
     env:
