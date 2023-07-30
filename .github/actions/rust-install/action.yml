@@ -46,6 +46,7 @@ runs:
     - name: Set sccache environments
       shell: bash
       run: |
+        echo "CACHE_TIMEOUT_MINUTES=5" >> $GITHUB_ENV
         echo "CARGO_TERM_COLOR=always" >> $GITHUB_ENV
         echo "CARGO_NET_RETRY=10" >> $GITHUB_ENV
         echo "RUSTUP_MAX_RETRIES=10" >> $GITHUB_ENV
