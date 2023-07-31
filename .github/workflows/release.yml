@@ -21,8 +21,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           default-branch: main
   cargo:
-    env:
-      RUSTC_WRAPPER: "sccache"
     needs: release-please
     runs-on: macos-latest
     timeout-minutes: 30
