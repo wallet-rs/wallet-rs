@@ -44,8 +44,6 @@ jobs:
           #   test: true
           # - os: windows-latest
           #   target: x86_64-pc-windows-msvc
-    env:
-      RUSTC_WRAPPER: "sccache"
     needs:
       - rust-turbo
     runs-on: ${{ matrix.os }}

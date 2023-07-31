@@ -2,10 +2,6 @@ name: Rust Finish
 runs:
   using: "composite"
   steps:
-    - name: Print sccache stats
-      shell: bash
-      run: |
-        ${SCCACHE_PATH} --show-stats
     - name: Save Rust Cache
       uses: actions/cache/save@v3
       if: failure()
