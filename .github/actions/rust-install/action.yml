@@ -1,23 +1,4 @@
 name: Rust Install
-# Borrowed from https://github.com/paradigmxyz/reth/pull/1355/files
-inputs:
-  sccache_region:
-    description: Region of sccache s3 bucket
-    default: auto
-    required: false
-  sccache_bucket:
-    description: Sccache s3 bucket name
-    default: sccache
-    required: false
-  sccache_endpoint:
-    description: Sccache s3 endpoint
-    required: true
-  sccache_key_id:
-    description: Sccache s3 key id
-    required: true
-  sccache_secret:
-    description: Sccache s3 key secret
-    required: true
 runs:
   using: "composite"
   steps:
@@ -27,10 +8,8 @@ runs:
       uses: taiki-e/install-action@v1
       with:
         tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt,cargo-deny
-    - name: Install Mold
-      uses: rui314/setup-mold@v1
-    - name: Run sccache-cache
-      uses: mozilla-actions/sccache-action@v0.0.3
+    - name: Run cache
+      uses: Swatinem/rust-cache@v2
     - name: Rust Cache
       uses: actions/cache@v3
       continue-on-error: false
@@ -41,23 +20,15 @@ runs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: ${{ matrix.os }}-${{ matrix.target }}-cargo-
-    - name: Set sccache environments
+        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: ${{ matrix.os }}-cargo-
+    - name: Set cargo environments
       shell: bash
       run: |
         echo "CACHE_TIMEOUT_MINUTES=5" >> $GITHUB_ENV
         echo "CARGO_TERM_COLOR=always" >> $GITHUB_ENV
         echo "CARGO_NET_RETRY=10" >> $GITHUB_ENV
-        echo "RUSTUP_MAX_RETRIES=10" >> $GITHUB_ENV
-        echo "SCCACHE_IDLE_TIMEOUT=0" >> $GITHUB_ENV
-        echo "SCCACHE_S3_USE_SSL=true" >> $GITHUB_ENV
         echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
-        echo "AWS_ACCESS_KEY_ID=${{ inputs.sccache_key_id }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ inputs.sccache_secret }}" >> $GITHUB_ENV
-        echo "SCCACHE_BUCKET=${{ inputs.sccache_bucket }}" >> $GITHUB_ENV
-        echo "SCCACHE_ENDPOINT=${{ inputs.sccache_endpoint }}" >> $GITHUB_ENV
-        echo "SCCACHE_REGION=${{ inputs.sccache_region }}" >> $GITHUB_ENV
     - if: runner.os == 'Linux'
       name: Install missing dependencies
       uses: awalsh128/cache-apt-pkgs-action@latest

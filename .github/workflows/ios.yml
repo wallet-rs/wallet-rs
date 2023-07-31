@@ -35,13 +35,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Cache Homebrew packages
-        uses: actions/cache@v2
-        with:
-          path: /home/linuxbrew/.linuxbrew/Homebrew/Library/Homebrew/vendor
-          key: ${{ runner.os }}-brew-${{ hashFiles('**/Brewfile.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-brew-
+      - name: Brew Install
+        uses: ./.github/actions/brew-install
       - name: Install Homebrew dependencies
         run: |
           brew update
@@ -63,10 +58,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Rust Install
         uses: ./.github/actions/rust-install
-        with:
-          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
-          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
-          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
       - name: Install Ruby Bundler
         uses: ruby/setup-ruby@v1
         with:
