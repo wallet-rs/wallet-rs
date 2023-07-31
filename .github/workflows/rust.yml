@@ -56,10 +56,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Rust Install
         uses: ./.github/actions/rust-install
-        with:
-          sccache_endpoint: ${{ secrets.SCCACHE_ENDPOINT }}
-          sccache_key_id: ${{ secrets.SCCACHE_KEY_ID }}
-          sccache_secret: ${{ secrets.SCCACHE_SECRET }}
       - if: matrix.os == 'ubuntu-latest'
         name: Rust Format Check
         uses: actions-rs/cargo@v1
