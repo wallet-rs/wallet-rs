@@ -22,6 +22,19 @@ runs:
           target/
         key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: ${{ matrix.os }}-cargo-
+    - if: runner.name == 'self-hosted'
+      name: Rust Buildjet Cache
+      uses: buildjet/cache@v3
+      continue-on-error: false
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: ${{ matrix.os }}-cargo-
     - name: Set cargo environments
       shell: bash
       run: |
