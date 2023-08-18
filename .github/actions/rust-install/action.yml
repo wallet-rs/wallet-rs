@@ -22,7 +22,7 @@ runs:
           target/
         key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: ${{ matrix.os }}-cargo-
-    - if: runner.name == 'self-hosted'
+    - if: runner.environment == 'self-hosted'
       name: Rust Buildjet Cache
       uses: buildjet/cache@v3
       continue-on-error: false
