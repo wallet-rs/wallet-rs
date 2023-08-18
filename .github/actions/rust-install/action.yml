@@ -10,8 +10,7 @@ runs:
         tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt,cargo-deny
     - name: Run cache
       uses: Swatinem/rust-cache@v2
-    - if: runner.environment != 'self-hosted'
-      name: Rust Cache
+    - name: Rust Cache
       uses: actions/cache@v3
       continue-on-error: false
       with:
