@@ -12,4 +12,16 @@ runs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - if: runner.environment == 'self-hosted'
+      name: Save Buildjet Rust Cache
+      uses: buildjet/cache/save@v3
+      if: failure()
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
