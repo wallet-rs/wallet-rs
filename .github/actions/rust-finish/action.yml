@@ -13,10 +13,9 @@ runs:
           ~/.cargo/git/db/
           target/
         key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - if: runner.environment == 'self-hosted'
+    - if: failure() && runner.environment == 'self-hosted'
       name: Save Buildjet Rust Cache
       uses: buildjet/cache/save@v3
-      if: failure()
       with:
         path: |
           ~/.cargo/bin/
