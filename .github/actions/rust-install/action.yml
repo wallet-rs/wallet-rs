@@ -1,4 +1,8 @@
 name: Rust Install
+inputs:
+  name:
+    description: Cache name
+    required: true
 runs:
   using: "composite"
   steps:
@@ -20,21 +24,8 @@ runs:
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
           target/
-        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: ${{ matrix.os }}-cargo-
-    - if: runner.environment == 'self-hosted'
-      name: Rust Buildjet Cache
-      uses: buildjet/cache@v3
-      continue-on-error: false
-      with:
-        path: |
-          ~/.cargo/bin/
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          target/
-        key: ${{ matrix.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: ${{ matrix.os }}-cargo-
+        key: ${{ matrix.os }}-${{ inputs.name }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: ${{ matrix.os }}-${{ inputs.name }}-cargo-
     - name: Set cargo environments
       shell: bash
       run: |
