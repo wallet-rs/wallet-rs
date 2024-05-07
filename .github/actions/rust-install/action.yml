@@ -13,7 +13,7 @@ runs:
       with:
         tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt,cargo-deny
     - name: Install Rustup
-      uses: brndnmtthws/rust-action@v1
+      uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Run cache
       uses: Swatinem/rust-cache@v2
     - name: Rust Cache
