@@ -11,7 +11,7 @@ runs:
     - name: Install Rust Utilities
       uses: taiki-e/install-action@v1
       with:
-        tool: nextest,cargo-llvm-cov,clippy-sarif,sarif-fmt,cargo-deny
+        tool: nextest,cargo-llvm-cov,cargo-deny
     - name: Install Rustup
       uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Run cache
