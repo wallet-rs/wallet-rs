@@ -3,6 +3,10 @@ inputs:
   workspace:
     description: Name for npm package name
     required: true
+  always_run_on_push:
+    description: Flag to always trigger the workflow on push events
+    required: false
+    default: false
 outputs:
   trigger:
     description: "Boolean value to trigger or not trigger the workflow"
@@ -24,7 +28,11 @@ runs:
         elif [ ${{ github.event_name }} == 'pull_request' ]; then
           npx turbo-ignore ${{ inputs.workspace }} && echo "trigger=false" >> "$GITHUB_OUTPUT" || echo "trigger=true" >> "$GITHUB_OUTPUT"
         elif [ ${{ github.event_name }} == 'push' ]; then
-          npx turbo-ignore ${{ inputs.workspace }} --fallback ${{ github.event.before }} && echo "trigger=false" >> "$GITHUB_OUTPUT" || echo "trigger=true" >> "$GITHUB_OUTPUT"
+          if [ "${{ inputs.always_run_on_push }}" == "true" ]; then
+            echo "trigger=true" >> "$GITHUB_OUTPUT"
+          else
+            npx turbo-ignore ${{ inputs.workspace }} --fallback ${{ github.event.before }} && echo "trigger=false" >> "$GITHUB_OUTPUT" || echo "trigger=true" >> "$GITHUB_OUTPUT"
+          fi
         else
           echo "trigger=true" >> "$GITHUB_OUTPUT"
         fi
